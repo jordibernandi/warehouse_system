@@ -3,11 +3,32 @@ import bcrypt from 'bcryptjs';
 import config from '../../config';
 import jwt from 'jsonwebtoken';
 import auth from '../../middleware/auth';
+import axios from 'axios';
 // User Model
 import User from '../../models/User';
 
 const { JWT_SECRET } = config;
 const router = Router();
+
+/**
+ * @route   POST api/auth/verifyCaptcha
+ * @desc    Verify Captcha
+ * @access  Public
+ */
+
+router.post("/verifyCaptcha", (request, response) => {
+  try {
+    const ip = request.connection.remoteAddress;
+    const { token } = request.body;
+    const secret = "6LevV9wUAAAAAHprzW2sj5c7FMeWTNJrfT0gTGbQ";
+    const jsonData = axios.get("https://www.google.com/recaptcha/api/siteverify?secret=" + secret + "&response=" + token + "&remoteip=" + ip);
+    jsonData.then((res) => {
+      response.status(200).json(res.data);
+    })
+  } catch (e) {
+    response.status(400).json({ error: e.message });
+  }
+});
 
 /**
  * @route   POST api/auth/login
@@ -18,21 +39,32 @@ const router = Router();
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  // Simple validation
-  if (!email || !password) {
-    return res.status(400).json({ msg: 'Please enter all fields' });
-  }
-
   try {
+    // Simple validation
+    if (!email || !password) throw Error('No data');
+
     // Check for existing user
-    const user = await User.findOne({ email });
-    if (!user) throw Error('User Does not exist');
+    const user = await User.findOne({ email, isActive: true });
+    if (!user) {
+      return res.send(JSON.stringify({
+        success: false,
+        msg: 'Invalid credentials'
+      }));
+
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw Error('Invalid credentials');
+    if (!isMatch) {
+      return res.send(JSON.stringify({
+        success: false,
+        msg: 'Invalid credentials'
+      }));
+    }
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 3600 });
-    if (!token) throw Error('Couldnt sign the token');
+    if (!token) {
+      throw Error('Couldnt sign the token');
+    }
 
     res.status(200).json({
       token,
@@ -40,56 +72,6 @@ router.post('/login', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email
-      }
-    });
-  } catch (e) {
-    res.status(400).json({ msg: e.message });
-  }
-});
-
-/**
- * @route   POST api/users
- * @desc    Register new user
- * @access  Public
- */
-
-router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
-
-  // Simple validation
-  if (!name || !email || !password) {
-    return res.status(400).json({ msg: 'Please enter all fields' });
-  }
-
-  try {
-    const user = await User.findOne({ email });
-    if (user) throw Error('User already exists');
-
-    const salt = await bcrypt.genSalt(10);
-    if (!salt) throw Error('Something went wrong with bcrypt');
-
-    const hash = await bcrypt.hash(password, salt);
-    if (!hash) throw Error('Something went wrong hashing the password');
-
-    const newUser = new User({
-      name,
-      email,
-      password: hash
-    });
-
-    const savedUser = await newUser.save();
-    if (!savedUser) throw Error('Something went wrong saving the user');
-
-    const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
-      expiresIn: 3600
-    });
-
-    res.status(200).json({
-      token,
-      user: {
-        id: savedUser.id,
-        name: savedUser.name,
-        email: savedUser.email
       }
     });
   } catch (e) {
@@ -103,9 +85,14 @@ router.post('/register', async (req, res) => {
  * @access  Private
  */
 
-router.get('/user', auth, async (req, res) => {
+router.get('/user/:_id', async (req, res) => {
+  const _id = req.params._id;
+
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    // Simple validation
+    if (!_id) throw Error('No data');
+
+    const user = await User.findById(_id).select('-password');
     if (!user) throw Error('User Does not exist');
     res.json(user);
   } catch (e) {

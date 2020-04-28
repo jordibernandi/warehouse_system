@@ -8,8 +8,14 @@ import config from './config';
 
 // routes
 import authRoutes from './routes/api/auth';
-import itemRoutes from './routes/api/items';
 import userRoutes from './routes/api/users';
+import companyRoutes from './routes/api/companies';
+import locationRoutes from './routes/api/locations';
+import brandRoutes from './routes/api/brands';
+import productRoutes from './routes/api/products';
+import shipmentRoutes from './routes/api/shipments';
+import customerRoutes from './routes/api/customers';
+import actionRoutes from './routes/api/actions';
 
 const { MONGO_URI, MONGO_DB_NAME } = config;
 
@@ -36,9 +42,15 @@ mongoose
   .catch(err => console.log(err));
 
 // Use Routes
-app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/companies', companyRoutes);
+app.use('/api/locations', locationRoutes);
+app.use('/api/brands', brandRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/shipments', shipmentRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/actions', actionRoutes);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {

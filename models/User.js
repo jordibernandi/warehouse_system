@@ -2,6 +2,10 @@ import { Schema, model } from 'mongoose';
 
 // Create Schema
 const UserSchema = new Schema({
+  _id: {
+    type: String,
+    required: true
+  },
   name: {
     type: String,
     required: true
@@ -15,10 +19,12 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  register_date: {
-    type: Date,
-    default: Date.now
+  isActive: {
+    type: Boolean,
+    default: true
   }
+}, {
+  timestamps: true, _id: false
 });
 
 const User = model('user', UserSchema);
