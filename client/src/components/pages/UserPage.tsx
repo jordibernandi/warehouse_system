@@ -11,6 +11,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Link from '@material-ui/core/Link';
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -35,16 +36,18 @@ const UserPage = (props: any) => {
 
     const initialErrorState = {
         _id: { type: [], status: false },
-        name: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
-        email: { type: [ERROR_TYPE.REQUIRED], status: false },
+        name: { type: [ERROR_TYPE.REQUIRED], status: false },
+        email: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
+        password: { type: [ERROR_TYPE.REQUIRED], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), name: '' };
+    const initialFormDataState = { _id: uuidv4(), name: '', email: '', password: '' };
     const initialSelectedDataIndex = 0;
     const defaultErrorMessage = "Value is Empty or Invalid";
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [userData, setUserData] = useState({} as any);
     const [tableData, setTableData] = useState([] as any);
+    const [isChangePassword, setIsChangePassword] = useState(false);
     const [isOpenFormDialog, setIsOpenFormDialog] = useState(false);
     const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
     const [formData, setFormData] = useState(initialFormDataState as any);
@@ -117,7 +120,7 @@ const UserPage = (props: any) => {
         const data = tableData[dataIndex]
 
         setDialogType(DIALOG_TYPE.EDIT);
-        setFormData({ _id: data._id, name: data.name, email: data.email });
+        setFormData({ _id: data._id, name: data.name, email: data.email, password: '' });
         setIsOpenFormDialog(true);
         setSelectedDataIndex(dataIndex);
     }
@@ -131,11 +134,15 @@ const UserPage = (props: any) => {
 
         Object.keys(formData).forEach((key: any) => {
             if (formData[key].toString().trim() === "" && error[key].type.includes(ERROR_TYPE.REQUIRED)) {
-                tempError[key] = {
-                    ...tempError[key],
-                    status: true
+                if (key === "password" && !isChangePassword && dialogType === DIALOG_TYPE.EDIT) {
+
+                } else {
+                    tempError[key] = {
+                        ...tempError[key],
+                        status: true
+                    }
+                    isValid = false;
                 }
-                isValid = false;
             }
             if (error[key].type.includes(ERROR_TYPE.UNIQUE)) {
                 let tempTableData = [...tableData];
@@ -162,7 +169,7 @@ const UserPage = (props: any) => {
             return;
         }
 
-        const newTableData = { "_id": formData._id, "name": formData.name };
+        const newTableData = { "_id": formData._id, "name": formData.name, "email": formData.email };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             UserService.add(formData).then((res: any) => {
@@ -179,22 +186,43 @@ const UserPage = (props: any) => {
                 }
             })
         } else if (dialogType === DIALOG_TYPE.EDIT) {
-            UserService.edit(formData._id, formData).then((res: any) => {
-                if (res.status === 200) {
-                    const tempTableData = [...tableData];
-                    tempTableData[selectedDataIndex] = newTableData;
-                    setTableData(tempTableData);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
-                    setSelectedDataIndex(initialSelectedDataIndex);
+            if (isChangePassword) {
+                UserService.editWithPassword(formData._id, formData).then((res: any) => {
+                    if (res.status === 200) {
+                        const tempTableData = [...tableData];
+                        tempTableData[selectedDataIndex] = newTableData;
+                        setTableData(tempTableData);
+                        handleCloseFormDialog();
+                        setFormData(initialFormDataState);
+                        setSelectedDataIndex(initialSelectedDataIndex);
+                        setIsChangePassword(false);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                        setSnackbarMessage("Success!");
+                        handleShowSuccessSnackbar();
+                    } else {
+                        setSnackbarMessage("Something went wrong!");
+                        handleShowErrorSnackbar();
+                    }
+                })
+            } else {
+                UserService.edit(formData._id, formData).then((res: any) => {
+                    if (res.status === 200) {
+                        const tempTableData = [...tableData];
+                        tempTableData[selectedDataIndex] = newTableData;
+                        setTableData(tempTableData);
+                        handleCloseFormDialog();
+                        setFormData(initialFormDataState);
+                        setSelectedDataIndex(initialSelectedDataIndex);
+                        setIsChangePassword(false);
+
+                        setSnackbarMessage("Success!");
+                        handleShowSuccessSnackbar();
+                    } else {
+                        setSnackbarMessage("Something went wrong!");
+                        handleShowErrorSnackbar();
+                    }
+                })
+            }
         }
     };
 
@@ -305,8 +333,7 @@ const UserPage = (props: any) => {
                                     error={error.name.status}
                                     helperText={error.name.status ? defaultErrorMessage : ""}
                                 />
-                            </DialogContent>
-                            <DialogContent>
+
                                 <TextField
                                     value={formData.email}
                                     margin="normal"
@@ -320,6 +347,46 @@ const UserPage = (props: any) => {
                                     error={error.email.status}
                                     helperText={error.email.status ? defaultErrorMessage : ""}
                                 />
+                                {dialogType === DIALOG_TYPE.REGISTER && (
+                                    <TextField
+                                        value={formData.password}
+                                        margin="normal"
+                                        id="password"
+                                        name="password"
+                                        label="Password"
+                                        type="password"
+                                        fullWidth
+                                        onChange={handleChange}
+                                        required
+                                        error={error.password.status}
+                                        helperText={error.password.status ? defaultErrorMessage : ""}
+                                    />
+                                )}
+                                {dialogType === DIALOG_TYPE.EDIT && !isChangePassword && (
+                                    <Link href="#" onClick={() => { setIsChangePassword(true) }}>
+                                        {"Change Password"}
+                                    </Link>
+                                )}
+                                {dialogType === DIALOG_TYPE.EDIT && isChangePassword && (
+                                    <>
+                                        <Link href="#" onClick={() => { setIsChangePassword(false) }}>
+                                            {"Cancel Change Password"}
+                                        </Link>
+                                        <TextField
+                                            value={formData.password}
+                                            margin="normal"
+                                            id="password"
+                                            name="password"
+                                            label="Password"
+                                            type="password"
+                                            fullWidth
+                                            onChange={handleChange}
+                                            required
+                                            error={error.password.status}
+                                            helperText={error.password.status ? defaultErrorMessage : ""}
+                                        />
+                                    </>
+                                )}
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleCloseFormDialog} color="primary">
