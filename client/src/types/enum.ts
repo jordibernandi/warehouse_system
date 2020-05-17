@@ -1,3 +1,28 @@
+export enum USER_ROLES {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  NON_ADMIN = 'NON_ADMIN'
+}
+
+export enum AUTH_ROUTES {
+  WELCOME = '/welcome',
+  USER = '/user',
+  COMPANY = '/company',
+  LOCATION = '/location',
+  BRAND = '/brand',
+  CUSTOMER = '/customer',
+  ACTION = '/action',
+  PRODUCT = '/product',
+  SHIPMENT = '/shipment',
+  SHIPMENT_REPORT = '/shipmentReport',
+  STOCK_REPORT = '/stockReport',
+}
+
+export enum NON_AUTH_ROUTES {
+  LOGIN = '/login',
+}
+
+
 export enum E_ERROR {
   LOGIN_FAIL = 'LOGIN_FAIL',
   REGISTER_FAIL = 'REGISTER_FAIL'

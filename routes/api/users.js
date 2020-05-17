@@ -27,12 +27,11 @@ router.get('/', async (req, res) => {
  */
 
 router.post('/add', async (req, res) => {
-  console.log("ADD");
-  const { _id, name, email, password } = req.body;
+  const { _id, name, email, role, password } = req.body;
 
   try {
     // Simple validation
-    if (!_id || !name || !email || !password) throw Error('No data');
+    if (!_id || !name || !email || !role || !password) throw Error('No data');
 
     const user = await User.findOne({ email, isActive: true });
     if (user) throw Error('User already exists');
@@ -47,7 +46,8 @@ router.post('/add', async (req, res) => {
       _id,
       name,
       email,
-      password: hash
+      role,
+      password: hash,
     });
 
     const savedUser = await newUser.save();
@@ -58,7 +58,6 @@ router.post('/add', async (req, res) => {
       msg: 'Data successfully added'
     });
   } catch (e) {
-    console.log("ERROR", e.message);
     res.status(400).json({ error: e.message });
   }
 });
@@ -71,17 +70,18 @@ router.post('/add', async (req, res) => {
 
 router.put('/edit/:_id', async (req, res) => {
   const _id = req.params._id;
-  const { name, email } = req.body;
+  const { name, email, role } = req.body;
 
   try {
     // Simple validation
-    if (!name || !email) throw Error('No data');
+    if (!name || !email || !role) throw Error('No data');
 
     const user = await User.findOne({ _id: _id });
     if (!user) throw Error('Data is not found');
 
     user.name = name;
     user.email = email;
+    user.role = role;
 
     const savedUser = await user.save();
     if (!savedUser) throw Error('Something went wrong saving the data');
@@ -103,11 +103,11 @@ router.put('/edit/:_id', async (req, res) => {
 
 router.put('/editWithPassword/:_id', async (req, res) => {
   const _id = req.params._id;
-  const { name, email, password } = req.body;
+  const { name, email, role, password } = req.body;
 
   try {
     // Simple validation
-    if (!name || !email || !password) throw Error('No data');
+    if (!name || !email || !role || !password) throw Error('No data');
 
     const user = await User.findOne({ _id: _id });
     if (!user) throw Error('Data is not found');
@@ -120,6 +120,7 @@ router.put('/editWithPassword/:_id', async (req, res) => {
 
     user.name = name;
     user.email = email;
+    user.role = role;
     user.password = hash;
 
     const savedUser = await user.save();

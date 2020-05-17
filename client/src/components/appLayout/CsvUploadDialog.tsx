@@ -30,6 +30,7 @@ import FunctionUtil from '../../utils/FunctionUtil';
 import BrandService from '../../services/BrandService';
 
 interface ICsvUploadDialog {
+    setIsLoading: any,
     isDialogOpen: boolean,
     handleCloseDialog: any,
     title: string,
@@ -55,7 +56,7 @@ const steps = ['Upload CSV', 'Header Index', 'First Data Index', 'Mapping Data']
 
 const CsvUploadDialog = (props: ICsvUploadDialog) => {
     const classes = useStyles();
-    const { isDialogOpen, handleCloseDialog, title, dataModel, handleSaveUpload } = props;
+    const { setIsLoading, isDialogOpen, handleCloseDialog, title, dataModel, handleSaveUpload } = props;
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [brandData, setBrandData] = useState({} as any);
@@ -66,6 +67,7 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
     const [dataMappingValue, setDataMappingValue] = useState({} as any);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataBrand: any;
 
@@ -78,11 +80,12 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
         }
 
         fetchData();
-
+        setIsLoading(false);
     }, []);
 
     useEffect(() => {
         if (isLoaded) {
+            setIsLoading(true);
             const tempDataMappingValue: any = { ...dataModel };
 
             Object.keys(dataModel).forEach((key: any, index: any) => {
@@ -96,6 +99,7 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
             })
 
             setDataMappingValue(tempDataMappingValue);
+            setIsLoading(false);
         }
     }, [isLoaded, handleCloseDialog]);
 
@@ -116,6 +120,7 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
     };
 
     const handleDataMapping = () => {
+        setIsLoading(true);
         const tempDataMapped: any[] = [];
         Object.values(uploadData).forEach((data: any, index: any) => {
             if (index >= firstDataIndex) {
@@ -144,6 +149,7 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
         })
         handleSaveUpload(tempDataMapped);
         closeDialog();
+        setIsLoading(false);
     };
 
     const closeDialog = () => {

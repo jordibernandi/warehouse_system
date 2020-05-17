@@ -50,9 +50,7 @@ import ActionService from '../../services/ActionService';
 
 const StockReportPage = (props: any) => {
     const {
-        handleShowSuccessSnackbar,
-        handleShowErrorSnackbar,
-        setSnackbarMessage
+        setIsLoading
     } = useContext(AppContext);
 
     const initialErrorState = {
@@ -86,6 +84,7 @@ const StockReportPage = (props: any) => {
     const [dateInfo, setDateInfo] = useState("...");
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataUser: any;
             let activeDataProduct: any;
@@ -130,7 +129,8 @@ const StockReportPage = (props: any) => {
             setIsLoaded(true);
         }
 
-        fetchData()
+        fetchData();
+        setIsLoading(false);
     }, []);
 
     useEffect(() => {
@@ -160,6 +160,8 @@ const StockReportPage = (props: any) => {
 
     const submit = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         let isValid = true;
         const tempError = { ...error };
@@ -222,6 +224,7 @@ const StockReportPage = (props: any) => {
                 setDateInfo(format(formData.endDate, "MMM d, yyyy").toString());
             }
         })
+        setIsLoading(false);
     };
 
     const columns = [

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Switch, Route, useHistory, } from "react-router-dom";
 import clsx from 'clsx';
+import { AppContext } from '../../App';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -30,6 +31,9 @@ import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+
+// Enum
+import { USER_ROLES, AUTH_ROUTES } from '../../types/enum';
 
 const drawerWidth = 240;
 
@@ -68,6 +72,9 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1,
     cursor: "pointer"
+  },
+  username: {
+    flexGrow: 1,
   },
   drawerPaper: {
     position: 'relative',
@@ -109,6 +116,10 @@ interface IAppNavbarProps {
 }
 
 const AppNavbar = (props: IAppNavbarProps) => {
+  const {
+    userData,
+  } = useContext(AppContext);
+
   const classes = useStyles();
   const history = useHistory();
 
@@ -157,8 +168,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={onLogoutClick}>Logout</MenuItem>
+      <MenuItem onClick={onLogoutClick}>{"Logout"}</MenuItem>
     </Menu>
   );
 
@@ -173,7 +183,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem onClick={onLogoutClick}>
         <IconButton
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
@@ -182,7 +192,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
         >
           <AccountCircle />
         </IconButton>
-        <p>{"Profile"}</p>
+        <p>{"Logout"}</p>
       </MenuItem>
     </Menu>
   );
@@ -204,6 +214,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
             {"KMJA & LKJA"}
           </Typography>
           <div className={classes.sectionDesktop}>
+            <p className={classes.username}>{"Halo, " + userData.name}</p>
             <IconButton
               edge="end"
               aria-label="account of current user"
@@ -244,86 +255,96 @@ const AppNavbar = (props: IAppNavbarProps) => {
         </div>
         <Divider />
         <List>
-          <Tooltip title={"Users"} placement="right">
-            <ListItem button onClick={() => history.push("/user")}>
-              <ListItemIcon>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Users" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Companies"} placement="right">
-            <ListItem button onClick={() => history.push("/company")}>
-              <ListItemIcon>
-                <ApartmentIcon />
-              </ListItemIcon>
-              <ListItemText primary="Companies" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Locations"} placement="right">
-            <ListItem button onClick={() => history.push("/location")}>
-              <ListItemIcon>
-                <PinDropIcon />
-              </ListItemIcon>
-              <ListItemText primary="Locations" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Brands"} placement="right">
-            <ListItem button onClick={() => history.push("/brand")}>
-              <ListItemIcon>
-                <BookmarksIcon />
-              </ListItemIcon>
-              <ListItemText primary="Brands" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Customers"} placement="right">
-            <ListItem button onClick={() => history.push("/customer")}>
-              <ListItemIcon>
-                <EmojiPeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Customers" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Actions"} placement="right">
-            <ListItem button onClick={() => history.push("/action")}>
-              <ListItemIcon>
-                <OpenWithIcon />
-              </ListItemIcon>
-              <ListItemText primary="Actions" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Products"} placement="right">
-            <ListItem button onClick={() => history.push("/product")}>
-              <ListItemIcon>
-                <LabelIcon />
-              </ListItemIcon>
-              <ListItemText primary="Products" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Shipments"} placement="right">
-            <ListItem button onClick={() => history.push("/shipment")}>
-              <ListItemIcon>
-                <LocalShippingIcon />
-              </ListItemIcon>
-              <ListItemText primary="Shipments" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Shipments Report"} placement="right">
-            <ListItem button onClick={() => history.push("/shipmentReport")}>
-              <ListItemIcon>
-                <AssignmentIcon />
-              </ListItemIcon>
-              <ListItemText primary="Shipments Report" />
-            </ListItem>
-          </Tooltip>
-          <Tooltip title={"Stocks Report"} placement="right">
-            <ListItem button onClick={() => history.push("/stockReport")}>
-              <ListItemIcon>
-                <AssignmentIcon />
-              </ListItemIcon>
-              <ListItemText primary="Stocks Report" />
-            </ListItem>
-          </Tooltip>
+          {[String(USER_ROLES.SUPER_ADMIN)].includes(userData.role) && (
+            <Tooltip title={"Users"} placement="right">
+              <ListItem button onClick={() => history.push(AUTH_ROUTES.USER)}>
+                <ListItemIcon>
+                  <PeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Users" />
+              </ListItem>
+            </Tooltip>
+          )}
+
+          {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)].includes(userData.role) && (
+            <>
+              <Tooltip title={"Companies"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.COMPANY)}>
+                  <ListItemIcon>
+                    <ApartmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Companies" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Locations"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.LOCATION)}>
+                  <ListItemIcon>
+                    <PinDropIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Locations" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Brands"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.BRAND)}>
+                  <ListItemIcon>
+                    <BookmarksIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Brands" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Customers"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.CUSTOMER)}>
+                  <ListItemIcon>
+                    <EmojiPeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Customers" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Actions"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.ACTION)}>
+                  <ListItemIcon>
+                    <OpenWithIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Actions" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Products"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.PRODUCT)}>
+                  <ListItemIcon>
+                    <LabelIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Products" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Shipments Report"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT_REPORT)}>
+                  <ListItemIcon>
+                    <AssignmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Shipments Report" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Stocks Report"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.STOCK_REPORT)}>
+                  <ListItemIcon>
+                    <AssignmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Stocks Report" />
+                </ListItem>
+              </Tooltip>
+            </>
+          )}
+
+          {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)].includes(userData.role) && (
+            <Tooltip title={"Shipments"} placement="right">
+              <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT)}>
+                <ListItemIcon>
+                  <LocalShippingIcon />
+                </ListItemIcon>
+                <ListItemText primary="Shipments" />
+              </ListItem>
+            </Tooltip>
+          )}
         </List>
       </Drawer>
     </>

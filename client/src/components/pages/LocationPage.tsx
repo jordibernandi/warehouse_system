@@ -28,6 +28,7 @@ import LocationService from '../../services/LocationService';
 
 const LocationPage = (props: any) => {
     const {
+        setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
         setSnackbarMessage
@@ -53,6 +54,7 @@ const LocationPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataLocation: any;
 
@@ -71,7 +73,8 @@ const LocationPage = (props: any) => {
             setIsLoaded(true);
         }
 
-        fetchData()
+        fetchData();
+        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {
@@ -123,6 +126,8 @@ const LocationPage = (props: any) => {
 
     const submit = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         let isValid = true;
 
@@ -195,10 +200,13 @@ const LocationPage = (props: any) => {
                 }
             })
         }
+        setIsLoading(false);
     };
 
     const submitDelete = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         LocationService.softDelete({ selectedData: selectedData }).then((res: any) => {
             if (res.status === 200) {
@@ -216,6 +224,7 @@ const LocationPage = (props: any) => {
                 handleShowErrorSnackbar();
             }
         })
+        setIsLoading(false);
     }
 
     const columns = [

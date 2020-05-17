@@ -14,6 +14,9 @@ import Container from '@material-ui/core/Container';
 // Recaptcha
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
+// Enum
+import { AUTH_ROUTES } from '../../types/enum';
+
 // Service
 import AuthService from '../../services/AuthService';
 
@@ -46,6 +49,7 @@ const LoginPage = () => {
     const { executeRecaptcha } = useGoogleReCaptcha();
 
     const {
+        setIsLoading: setIsLoading,
         userData: userData,
         setUserData: setUserData,
         token: token,
@@ -86,6 +90,8 @@ const LoginPage = () => {
     const login = async (e: any) => {
         e.preventDefault();
 
+        setIsLoading(true);
+
         if (!executeRecaptcha) {
             return;
         }
@@ -107,7 +113,6 @@ const LoginPage = () => {
         const dataToken = { token: result }
 
         AuthService.verifyCaptcha(dataToken).then((res: any) => {
-            console.log("RES", res);
             setCaptchaData(res.data);
             if (res.data && res.data.success) {
                 const credentials = { email: email, password: password };
@@ -120,7 +125,7 @@ const LoginPage = () => {
 
                             // Set current user
                             setupUserData();
-                            history.push('/welcome');
+                            history.push(AUTH_ROUTES.WELCOME);
                         } else {
                             setEmailError(true)
                             setPasswordError(true)
@@ -129,14 +134,17 @@ const LoginPage = () => {
                             } else {
                                 setErrorMessage("Email or Password is incorrect!");
                             }
+                            setIsLoading(false);
                         }
                     }, (error: any) => {
                         setErrorMessage("Internal error during user login!");
                     });
                 } else {
-                    setEmailError(true)
-                    setPasswordError(true)
+                    setEmailError(true);
+                    setPasswordError(true);
                     setErrorMessage("You are not HUMAN!");
+
+                    setIsLoading(false);
                 }
             }
         })

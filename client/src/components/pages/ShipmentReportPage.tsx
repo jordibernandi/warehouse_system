@@ -51,6 +51,7 @@ import ActionService from '../../services/ActionService';
 
 const ShipmentReportPage = (props: any) => {
     const {
+        setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
         setSnackbarMessage
@@ -91,6 +92,7 @@ const ShipmentReportPage = (props: any) => {
     const [isOpenShipmentSummaryDialog, setIsOpenShipmentSummaryDialog] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataUser: any;
             let activeDataProduct: any;
@@ -135,7 +137,8 @@ const ShipmentReportPage = (props: any) => {
             setIsLoaded(true);
         }
 
-        fetchData()
+        fetchData();
+        setIsLoading(false);
     }, []);
 
     const handleClickShipmentSummaryButton = () => {
@@ -210,6 +213,8 @@ const ShipmentReportPage = (props: any) => {
     const submit = async (e: any) => {
         e.preventDefault();
 
+        setIsLoading(true);
+
         let isValid = true;
         const tempError = { ...error };
 
@@ -277,10 +282,14 @@ const ShipmentReportPage = (props: any) => {
                 }
             }
         })
+        setIsLoading(false);
     };
 
     const submitDelete = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
+
         ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
             if (res.status === 200) {
                 const tempTableData = [...tableData]
@@ -297,6 +306,7 @@ const ShipmentReportPage = (props: any) => {
                 handleShowErrorSnackbar();
             }
         })
+        setIsLoading(false);
     }
 
     const columns = [
@@ -529,7 +539,7 @@ const ShipmentReportPage = (props: any) => {
                         />
                     </Dialog>
 
-                    <ShipmentSummaryDialog tableData={tableData} isDialogOpen={isOpenShipmentSummaryDialog} handleCloseDialog={handleCloseShipmentSummaryDialog}></ShipmentSummaryDialog>
+                    <ShipmentSummaryDialog setIsLoading={setIsLoading} tableData={tableData} isDialogOpen={isOpenShipmentSummaryDialog} handleCloseDialog={handleCloseShipmentSummaryDialog}></ShipmentSummaryDialog>
                 </>
             )
             }

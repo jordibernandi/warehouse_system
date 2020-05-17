@@ -46,6 +46,7 @@ import ActionService from '../../services/ActionService';
 
 const ShipmentPage = (props: any) => {
     const {
+        setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
         setSnackbarMessage
@@ -89,6 +90,7 @@ const ShipmentPage = (props: any) => {
     const inputSerialNumber = useRef(null as any);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataProduct: any;
             let activeDataProductCode: any;
@@ -127,7 +129,8 @@ const ShipmentPage = (props: any) => {
             setIsLoaded(true);
         }
 
-        fetchData()
+        fetchData();
+        setIsLoading(false);
     }, []);
 
     useEffect(() => {
@@ -195,6 +198,8 @@ const ShipmentPage = (props: any) => {
     }
 
     const submit = async () => {
+        setIsLoading(true);
+
         let isValid = true;
         const tempError = { ...error };
 
@@ -296,10 +301,13 @@ const ShipmentPage = (props: any) => {
                 return;
             }
         }
+        setIsLoading(false);
     };
 
     const submitDelete = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
             if (res.status === 200) {
@@ -317,6 +325,7 @@ const ShipmentPage = (props: any) => {
                 handleShowErrorSnackbar();
             }
         })
+        setIsLoading(false);
     }
 
     const columns = [
@@ -541,7 +550,7 @@ const ShipmentPage = (props: any) => {
                         </DialogActions>
                     </Dialog>
 
-                    <ShipmentSummaryDialog tableData={tableData} isDialogOpen={isOpenShipmentSummaryDialog} handleCloseDialog={handleCloseShipmentSummaryDialog}></ShipmentSummaryDialog>
+                    <ShipmentSummaryDialog setIsLoading={setIsLoading} tableData={tableData} isDialogOpen={isOpenShipmentSummaryDialog} handleCloseDialog={handleCloseShipmentSummaryDialog}></ShipmentSummaryDialog>
                 </>
             )
             }

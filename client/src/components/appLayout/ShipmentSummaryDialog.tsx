@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
 interface IShipmentSummaryDialog {
+    setIsLoading: any,
     isDialogOpen: boolean,
     handleCloseDialog: any,
     tableData: [{
@@ -31,12 +32,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ShipmentSummaryDialog = (props: IShipmentSummaryDialog) => {
     const classes = useStyles();
-    const { isDialogOpen, handleCloseDialog, tableData } = props;
+    const { setIsLoading, isDialogOpen, handleCloseDialog, tableData } = props;
 
     const [stockSummary, setStockSummary] = useState([] as any);
 
     useEffect(() => {
         if (isDialogOpen) {
+            setIsLoading(true);
             const uniqueBrands = tableData.map(item => item.brand).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
             const uniqueProducts = tableData.map(item => item.product).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
             const uniqueLocations = tableData.map(item => item.location).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
@@ -79,6 +81,7 @@ const ShipmentSummaryDialog = (props: IShipmentSummaryDialog) => {
             })
 
             setStockSummary(tempStockSummary);
+            setIsLoading(false);
         }
 
     }, [isDialogOpen]);

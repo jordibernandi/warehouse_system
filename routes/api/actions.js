@@ -30,7 +30,7 @@ router.post('/add', async (req, res) => {
 
     try {
         // Simple validation
-        if (!_id || !name || !value || !checkFirst) throw Error('No data');
+        if (!_id || !name || value === "" || !checkFirst) throw Error('No data');
 
         const newAction = new Action({
             _id,
@@ -48,6 +48,7 @@ router.post('/add', async (req, res) => {
             msg: 'Data successfully added'
         });
     } catch (e) {
+        console.log(e.message);
         res.status(400).json({ error: e.message });
     }
 });

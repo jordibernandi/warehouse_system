@@ -1,6 +1,12 @@
-import { SHIPMENT_INFORMATION_TYPE } from "./enum";
+import { SHIPMENT_INFORMATION_TYPE, USER_ROLES } from "./enum";
 
 export const USER_API_BASE_URL = 'http://localhost:3000/api/';
+
+export const userRoles = {
+    admins: [String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)],
+    users: [String(USER_ROLES.NON_ADMIN)],
+    all: [String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]
+}
 
 export const getShipmentInformation = (shipmentInformation: any) => {
     switch (shipmentInformation) {

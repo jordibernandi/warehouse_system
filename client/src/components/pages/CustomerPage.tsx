@@ -28,6 +28,7 @@ import CustomerService from '../../services/CustomerService';
 
 const CustomerPage = (props: any) => {
     const {
+        setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
         setSnackbarMessage
@@ -54,6 +55,7 @@ const CustomerPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataCustomer: any;
 
@@ -72,7 +74,8 @@ const CustomerPage = (props: any) => {
             setIsLoaded(true);
         }
 
-        fetchData()
+        fetchData();
+        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {
@@ -124,6 +127,8 @@ const CustomerPage = (props: any) => {
 
     const submit = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         let isValid = true;
 
@@ -196,10 +201,13 @@ const CustomerPage = (props: any) => {
                 }
             })
         }
+        setIsLoading(false);
     };
 
     const submitDelete = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         CustomerService.softDelete({ selectedData: selectedData }).then((res: any) => {
             if (res.status === 200) {
@@ -217,6 +225,7 @@ const CustomerPage = (props: any) => {
                 handleShowErrorSnackbar();
             }
         })
+        setIsLoading(false);
     }
 
     const columns = [

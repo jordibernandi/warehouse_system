@@ -14,12 +14,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Link from '@material-ui/core/Link';
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from '@material-ui/icons/Delete';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
 
 // Types
-import { DIALOG_TYPE, ERROR_TYPE } from '../../types/enum';
+import { DIALOG_TYPE, ERROR_TYPE, USER_ROLES } from '../../types/enum';
 
 // Utils
 import FunctionUtil from '../../utils/FunctionUtil';
@@ -38,9 +43,10 @@ const UserPage = (props: any) => {
         _id: { type: [], status: false },
         name: { type: [ERROR_TYPE.REQUIRED], status: false },
         email: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
+        role: { type: [ERROR_TYPE.REQUIRED], status: false },
         password: { type: [ERROR_TYPE.REQUIRED], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), name: '', email: '', password: '' };
+    const initialFormDataState = { _id: uuidv4(), name: '', email: '', role: '', password: '' };
     const initialSelectedDataIndex = 0;
     const defaultErrorMessage = "Value is Empty or Invalid";
 
@@ -67,7 +73,7 @@ const UserPage = (props: any) => {
             let tempTableData: any[] = [];
 
             Object.values(activeDataUser).forEach((data: any) => {
-                tempTableData.push({ "_id": data._id, "name": data.name, "email": data.email });
+                tempTableData.push({ "_id": data._id, "name": data.name, "email": data.email, "role": data.role });
             })
 
             setUserData(activeDataUser);
@@ -120,7 +126,7 @@ const UserPage = (props: any) => {
         const data = tableData[dataIndex]
 
         setDialogType(DIALOG_TYPE.EDIT);
-        setFormData({ _id: data._id, name: data.name, email: data.email, password: '' });
+        setFormData({ _id: data._id, name: data.name, email: data.email, role: data.role, password: '' });
         setIsOpenFormDialog(true);
         setSelectedDataIndex(dataIndex);
     }
@@ -169,7 +175,7 @@ const UserPage = (props: any) => {
             return;
         }
 
-        const newTableData = { "_id": formData._id, "name": formData.name, "email": formData.email };
+        const newTableData = { "_id": formData._id, "name": formData.name, "email": formData.email, "role": formData.role };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             UserService.add(formData).then((res: any) => {
@@ -260,12 +266,15 @@ const UserPage = (props: any) => {
         },
         {
             name: "email", label: "Email"
+        },
+        {
+            name: "role", label: "Role"
         }
     ] as any;
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "name": td.name, "email": td.email })
+        data.push({ "_id": td._id, "name": td.name, "email": td.email, "role": td.role })
     })
 
     const options = {
@@ -333,7 +342,6 @@ const UserPage = (props: any) => {
                                     error={error.name.status}
                                     helperText={error.name.status ? defaultErrorMessage : ""}
                                 />
-
                                 <TextField
                                     value={formData.email}
                                     margin="normal"
@@ -347,6 +355,24 @@ const UserPage = (props: any) => {
                                     error={error.email.status}
                                     helperText={error.email.status ? defaultErrorMessage : ""}
                                 />
+                                <FormControl style={{ width: "100%" }} required error={error.role.status}>
+                                    <InputLabel id="role-label">{"Role"}</InputLabel>
+                                    <Select
+                                        labelId="role-label"
+                                        id="role"
+                                        name="role"
+                                        value={formData.role ? formData.role : ""}
+                                        onChange={handleChange}
+                                        error={error.role.status}
+                                    >
+                                        {Object.values(USER_ROLES).map((role: any) => {
+                                            return (
+                                                <MenuItem key={role} value={role}>{role}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                    <FormHelperText>{error.role.status ? defaultErrorMessage : ""}</FormHelperText>
+                                </FormControl>
                                 {dialogType === DIALOG_TYPE.REGISTER && (
                                     <TextField
                                         value={formData.password}

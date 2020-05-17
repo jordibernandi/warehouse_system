@@ -28,6 +28,7 @@ import CompanyService from '../../services/CompanyService';
 
 const CompanyPage = (props: any) => {
     const {
+        setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
         setSnackbarMessage
@@ -53,6 +54,7 @@ const CompanyPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataCompany: any;
 
@@ -71,7 +73,8 @@ const CompanyPage = (props: any) => {
             setIsLoaded(true);
         }
 
-        fetchData()
+        fetchData();
+        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {
@@ -123,6 +126,8 @@ const CompanyPage = (props: any) => {
 
     const submit = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         let isValid = true;
 
@@ -195,10 +200,13 @@ const CompanyPage = (props: any) => {
                 }
             })
         }
+        setIsLoading(false);
     };
 
     const submitDelete = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         CompanyService.softDelete({ selectedData: selectedData }).then((res: any) => {
             if (res.status === 200) {
@@ -216,6 +224,7 @@ const CompanyPage = (props: any) => {
                 handleShowErrorSnackbar();
             }
         })
+        setIsLoading(false);
     }
 
     const columns = [
