@@ -9,7 +9,6 @@ import config from './config';
 // routes
 import authRoutes from './routes/api/auth';
 import userRoutes from './routes/api/users';
-import companyRoutes from './routes/api/companies';
 import locationRoutes from './routes/api/locations';
 import brandRoutes from './routes/api/brands';
 import productRoutes from './routes/api/products';
@@ -44,7 +43,6 @@ mongoose
 // Use Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/companies', companyRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/products', productRoutes);

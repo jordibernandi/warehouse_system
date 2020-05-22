@@ -1,4 +1,4 @@
 {
   "mongoURI": "mongodb://127.0.0.1:27017/warehouse",
-  "jwtSecret": "sl_myJwtSecret"
+  "jwtSecret": "6LevV9wUAAAAAHprzW2sj5c7FMeWTNJrfT0gTGbQ"
 }

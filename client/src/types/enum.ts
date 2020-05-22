@@ -7,7 +7,6 @@ export enum USER_ROLES {
 export enum AUTH_ROUTES {
   WELCOME = '/welcome',
   USER = '/user',
-  COMPANY = '/company',
   LOCATION = '/location',
   BRAND = '/brand',
   CUSTOMER = '/customer',
@@ -42,7 +41,6 @@ export enum DATA_MODEL_TYPE {
   KEY = 'KEY',
   FOREIGN_KEY_BRAND = 'FOREIGN_KEY_BRAND',
   FOREIGN_KEY_LOCATION = 'FOREIGN_KEY_LOCATION',
-  FOREIGN_KEY_COMPANY = 'FOREIGN_KEY_COMPANY',
   FOREIGN_KEY_USER = 'FOREIGN_KEY_USER',
   FOREIGN_KEY_PRODUCT = 'FOREIGN_KEY_PRODUCT',
   DATA = 'DATA',

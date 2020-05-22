@@ -268,14 +268,6 @@ const AppNavbar = (props: IAppNavbarProps) => {
 
           {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)].includes(userData.role) && (
             <>
-              <Tooltip title={"Companies"} placement="right">
-                <ListItem button onClick={() => history.push(AUTH_ROUTES.COMPANY)}>
-                  <ListItemIcon>
-                    <ApartmentIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Companies" />
-                </ListItem>
-              </Tooltip>
               <Tooltip title={"Locations"} placement="right">
                 <ListItem button onClick={() => history.push(AUTH_ROUTES.LOCATION)}>
                   <ListItemIcon>

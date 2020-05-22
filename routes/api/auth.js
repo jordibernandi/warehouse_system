@@ -20,8 +20,7 @@ router.post("/verifyCaptcha", (request, response) => {
   try {
     const ip = request.connection.remoteAddress;
     const { token } = request.body;
-    const secret = "6LevV9wUAAAAAHprzW2sj5c7FMeWTNJrfT0gTGbQ";
-    const jsonData = axios.get("https://www.google.com/recaptcha/api/siteverify?secret=" + secret + "&response=" + token + "&remoteip=" + ip);
+    const jsonData = axios.get("https://www.google.com/recaptcha/api/siteverify?secret=" + JWT_SECRET + "&response=" + token + "&remoteip=" + ip);
     jsonData.then((res) => {
       response.status(200).json(res.data);
     })
