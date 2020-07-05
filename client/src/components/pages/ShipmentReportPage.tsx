@@ -104,28 +104,46 @@ const ShipmentReportPage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await ProductService.getAll().then((res: any) => {
                 activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
                 activeDataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await BrandService.getAll().then((res: any) => {
                 activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await LocationService.getAll().then((res: any) => {
                 activeDataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await CustomerService.getAll().then((res: any) => {
                 activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await ActionService.getAll().then((res: any) => {
                 activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             setProductData(activeDataProduct);
             setProductCodeData(activeDataProductCode);
@@ -252,36 +270,37 @@ const ShipmentReportPage = (props: any) => {
 
         // Valid data        
         ShipmentService.getSpecific(formData).then((res: any) => {
-            if (res.status === 200) {
-                let tempTableData: any[] = [];
+            let tempTableData: any[] = [];
 
-                res.data.forEach((shipment: any) => {
-                    const productFound = productData[shipment.productId];
-                    tempTableData.push({
-                        "_id": shipment._id,
-                        "product": productFound,
-                        "brand": brandData[productFound.brandId],
-                        "location": locationData[shipment.locationId],
-                        "customer": customerData[shipment.customerId],
-                        "action": actionData[shipment.actionId],
-                        "serialNumber": shipment.serialNumber,
-                        "user": userData[shipment.userId],
-                        "createdAt": shipment.createdAt,
-                    });
-                })
-                setTableData(tempTableData);
-                if (useDate) {
-                    setDateInfo(format(formData.startDate, "MMM d, yyyy").toString() + " - " + format(formData.endDate, "MMM d, yyyy").toString());
-                } else {
-                    setDateInfo(LIST_DATA_TYPE.ALL + "-Dates");
-                }
-                if (brandData[formData.brandId] && formData.brandId !== LIST_DATA_TYPE.ALL && productData[formData.productId]) {
-                    setProductInfo(brandData[formData.brandId].name + " - " + productData[formData.productId].name);
-                } else {
-                    setProductInfo(LIST_DATA_TYPE.ALL + "-Products");
-                }
+            res.data.forEach((shipment: any) => {
+                const productFound = productData[shipment.productId];
+                tempTableData.push({
+                    "_id": shipment._id,
+                    "product": productFound,
+                    "brand": brandData[productFound.brandId],
+                    "location": locationData[shipment.locationId],
+                    "customer": customerData[shipment.customerId],
+                    "action": actionData[shipment.actionId],
+                    "serialNumber": shipment.serialNumber,
+                    "user": userData[shipment.userId],
+                    "createdAt": shipment.createdAt,
+                });
+            })
+            setTableData(tempTableData);
+            if (useDate) {
+                setDateInfo(format(formData.startDate, "MMM d, yyyy").toString() + " - " + format(formData.endDate, "MMM d, yyyy").toString());
+            } else {
+                setDateInfo(LIST_DATA_TYPE.ALL + "-Dates");
             }
-        })
+            if (brandData[formData.brandId] && formData.brandId !== LIST_DATA_TYPE.ALL && productData[formData.productId]) {
+                setProductInfo(brandData[formData.brandId].name + " - " + productData[formData.productId].name);
+            } else {
+                setProductInfo(LIST_DATA_TYPE.ALL + "-Products");
+            }
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
         setIsLoading(false);
     };
 
@@ -291,21 +310,19 @@ const ShipmentReportPage = (props: any) => {
         setIsLoading(true);
 
         ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
-            if (res.status === 200) {
-                const tempTableData = [...tableData]
-                setTableData(tempTableData.filter(function (data: any) {
-                    return selectedData.indexOf(data._id) === -1;
-                }));
-                handleCloseConfirmationDialog();
-                setSelectedData([]);
+            const tempTableData = [...tableData]
+            setTableData(tempTableData.filter(function (data: any) {
+                return selectedData.indexOf(data._id) === -1;
+            }));
+            handleCloseConfirmationDialog();
+            setSelectedData([]);
 
-                setSnackbarMessage("Success!");
-                handleShowSuccessSnackbar();
-            } else {
-                setSnackbarMessage("Something went wrong!");
-                handleShowErrorSnackbar();
-            }
-        })
+            setSnackbarMessage("Success!");
+            handleShowSuccessSnackbar();
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
         setIsLoading(false);
     }
 

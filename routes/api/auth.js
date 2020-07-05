@@ -25,7 +25,7 @@ router.post("/verifyCaptcha", (request, response) => {
       response.status(200).json(res.data);
     })
   } catch (e) {
-    response.status(400).json({ error: e.message });
+    response.status(400).json({ msg: e.message });
   }
 });
 
@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
       }));
     }
 
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 3600 });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 10 });
     if (!token) {
       throw Error('Couldnt sign the token');
     }
@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (e) {
-    res.status(400).json({ error: e.message });
+    res.status(400).json({ msg: e.message });
   }
 });
 

@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import auth from '../../middleware/auth';
+
 // Action Model
 import Action from '../../models/Action';
 
@@ -10,7 +12,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const actions = await Action.find({ isActive: true });
         res.json(actions);
@@ -22,10 +24,10 @@ router.get('/', async (req, res) => {
 /**
  * @route   POST api/actions/add
  * @desc    Add new action
- * @access  Public
+ * @access  Private
  */
 
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
     const { _id, name, value, checkFirst, description } = req.body;
 
     try {
@@ -48,18 +50,17 @@ router.post('/add', async (req, res) => {
             msg: 'Data successfully added'
         });
     } catch (e) {
-        console.log(e.message);
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/actions/edit/:id
  * @desc    Edit action
- * @access  Public
+ * @access  Private
  */
 
-router.put('/edit/:_id', async (req, res) => {
+router.put('/edit/:_id', auth, async (req, res) => {
     const _id = req.params._id;
     const { name, value, checkFirst, description } = req.body;
 
@@ -83,17 +84,17 @@ router.put('/edit/:_id', async (req, res) => {
             msg: 'Data successfully updated'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/actions/softDelete
  * @desc    Soft delete action
- * @access  Public
+ * @access  Private
  */
 
-router.put('/softDelete', async (req, res) => {
+router.put('/softDelete', auth, async (req, res) => {
     const { selectedData } = req.body;
 
     // Simple validation
@@ -115,7 +116,7 @@ router.put('/softDelete', async (req, res) => {
             msg: 'Data successfully soft deleted'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 

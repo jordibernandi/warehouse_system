@@ -20,18 +20,14 @@ const AuthRoute = ({ Component, path, exact = false, requiredRoles }: IAuthRoute
         setupUserDataDone,
         setSetupUserDataDone,
         checkIfTokenExpired,
-        logoutAction
+        logoutAction,
     } = useContext(AppContext);
 
     useEffect(() => {
         if (AuthService.getUserInfo()) {
             if (checkIfTokenExpired()) {
                 logoutAction();
-            } else {
-                setupUserData();
             }
-        } else {
-            setSetupUserDataDone(true);
         }
     }, []);
 
@@ -42,10 +38,11 @@ const AuthRoute = ({ Component, path, exact = false, requiredRoles }: IAuthRoute
                     exact={exact}
                     path={path}
                     render={(props: RouteComponentProps) => {
+
                         return AuthService.getUserInfo() && !checkIfTokenExpired() && requiredRoles.includes(userData.role) ?
                             (<Component {...props}></Component>)
                             :
-                            (<Redirect to={{ pathname: AuthService.getUserInfo() && !checkIfTokenExpired() ? "/welcome" : "/login" }}></Redirect>)
+                            (<Redirect to={{ pathname: (AuthService.getUserInfo() && !checkIfTokenExpired()) ? "/welcome" : "/login" }}></Redirect>)
                     }
 
                     }

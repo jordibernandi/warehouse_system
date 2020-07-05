@@ -19,9 +19,25 @@ export class AuthService {
         return JSON.parse(localStorage.getItem("userInfo") as any);
     }
 
-    getAuthHeader() {
-        return { headers: { "Authorization": this.getUserInfo() } };
-    }
+    // Setup config/headers and token
+    tokenConfig = () => {
+        // Get token from localstorage
+        const token = this.getUserInfo();
+
+        // Headers
+        const config: any = {
+            headers: {
+                'Content-type': 'application/json'
+            }
+        };
+
+        // If token, add to headers
+        if (token) {
+            config.headers['x-auth-token'] = token;
+        }
+
+        return config;
+    };
 
     logOut() {
         localStorage.removeItem("userInfo");

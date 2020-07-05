@@ -50,7 +50,9 @@ import ActionService from '../../services/ActionService';
 
 const StockReportPage = (props: any) => {
     const {
-        setIsLoading
+        setIsLoading,
+        setSnackbarMessage,
+        handleShowErrorSnackbar
     } = useContext(AppContext);
 
     const initialErrorState = {
@@ -96,28 +98,46 @@ const StockReportPage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await ProductService.getAll().then((res: any) => {
                 activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
                 activeDataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await BrandService.getAll().then((res: any) => {
                 activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await LocationService.getAll().then((res: any) => {
                 activeDataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await CustomerService.getAll().then((res: any) => {
                 activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await ActionService.getAll().then((res: any) => {
                 activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             setProductData(activeDataProduct);
             setProductCodeData(activeDataProductCode);
@@ -200,30 +220,31 @@ const StockReportPage = (props: any) => {
 
         // Valid data        
         ShipmentService.getSpecific(formData).then((res: any) => {
-            if (res.status === 200) {
-                const shipments = res.data;
-                let tempTableData = [...initialTableData] as any
+            const shipments = res.data;
+            let tempTableData = [...initialTableData] as any
 
-                tempTableData.forEach((row: any) => {
-                    let totalStock = 0;
-                    Object.values(locationData).forEach((location: any) => {
-                        row[location._id] = 0;
-                        shipments.forEach((shipment: any) => {
-                            if (shipment.productId === row.product._id) {
-                                if (shipment.locationId === location._id) {
-                                    row[location._id] += actionData[shipment.actionId].value;
-                                    totalStock += actionData[shipment.actionId].value;
-                                }
+            tempTableData.forEach((row: any) => {
+                let totalStock = 0;
+                Object.values(locationData).forEach((location: any) => {
+                    row[location._id] = 0;
+                    shipments.forEach((shipment: any) => {
+                        if (shipment.productId === row.product._id) {
+                            if (shipment.locationId === location._id) {
+                                row[location._id] += actionData[shipment.actionId].value;
+                                totalStock += actionData[shipment.actionId].value;
                             }
-                        })
+                        }
                     })
-                    row.totalStock = totalStock;
                 })
+                row.totalStock = totalStock;
+            })
 
-                setTableData(tempTableData);
-                setDateInfo(format(formData.endDate, "MMM d, yyyy").toString());
-            }
-        })
+            setTableData(tempTableData);
+            setDateInfo(format(formData.endDate, "MMM d, yyyy").toString());
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
         setIsLoading(false);
     };
 

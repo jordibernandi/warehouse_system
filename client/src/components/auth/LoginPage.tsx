@@ -49,14 +49,15 @@ const LoginPage = () => {
     const { executeRecaptcha } = useGoogleReCaptcha();
 
     const {
-        setIsLoading: setIsLoading,
-        userData: userData,
-        setUserData: setUserData,
-        token: token,
-        setToken: setToken,
-        captchaData: captchaData,
-        setCaptchaData: setCaptchaData,
-        setupUserData: setupUserData
+        setIsLoading,
+        userData,
+        setUserData,
+        token,
+        setToken,
+        captchaData,
+        setCaptchaData,
+        setupUserData,
+        redirectToWelcome
     } = useContext(AppContext);
 
     const [email, setEmail] = useState("");
@@ -65,7 +66,13 @@ const LoginPage = () => {
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
 
-    const [errorMessage, setErrorMessage] = useState(" ");
+    const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        if (AuthService.getUserInfo()) {
+            redirectToWelcome(history)
+        }
+    }, []);
 
     const handleChangeEmail = (e: any) => {
         setEmail(e.currentTarget.value)

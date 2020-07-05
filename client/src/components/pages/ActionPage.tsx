@@ -68,7 +68,10 @@ const ActionPage = (props: any) => {
 
             await ActionService.getAll().then((res: any) => {
                 activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             let tempTableData: any[] = [];
 
@@ -191,35 +194,31 @@ const ActionPage = (props: any) => {
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             ActionService.add(formData).then((res: any) => {
-                if (res.status === 200) {
-                    setTableData([...tableData, newTableData]);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
+                setTableData([...tableData, newTableData]);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
             ActionService.edit(formData._id, formData).then((res: any) => {
-                if (res.status === 200) {
-                    const tempTableData = [...tableData];
-                    tempTableData[selectedDataIndex] = newTableData;
-                    setTableData(tempTableData);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
-                    setSelectedDataIndex(initialSelectedDataIndex);
+                const tempTableData = [...tableData];
+                tempTableData[selectedDataIndex] = newTableData;
+                setTableData(tempTableData);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
+                setSelectedDataIndex(initialSelectedDataIndex);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         }
         setIsLoading(false);
     };
@@ -230,21 +229,19 @@ const ActionPage = (props: any) => {
         setIsLoading(true);
 
         ActionService.softDelete({ selectedData: selectedData }).then((res: any) => {
-            if (res.status === 200) {
-                const tempTableData = [...tableData]
-                setTableData(tempTableData.filter(function (data: any) {
-                    return selectedData.indexOf(data._id) === -1;
-                }));
-                handleCloseConfirmationDialog();
-                setSelectedData([]);
+            const tempTableData = [...tableData]
+            setTableData(tempTableData.filter(function (data: any) {
+                return selectedData.indexOf(data._id) === -1;
+            }));
+            handleCloseConfirmationDialog();
+            setSelectedData([]);
 
-                setSnackbarMessage("Success!");
-                handleShowSuccessSnackbar();
-            } else {
-                setSnackbarMessage("Something went wrong!");
-                handleShowErrorSnackbar();
-            }
-        })
+            setSnackbarMessage("Success!");
+            handleShowSuccessSnackbar();
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
 
         setIsLoading(false);
     }

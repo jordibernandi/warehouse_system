@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
+import auth from '../../middleware/auth';
+
 // User Model
 import User from '../../models/User';
 
@@ -11,7 +13,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const users = await User.find({ isActive: true });
     res.json(users);
@@ -23,10 +25,10 @@ router.get('/', async (req, res) => {
 /**
  * @route   POST api/users
  * @desc    Add new user
- * @access  Public
+ * @access  Private
  */
 
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
   const { _id, name, email, role, password } = req.body;
 
   try {
@@ -65,10 +67,10 @@ router.post('/add', async (req, res) => {
 /**
  * @route   POST api/users/edit/:id
  * @desc    Edit user
- * @access  Public
+ * @access  Private
  */
 
-router.put('/edit/:_id', async (req, res) => {
+router.put('/edit/:_id', auth, async (req, res) => {
   const _id = req.params._id;
   const { name, email, role } = req.body;
 
@@ -98,10 +100,10 @@ router.put('/edit/:_id', async (req, res) => {
 /**
  * @route   POST api/users/editWithPassword/:id
  * @desc    Edit user with password
- * @access  Public
+ * @access  Private
  */
 
-router.put('/editWithPassword/:_id', async (req, res) => {
+router.put('/editWithPassword/:_id', auth, async (req, res) => {
   const _id = req.params._id;
   const { name, email, role, password } = req.body;
 
@@ -139,10 +141,10 @@ router.put('/editWithPassword/:_id', async (req, res) => {
 /**
 * @route   POST api/users/softDelete
 * @desc    Soft delete user
-* @access  Public
+* @access  Private
 */
 
-router.put('/softDelete', async (req, res) => {
+router.put('/softDelete', auth, async (req, res) => {
   const { selectedData } = req.body;
 
   try {

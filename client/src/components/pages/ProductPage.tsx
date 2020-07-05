@@ -74,11 +74,17 @@ const ProductPage = (props: any) => {
 
             await ProductService.getAll().then((res: any) => {
                 activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await BrandService.getAll().then((res: any) => {
                 activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             let tempTableData: any[] = [];
 
@@ -113,7 +119,10 @@ const ProductPage = (props: any) => {
         ProductService.saveUpload(tempUploadData).then((res: any) => {
             var newArray = tableData.concat(tempTableData);
             setTableData(newArray);
-        })
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
     }
 
     const handleCloseFormDialog = () => {
@@ -216,35 +225,31 @@ const ProductPage = (props: any) => {
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             ProductService.add(formData).then((res: any) => {
-                if (res.status === 200) {
-                    setTableData([...tableData, newTableData]);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
+                setTableData([...tableData, newTableData]);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
             ProductService.edit(formData._id, formData).then((res: any) => {
-                if (res.status === 200) {
-                    const tempTableData = [...tableData];
-                    tempTableData[selectedDataIndex] = newTableData;
-                    setTableData(tempTableData);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
-                    setSelectedDataIndex(initialSelectedDataIndex);
+                const tempTableData = [...tableData];
+                tempTableData[selectedDataIndex] = newTableData;
+                setTableData(tempTableData);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
+                setSelectedDataIndex(initialSelectedDataIndex);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         }
         setIsLoading(false);
     };
@@ -255,21 +260,19 @@ const ProductPage = (props: any) => {
         setIsLoading(true);
 
         ProductService.softDelete({ selectedData: selectedData }).then((res: any) => {
-            if (res.status === 200) {
-                const tempTableData = [...tableData]
-                setTableData(tempTableData.filter(function (data: any) {
-                    return selectedData.indexOf(data._id) === -1;
-                }));
-                handleCloseConfirmationDialog();
-                setSelectedData([]);
+            const tempTableData = [...tableData]
+            setTableData(tempTableData.filter(function (data: any) {
+                return selectedData.indexOf(data._id) === -1;
+            }));
+            handleCloseConfirmationDialog();
+            setSelectedData([]);
 
-                setSnackbarMessage("Success!");
-                handleShowSuccessSnackbar();
-            } else {
-                setSnackbarMessage("Something went wrong!");
-                handleShowErrorSnackbar();
-            }
-        })
+            setSnackbarMessage("Success!");
+            handleShowSuccessSnackbar();
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
         setIsLoading(false);
     }
 

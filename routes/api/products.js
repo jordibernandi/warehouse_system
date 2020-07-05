@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import auth from '../../middleware/auth';
+
 // Product Model
 import Product from '../../models/Product';
 
@@ -10,7 +12,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const products = await Product.find({ isActive: true });
         res.json(products);
@@ -22,10 +24,10 @@ router.get('/', async (req, res) => {
 /**
  * @route   POST api/products/add
  * @desc    Add new product
- * @access  Public
+ * @access  Private
  */
 
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
     const { _id, brandId, code, name } = req.body;
 
     try {
@@ -47,17 +49,17 @@ router.post('/add', async (req, res) => {
             msg: 'Data successfully added',
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/products/edit/:id
  * @desc    Edit product
- * @access  Public
+ * @access  Private
  */
 
-router.put('/edit/:_id', async (req, res) => {
+router.put('/edit/:_id', auth, async (req, res) => {
     const _id = req.params._id;
     const { brandId, code, name } = req.body;
 
@@ -80,7 +82,7 @@ router.put('/edit/:_id', async (req, res) => {
             msg: 'Data successfully updated',
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
         console.log(e.message);
     }
 });
@@ -88,10 +90,10 @@ router.put('/edit/:_id', async (req, res) => {
 /**
  * @route   POST api/products/softDelete
  * @desc    Soft delete product
- * @access  Public
+ * @access  Private
  */
 
-router.put('/softDelete', async (req, res) => {
+router.put('/softDelete', auth, async (req, res) => {
     const { selectedData } = req.body;
 
     try {
@@ -113,17 +115,17 @@ router.put('/softDelete', async (req, res) => {
             msg: 'Data successfully soft deleted'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/products/saveUpload
  * @desc    Save upload
- * @access  Public
+ * @access  Private
  */
 
-router.post('/saveUpload', async (req, res) => {
+router.post('/saveUpload', auth, async (req, res) => {
 
     const uploadData = req.body;
 
@@ -143,7 +145,7 @@ router.post('/saveUpload', async (req, res) => {
             msg: 'Data successfully added',
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 

@@ -68,7 +68,10 @@ const UserPage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             let tempTableData: any[] = [];
 
@@ -179,55 +182,49 @@ const UserPage = (props: any) => {
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             UserService.add(formData).then((res: any) => {
-                if (res.status === 200) {
-                    setTableData([...tableData, newTableData]);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
+                setTableData([...tableData, newTableData]);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
             if (isChangePassword) {
                 UserService.editWithPassword(formData._id, formData).then((res: any) => {
-                    if (res.status === 200) {
-                        const tempTableData = [...tableData];
-                        tempTableData[selectedDataIndex] = newTableData;
-                        setTableData(tempTableData);
-                        handleCloseFormDialog();
-                        setFormData(initialFormDataState);
-                        setSelectedDataIndex(initialSelectedDataIndex);
-                        setIsChangePassword(false);
+                    const tempTableData = [...tableData];
+                    tempTableData[selectedDataIndex] = newTableData;
+                    setTableData(tempTableData);
+                    handleCloseFormDialog();
+                    setFormData(initialFormDataState);
+                    setSelectedDataIndex(initialSelectedDataIndex);
+                    setIsChangePassword(false);
 
-                        setSnackbarMessage("Success!");
-                        handleShowSuccessSnackbar();
-                    } else {
-                        setSnackbarMessage("Something went wrong!");
-                        handleShowErrorSnackbar();
-                    }
-                })
+                    setSnackbarMessage("Success!");
+                    handleShowSuccessSnackbar();
+                }).catch((error: any) => {
+                    setSnackbarMessage(error.response.data.msg);
+                    handleShowErrorSnackbar();
+                });
             } else {
                 UserService.edit(formData._id, formData).then((res: any) => {
-                    if (res.status === 200) {
-                        const tempTableData = [...tableData];
-                        tempTableData[selectedDataIndex] = newTableData;
-                        setTableData(tempTableData);
-                        handleCloseFormDialog();
-                        setFormData(initialFormDataState);
-                        setSelectedDataIndex(initialSelectedDataIndex);
-                        setIsChangePassword(false);
+                    const tempTableData = [...tableData];
+                    tempTableData[selectedDataIndex] = newTableData;
+                    setTableData(tempTableData);
+                    handleCloseFormDialog();
+                    setFormData(initialFormDataState);
+                    setSelectedDataIndex(initialSelectedDataIndex);
+                    setIsChangePassword(false);
 
-                        setSnackbarMessage("Success!");
-                        handleShowSuccessSnackbar();
-                    } else {
-                        setSnackbarMessage("Something went wrong!");
-                        handleShowErrorSnackbar();
-                    }
-                })
+                    setSnackbarMessage("Success!");
+                    handleShowSuccessSnackbar();
+                }).catch((error: any) => {
+                    setSnackbarMessage(error.response.data.msg);
+                    handleShowErrorSnackbar();
+                });
             }
         }
     };
@@ -236,21 +233,19 @@ const UserPage = (props: any) => {
         e.preventDefault();
 
         UserService.softDelete({ selectedData: selectedData }).then((res: any) => {
-            if (res.status === 200) {
-                const tempTableData = [...tableData]
-                setTableData(tempTableData.filter(function (data: any) {
-                    return selectedData.indexOf(data._id) === -1;
-                }));
-                handleCloseConfirmationDialog();
-                setSelectedData([]);
+            const tempTableData = [...tableData]
+            setTableData(tempTableData.filter(function (data: any) {
+                return selectedData.indexOf(data._id) === -1;
+            }));
+            handleCloseConfirmationDialog();
+            setSelectedData([]);
 
-                setSnackbarMessage("Success!");
-                handleShowSuccessSnackbar();
-            } else {
-                setSnackbarMessage("Something went wrong!");
-                handleShowErrorSnackbar();
-            }
-        })
+            setSnackbarMessage("Success!");
+            handleShowSuccessSnackbar();
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
     }
 
     const columns = [

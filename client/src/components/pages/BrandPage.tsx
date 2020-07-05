@@ -60,7 +60,10 @@ const BrandPage = (props: any) => {
 
             await BrandService.getAll().then((res: any) => {
                 activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             let tempTableData: any[] = [];
 
@@ -170,35 +173,31 @@ const BrandPage = (props: any) => {
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             BrandService.add(formData).then((res: any) => {
-                if (res.status === 200) {
-                    setTableData([...tableData, newTableData]);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
+                setTableData([...tableData, newTableData]);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
             BrandService.edit(formData._id, formData).then((res: any) => {
-                if (res.status === 200) {
-                    const tempTableData = [...tableData];
-                    tempTableData[selectedDataIndex] = newTableData;
-                    setTableData(tempTableData);
-                    handleCloseFormDialog();
-                    setFormData(initialFormDataState);
-                    setSelectedDataIndex(initialSelectedDataIndex);
+                const tempTableData = [...tableData];
+                tempTableData[selectedDataIndex] = newTableData;
+                setTableData(tempTableData);
+                handleCloseFormDialog();
+                setFormData(initialFormDataState);
+                setSelectedDataIndex(initialSelectedDataIndex);
 
-                    setSnackbarMessage("Success!");
-                    handleShowSuccessSnackbar();
-                } else {
-                    setSnackbarMessage("Something went wrong!");
-                    handleShowErrorSnackbar();
-                }
-            })
+                setSnackbarMessage("Success!");
+                handleShowSuccessSnackbar();
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
         }
         setIsLoading(false);
     };
@@ -209,21 +208,19 @@ const BrandPage = (props: any) => {
         setIsLoading(true);
 
         BrandService.softDelete({ selectedData: selectedData }).then((res: any) => {
-            if (res.status === 200) {
-                const tempTableData = [...tableData]
-                setTableData(tempTableData.filter(function (data: any) {
-                    return selectedData.indexOf(data._id) === -1;
-                }));
-                handleCloseConfirmationDialog();
-                setSelectedData([]);
+            const tempTableData = [...tableData]
+            setTableData(tempTableData.filter(function (data: any) {
+                return selectedData.indexOf(data._id) === -1;
+            }));
+            handleCloseConfirmationDialog();
+            setSelectedData([]);
 
-                setSnackbarMessage("Success!");
-                handleShowSuccessSnackbar();
-            } else {
-                setSnackbarMessage("Something went wrong!");
-                handleShowErrorSnackbar();
-            }
-        })
+            setSnackbarMessage("Success!");
+            handleShowSuccessSnackbar();
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
         setIsLoading(false);
     }
 

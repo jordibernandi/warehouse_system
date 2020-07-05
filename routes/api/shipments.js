@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import auth from '../../middleware/auth';
+
 // Shipment Model
 import Shipment from '../../models/Shipment';
 
@@ -10,7 +12,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const shipments = await Shipment.find({ isActive: true });
         res.json(shipments);
@@ -25,7 +27,7 @@ router.get('/', async (req, res) => {
  * @access  Private
  */
 
-router.post('/specific', async (req, res) => {
+router.post('/specific', auth, async (req, res) => {
     const { startDate, endDate, productId } = req.body;
 
     try {
@@ -58,10 +60,10 @@ router.post('/specific', async (req, res) => {
 /**
  * @route   POST api/shipments/add
  * @desc    Add new shipment
- * @access  Public
+ * @access  Private
  */
 
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
     const { _id, productId, userId, locationId, customerId, actionId, checkFirst, serialNumber } = req.body;
 
     try {
@@ -111,17 +113,17 @@ router.post('/add', async (req, res) => {
             }
         }
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/shipments/edit/:id
  * @desc    Edit shipment
- * @access  Public
+ * @access  Private
  */
 
-router.put('/edit/:_id', async (req, res) => {
+router.put('/edit/:_id', auth, async (req, res) => {
     const _id = req.params._id;
     const { name } = req.body;
 
@@ -142,17 +144,17 @@ router.put('/edit/:_id', async (req, res) => {
             msg: 'Data successfully updated'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/shipments/Delete
  * @desc    Delete shipment
- * @access  Public
+ * @access  Private
  */
 
-router.put('/delete', async (req, res) => {
+router.put('/delete', auth, async (req, res) => {
     const { selectedData } = req.body;
 
     // Simple validation
@@ -169,7 +171,7 @@ router.put('/delete', async (req, res) => {
             msg: 'Data successfully deleted'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 

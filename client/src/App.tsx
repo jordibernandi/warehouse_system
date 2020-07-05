@@ -54,6 +54,7 @@ export interface IAppContextInterface {
   setupUserDataDone: boolean,
   setSetupUserDataDone: any,
   logoutAction: any,
+  redirectToWelcome: any,
 
   handleShowSuccessSnackbar: any,
   handleShowErrorSnackbar: any,
@@ -99,6 +100,18 @@ const App = () => {
   const [showErrorSnackbar, setShowErrorSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
+  useEffect(() => {
+    if (AuthService.getUserInfo()) {
+      if (checkIfTokenExpired()) {
+        logoutAction();
+      } else {
+        setupUserData();
+      }
+    } else {
+      setSetupUserDataDone(true);
+    }
+  }, []);
+
   const redirectToLogin = (history: any) => {
     history.push(NON_AUTH_ROUTES.LOGIN);
   }
@@ -114,6 +127,12 @@ const App = () => {
     AuthService.logOut();
     setUserData({});
     setSetupUserDataDone(false);
+    setSnackbarMessage("Your session has expired!");
+    handleShowErrorSnackbar();
+  }
+
+  const redirectToWelcome = (history: any) => {
+    history.push(AUTH_ROUTES.WELCOME);
   }
 
   const RECAPTCHA_KEY = "6LevV9wUAAAAAGdiDVHZfiooVPH5A10f0XLW7obF";
@@ -166,6 +185,7 @@ const App = () => {
     checkIfTokenExpired: checkIfTokenExpired,
     setupUserDataDone: setupUserDataDone,
     logoutAction: logoutAction,
+    redirectToWelcome: redirectToWelcome,
 
     handleShowSuccessSnackbar: handleShowSuccessSnackbar,
     handleShowErrorSnackbar: handleShowErrorSnackbar,
@@ -186,7 +206,7 @@ const App = () => {
             <Container maxWidth="lg" className={classes.container}>
               <Switch>
                 {/** Login & Register Components */}
-                <Route exact path={'/login'}>
+                <Route exact path={NON_AUTH_ROUTES.LOGIN}>
                   <GoogleReCaptchaProvider reCaptchaKey={RECAPTCHA_KEY}>
                     <LoginPage />
                   </GoogleReCaptchaProvider>
@@ -217,7 +237,7 @@ const App = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <Snackbar open={showErrorSnackbar} autoHideDuration={3000} onClose={handleCloseErrorSnackbar}>
+      <Snackbar open={showErrorSnackbar} autoHideDuration={6000} onClose={handleCloseErrorSnackbar}>
         <Alert onClose={handleCloseErrorSnackbar} severity="error">
           {snackbarMessage}
         </Alert>

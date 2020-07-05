@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import auth from '../../middleware/auth';
+
 // Brand Model
 import Brand from '../../models/Brand';
 
@@ -10,7 +12,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const brands = await Brand.find({ isActive: true });
         res.json(brands);
@@ -22,10 +24,10 @@ router.get('/', async (req, res) => {
 /**
  * @route   POST api/brands/add
  * @desc    Add new brand
- * @access  Public
+ * @access  Private
  */
 
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
     const { _id, name } = req.body;
 
     try {
@@ -45,17 +47,17 @@ router.post('/add', async (req, res) => {
             msg: 'Data successfully added'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/brands/edit/:id
  * @desc    Edit brand
- * @access  Public
+ * @access  Private
  */
 
-router.put('/edit/:_id', async (req, res) => {
+router.put('/edit/:_id', auth, async (req, res) => {
     const _id = req.params._id;
     const { name } = req.body;
 
@@ -76,17 +78,17 @@ router.put('/edit/:_id', async (req, res) => {
             msg: 'Data successfully updated'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 
 /**
  * @route   POST api/brands/softDelete
  * @desc    Soft delete brand
- * @access  Public
+ * @access  Private
  */
 
-router.put('/softDelete', async (req, res) => {
+router.put('/softDelete', auth, async (req, res) => {
     const { selectedData } = req.body;
 
     // Simple validation
@@ -108,7 +110,7 @@ router.put('/softDelete', async (req, res) => {
             msg: 'Data successfully soft deleted'
         });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        res.status(400).json({ msg: e.message });
     }
 });
 

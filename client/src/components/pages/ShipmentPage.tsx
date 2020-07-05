@@ -102,23 +102,38 @@ const ShipmentPage = (props: any) => {
             await ProductService.getAll().then((res: any) => {
                 activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
                 activeDataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await BrandService.getAll().then((res: any) => {
                 activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await LocationService.getAll().then((res: any) => {
                 activeDataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await CustomerService.getAll().then((res: any) => {
                 activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             await ActionService.getAll().then((res: any) => {
                 activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
-            })
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
 
             setProductData(activeDataProduct);
             setProductCodeData(activeDataProductCode);
@@ -264,36 +279,34 @@ const ShipmentPage = (props: any) => {
                 };
 
                 ShipmentService.add(newShipmentData).then((res: any) => {
-                    if (res.status === 200) {
-                        if (res.data.success) {
-                            setTableData([...tableData, newTableData]);
-                            setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
-                            setIsSubmit(true);
-                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.ADD_SERIAL_NUMBER);
+                    if (res.data.success) {
+                        setTableData([...tableData, newTableData]);
+                        setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                        setIsSubmit(true);
+                        setShipmentStatus(SHIPMENT_INFORMATION_TYPE.ADD_SERIAL_NUMBER);
 
-                            setSnackbarMessage("Success!");
-                            handleShowSuccessSnackbar();
-                        } else {
-                            setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
-                            setIsSubmit(true);
-                            if (res.data.cause === "errorDuplicate") {
-                                setShipmentStatus(SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA);
-                            } else if (res.data.cause === "errorCheckFirst") {
-                                setShipmentStatus(SHIPMENT_INFORMATION_TYPE.CHECK_FIRST_ERROR);
-                            }
-
-                            setSnackbarMessage("Something went wrong!");
-                            handleShowErrorSnackbar();
-                        }
+                        setSnackbarMessage("Success!");
+                        handleShowSuccessSnackbar();
                     } else {
                         setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
                         setIsSubmit(true);
-                        setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SOMETHING_ERROR);
+                        if (res.data.cause === "errorDuplicate") {
+                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA);
+                        } else if (res.data.cause === "errorCheckFirst") {
+                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.CHECK_FIRST_ERROR);
+                        }
 
                         setSnackbarMessage("Something went wrong!");
                         handleShowErrorSnackbar();
                     }
-                })
+                }).catch((error: any) => {
+                    setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                    setIsSubmit(true);
+                    setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SOMETHING_ERROR);
+
+                    setSnackbarMessage(error.response.data.msg);
+                    handleShowErrorSnackbar();
+                });
             } else {
                 setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
                 setIsSubmit(true);
@@ -310,21 +323,19 @@ const ShipmentPage = (props: any) => {
         setIsLoading(true);
 
         ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
-            if (res.status === 200) {
-                const tempTableData = [...tableData]
-                setTableData(tempTableData.filter(function (data: any) {
-                    return selectedData.indexOf(data._id) === -1;
-                }));
-                handleCloseConfirmationDialog();
-                setSelectedData([]);
+            const tempTableData = [...tableData]
+            setTableData(tempTableData.filter(function (data: any) {
+                return selectedData.indexOf(data._id) === -1;
+            }));
+            handleCloseConfirmationDialog();
+            setSelectedData([]);
 
-                setSnackbarMessage("Success!");
-                handleShowSuccessSnackbar();
-            } else {
-                setSnackbarMessage("Something went wrong!");
-                handleShowErrorSnackbar();
-            }
-        })
+            setSnackbarMessage("Success!");
+            handleShowSuccessSnackbar();
+        }).catch((error: any) => {
+            setSnackbarMessage(error.response.data.msg);
+            handleShowErrorSnackbar();
+        });
         setIsLoading(false);
     }
 
