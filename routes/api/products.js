@@ -1,4 +1,9 @@
 import { Router } from 'express';
+
+// Constants
+import { USER_ROLES } from '../../lib/constants'
+
+// Middleware
 import auth from '../../middleware/auth';
 
 // Product Model
@@ -12,7 +17,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', auth, async (req, res) => {
+router.get('/', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     try {
         const products = await Product.find({ isActive: true });
         res.json(products);
@@ -27,7 +32,7 @@ router.get('/', auth, async (req, res) => {
  * @access  Private
  */
 
-router.post('/add', auth, async (req, res) => {
+router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const { _id, brandId, code, name } = req.body;
 
     try {
@@ -59,7 +64,7 @@ router.post('/add', auth, async (req, res) => {
  * @access  Private
  */
 
-router.put('/edit/:_id', auth, async (req, res) => {
+router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const _id = req.params._id;
     const { brandId, code, name } = req.body;
 
@@ -93,7 +98,7 @@ router.put('/edit/:_id', auth, async (req, res) => {
  * @access  Private
  */
 
-router.put('/softDelete', auth, async (req, res) => {
+router.put('/softDelete', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const { selectedData } = req.body;
 
     try {
@@ -125,7 +130,7 @@ router.put('/softDelete', auth, async (req, res) => {
  * @access  Private
  */
 
-router.post('/saveUpload', auth, async (req, res) => {
+router.post('/saveUpload', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
 
     const uploadData = req.body;
 

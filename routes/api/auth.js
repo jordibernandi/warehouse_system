@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
       }));
     }
 
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 10 });
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: 21600 });
     if (!token) {
       throw Error('Couldnt sign the token');
     }

@@ -1,4 +1,9 @@
 import { Router } from 'express';
+
+// Constants
+import { USER_ROLES } from '../../lib/constants'
+
+// Middleware
 import auth from '../../middleware/auth';
 
 // Action Model
@@ -12,7 +17,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', auth, async (req, res) => {
+router.get('/', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     try {
         const actions = await Action.find({ isActive: true });
         res.json(actions);
@@ -27,7 +32,7 @@ router.get('/', auth, async (req, res) => {
  * @access  Private
  */
 
-router.post('/add', auth, async (req, res) => {
+router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const { _id, name, value, checkFirst, description } = req.body;
 
     try {
@@ -60,7 +65,7 @@ router.post('/add', auth, async (req, res) => {
  * @access  Private
  */
 
-router.put('/edit/:_id', auth, async (req, res) => {
+router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const _id = req.params._id;
     const { name, value, checkFirst, description } = req.body;
 
@@ -94,7 +99,7 @@ router.put('/edit/:_id', auth, async (req, res) => {
  * @access  Private
  */
 
-router.put('/softDelete', auth, async (req, res) => {
+router.put('/softDelete', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const { selectedData } = req.body;
 
     // Simple validation
