@@ -231,8 +231,6 @@ const ShipmentReportPage = (props: any) => {
     const submit = async (e: any) => {
         e.preventDefault();
 
-        setIsLoading(true);
-
         let isValid = true;
         const tempError = { ...error };
 
@@ -266,6 +264,8 @@ const ShipmentReportPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         // Valid data        

@@ -130,8 +130,6 @@ const LocationPage = (props: any) => {
     const submit = async (e: any) => {
         e.preventDefault();
 
-        setIsLoading(true);
-
         let isValid = true;
 
         const tempError = { ...error }
@@ -167,6 +165,8 @@ const LocationPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         const newTableData = { "_id": formData._id, "name": formData.name };

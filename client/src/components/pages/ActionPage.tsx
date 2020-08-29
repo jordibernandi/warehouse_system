@@ -144,8 +144,6 @@ const ActionPage = (props: any) => {
     const submit = async (e: any) => {
         e.preventDefault();
 
-        setIsLoading(true);
-
         let isValid = true;
 
         const tempError = { ...error }
@@ -181,6 +179,8 @@ const ActionPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         let tempCheckFirstAction = "NONE";

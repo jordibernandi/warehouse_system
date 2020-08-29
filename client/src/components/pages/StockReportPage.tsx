@@ -181,8 +181,6 @@ const StockReportPage = (props: any) => {
     const submit = async (e: any) => {
         e.preventDefault();
 
-        setIsLoading(true);
-
         let isValid = true;
         const tempError = { ...error };
 
@@ -216,6 +214,8 @@ const StockReportPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         // Valid data        

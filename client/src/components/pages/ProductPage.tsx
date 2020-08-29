@@ -183,8 +183,6 @@ const ProductPage = (props: any) => {
     const submit = async (e: any) => {
         e.preventDefault();
 
-        setIsLoading(true);
-
         let isValid = true;
         const tempError = { ...error }
 
@@ -219,6 +217,8 @@ const ProductPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         const newTableData = { "_id": formData._id, "brand": { _id: formData.brandId, name: brandData[formData.brandId].name }, "code": formData.code, "name": formData.name };

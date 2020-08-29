@@ -34,6 +34,7 @@ import UserService from '../../services/UserService';
 
 const UserPage = (props: any) => {
     const {
+        setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
         setSnackbarMessage
@@ -63,6 +64,7 @@ const UserPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
+        setIsLoading(true);
         const fetchData = async () => {
             let activeDataUser: any;
 
@@ -85,6 +87,7 @@ const UserPage = (props: any) => {
         }
 
         fetchData()
+        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {
@@ -176,6 +179,8 @@ const UserPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         const newTableData = { "_id": formData._id, "name": formData.name, "email": formData.email, "role": formData.role };
@@ -227,10 +232,13 @@ const UserPage = (props: any) => {
                 });
             }
         }
+        setIsLoading(false);
     };
 
     const submitDelete = async (e: any) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         UserService.softDelete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
@@ -246,6 +254,7 @@ const UserPage = (props: any) => {
             setSnackbarMessage(error.response.data.msg);
             handleShowErrorSnackbar();
         });
+        setIsLoading(false);
     }
 
     const columns = [

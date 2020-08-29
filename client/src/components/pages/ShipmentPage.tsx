@@ -213,8 +213,6 @@ const ShipmentPage = (props: any) => {
     }
 
     const submit = async () => {
-        setIsLoading(true);
-
         let isValid = true;
         const tempError = { ...error };
 
@@ -245,6 +243,8 @@ const ShipmentPage = (props: any) => {
 
         if (!isValid) {
             return;
+        } else {
+            setIsLoading(true);
         }
 
         if (productCodeData[formData.serialNumber]) {
