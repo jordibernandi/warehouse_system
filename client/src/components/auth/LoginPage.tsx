@@ -97,8 +97,6 @@ const LoginPage = () => {
     const login = async (e: any) => {
         e.preventDefault();
 
-        setIsLoading(true);
-
         if (!executeRecaptcha) {
             return;
         }
@@ -111,6 +109,8 @@ const LoginPage = () => {
 
             return;
         }
+
+        setIsLoading(true);
 
         const result = await executeRecaptcha("login");
 
