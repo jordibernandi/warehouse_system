@@ -143,4 +143,4 @@ const ShipmentSummaryDialog = (props: IShipmentSummaryDialog) => {
     );
 }
 
-export default ShipmentSummaryDialog;
+export default React.memo(ShipmentSummaryDialog);

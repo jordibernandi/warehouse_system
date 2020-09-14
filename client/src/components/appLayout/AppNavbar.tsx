@@ -343,4 +343,4 @@ const AppNavbar = (props: IAppNavbarProps) => {
   );
 }
 
-export default AppNavbar;
+export default React.memo(AppNavbar);

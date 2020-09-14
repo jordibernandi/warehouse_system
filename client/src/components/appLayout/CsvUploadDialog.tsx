@@ -387,4 +387,4 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
     );
 }
 
-export default CsvUploadDialog;
+export default React.memo(CsvUploadDialog);

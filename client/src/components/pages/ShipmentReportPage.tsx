@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { AppContext } from '../../App';
 import { v4 as uuidv4 } from 'uuid';
@@ -159,9 +159,9 @@ const ShipmentReportPage = (props: any) => {
         setIsLoading(false);
     }, []);
 
-    const handleClickShipmentSummaryButton = () => {
+    const handleClickShipmentSummaryButton = useCallback(() => {
         setIsOpenShipmentSummaryDialog(true);
-    }
+    }, [isOpenShipmentSummaryDialog])
 
     const handleCloseShipmentSummaryDialog = () => {
         setIsOpenShipmentSummaryDialog(false);
