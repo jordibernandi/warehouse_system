@@ -16,6 +16,7 @@ import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import AuthRoute from './AuthRoute';
 
 // Pages
+import HomePage from './components/pages/HomePage';
 import WelcomePage from './components/pages/WelcomePage';
 import LoginPage from './components/auth/LoginPage';
 import UserPage from './components/pages/UserPage';
@@ -27,6 +28,7 @@ import ShipmentReportPage from './components/pages/ShipmentReportPage';
 import StockReportPage from './components/pages/StockReportPage';
 import CustomerPage from './components/pages/CustomerPage';
 import ActionPage from './components/pages/ActionPage';
+import ErrorPage from './components/pages/ErrorPage';
 
 // Style
 import './App.css';
@@ -206,12 +208,15 @@ const App = () => {
             <Container maxWidth="lg" className={classes.container}>
               <Switch>
                 {/** Login & Register Components */}
-                <Route exact path={NON_AUTH_ROUTES.LOGIN}>
+                <Route exact path={NON_AUTH_ROUTES.HOME}>
+                  <HomePage />
+                </Route>
+                <Route path={NON_AUTH_ROUTES.LOGIN}>
                   <GoogleReCaptchaProvider reCaptchaKey={RECAPTCHA_KEY}>
                     <LoginPage />
                   </GoogleReCaptchaProvider>
                 </Route>
-                <AuthRoute path={AUTH_ROUTES.WELCOME} Component={WelcomePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.WELCOME} Component={HomePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.USER} Component={UserPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.LOCATION} Component={LocationPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.BRAND} Component={BrandPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
@@ -221,8 +226,8 @@ const App = () => {
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT} Component={ShipmentPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT_REPORT} Component={ShipmentReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.STOCK_REPORT} Component={StockReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
-                <Route exact path="*">
-                  <h1>{"404 NOT FOUND"}</h1>
+                <Route>
+                  <ErrorPage />
                 </Route>
               </Switch>
               <Box pt={4}>

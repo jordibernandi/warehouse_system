@@ -19,6 +19,7 @@ export enum AUTH_ROUTES {
 
 export enum NON_AUTH_ROUTES {
   LOGIN = '/login',
+  HOME = '/',
 }
 
 
