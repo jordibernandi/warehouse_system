@@ -422,81 +422,95 @@ const ShipmentReportPage = (props: any) => {
                                     autoComplete="off"
                                     noValidate
                                 >
-                                    <FormControlLabel
-                                        style={{ height: "48px" }}
-                                        control={<Checkbox checked={useDate} onChange={handleChangeUseDate} name="useDate" color="primary" />}
-                                        label="Use Date"
-                                    />
-                                    {useDate && (
-                                        <>
-                                            <IconBtn icon={TodayIcon} tooltip={"Set Date"} handleClick={handleClickDateButton}></IconBtn>
-                                            <TextField
-                                                id="input-start-date"
-                                                label="Start Date"
-                                                fullWidth={true}
-                                                disabled
-                                                value={format(formData.startDate, "MMM d, yyyy")}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <TodayIcon></TodayIcon>
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} sm={12}>
+                                            <FormControlLabel
+                                                style={{ height: "48px" }}
+                                                control={<Checkbox checked={useDate} onChange={handleChangeUseDate} name="useDate" color="primary" />}
+                                                label="Use Date"
                                             />
-                                            <TextField
-                                                id="input-end-date"
-                                                label="End Date"
-                                                fullWidth={true}
-                                                disabled
-                                                value={format(formData.endDate, "MMM d, yyyy")}
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <TodayIcon></TodayIcon>
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
-                                            />
-                                        </>
-                                    )}
-                                    <FormControl style={{ width: "100%" }} required error={error.brandId.status}>
-                                        <InputLabel id="brand-label">{"Brand"}</InputLabel>
-                                        <Select
-                                            labelId="brand-label"
-                                            id="brandId"
-                                            name="brandId"
-                                            value={formData.brandId ? formData.brandId : ""}
-                                            onChange={handleChange}
-                                            error={error.brandId.status}
-                                        >
-                                            <MenuItem key={LIST_DATA_TYPE.ALL} value={LIST_DATA_TYPE.ALL}>{LIST_DATA_TYPE.ALL}</MenuItem>
-                                            {Object.values(brandData).map((data: any) => {
-                                                return (
-                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                )
-                                            })}
-                                        </Select>
-                                        <FormHelperText>{error.brandId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                    </FormControl>
-                                    {formData.brandId !== LIST_DATA_TYPE.ALL && (
-                                        <>
-                                            <Autocomplete
-                                                key={isChangeBrand}
-                                                id="productId"
-                                                options={productOptions}
-                                                getOptionLabel={(option: any) => option.name}
-                                                fullWidth={true}
-                                                size={"small"}
-                                                onChange={handleChangeAutoComplete}
-                                                renderInput={(params) => <TextField required {...params} label="Product" variant="outlined" />}
-                                            />
-                                            <FormHelperText style={{ color: "red" }}>{error.productId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                        </>
-                                    )}
-                                    <Button type="submit" fullWidth variant="contained" size="large" color="primary">
-                                        {"Search"}
-                                    </Button>
+                                            {useDate && (
+                                                <Grid container spacing={1}>
+                                                    <Grid item xs={12} sm={12}>
+                                                        <IconBtn icon={TodayIcon} tooltip={"Set Date"} handleClick={handleClickDateButton}></IconBtn>
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={12}>
+                                                        <TextField
+                                                            id="input-start-date"
+                                                            label="Start Date"
+                                                            fullWidth={true}
+                                                            disabled
+                                                            value={format(formData.startDate, "MMM d, yyyy")}
+                                                            InputProps={{
+                                                                startAdornment: (
+                                                                    <InputAdornment position="start">
+                                                                        <TodayIcon></TodayIcon>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={12}>
+                                                        <TextField
+                                                            id="input-end-date"
+                                                            label="End Date"
+                                                            fullWidth={true}
+                                                            disabled
+                                                            value={format(formData.endDate, "MMM d, yyyy")}
+                                                            InputProps={{
+                                                                startAdornment: (
+                                                                    <InputAdornment position="start">
+                                                                        <TodayIcon></TodayIcon>
+                                                                    </InputAdornment>
+                                                                ),
+                                                            }}
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <FormControl style={{ width: "100%" }} required error={error.brandId.status}>
+                                                <InputLabel id="brand-label">{"Brand"}</InputLabel>
+                                                <Select
+                                                    labelId="brand-label"
+                                                    id="brandId"
+                                                    name="brandId"
+                                                    value={formData.brandId ? formData.brandId : ""}
+                                                    onChange={handleChange}
+                                                    error={error.brandId.status}
+                                                >
+                                                    <MenuItem key={LIST_DATA_TYPE.ALL} value={LIST_DATA_TYPE.ALL}>{LIST_DATA_TYPE.ALL}</MenuItem>
+                                                    {Object.values(brandData).map((data: any) => {
+                                                        return (
+                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                        )
+                                                    })}
+                                                </Select>
+                                                <FormHelperText>{error.brandId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </FormControl>
+                                        </Grid>
+                                        {formData.brandId !== LIST_DATA_TYPE.ALL && (
+                                            <Grid item xs={12} sm={12}>
+                                                <Autocomplete
+                                                    key={isChangeBrand}
+                                                    id="productId"
+                                                    options={productOptions}
+                                                    getOptionLabel={(option: any) => option.name}
+                                                    fullWidth={true}
+                                                    size={"small"}
+                                                    onChange={handleChangeAutoComplete}
+                                                    renderInput={(params) => <TextField required {...params} label="Product" variant="outlined" />}
+                                                />
+                                                <FormHelperText style={{ color: "red" }}>{error.productId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </Grid>
+                                        )}
+                                        <Grid item xs={12} sm={12}>
+                                            <Button type="submit" fullWidth variant="contained" size="large" color="primary">
+                                                {"Search"}
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
                                 </form>
                             </Paper>
                         </Grid>

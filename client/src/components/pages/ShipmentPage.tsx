@@ -433,91 +433,105 @@ const ShipmentPage = (props: any) => {
                                     autoComplete="off"
                                     noValidate
                                 >
-                                    <FormControl style={{ width: "100%" }} required error={error.locationId.status}>
-                                        <InputLabel id="location-label">{"Location"}</InputLabel>
-                                        <Select
-                                            labelId="location-label"
-                                            id="locationId"
-                                            name="locationId"
-                                            value={formData.locationId ? formData.locationId : ""}
-                                            onChange={handleChange}
-                                            error={error.locationId.status}
-                                        >
-                                            {Object.values(locationData).map((data: any) => {
-                                                return (
-                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                )
-                                            })}
-                                        </Select>
-                                        <FormHelperText>{error.locationId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                    </FormControl>
-                                    <FormControl style={{ width: "100%" }} required error={error.actionId.status}>
-                                        <InputLabel id="action-label">{"Action"}</InputLabel>
-                                        <Select
-                                            labelId="action-label"
-                                            id="actionId"
-                                            name="actionId"
-                                            value={formData.actionId ? formData.actionId : ""}
-                                            onChange={handleChange}
-                                            error={error.actionId.status}
-                                        >
-                                            {Object.values(actionData).map((data: any) => {
-                                                return (
-                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                )
-                                            })}
-                                        </Select>
-                                        <FormHelperText>{error.actionId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                    </FormControl>
-                                    <FormControl style={{ width: "100%" }} error={error.customerId.status}>
-                                        <InputLabel id="customer-label">{"Customer"}</InputLabel>
-                                        <Select
-                                            labelId="customer-label"
-                                            id="customerId"
-                                            name="customerId"
-                                            value={formData.customerId ? formData.customerId : ""}
-                                            onChange={handleChange}
-                                            error={error.customerId.status}
-                                        >
-                                            {Object.values(customerData).map((data: any) => {
-                                                return (
-                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                )
-                                            })}
-                                        </Select>
-                                        <FormHelperText>{error.customerId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                    </FormControl>
-                                    <TextField
-                                        value={formData.productCode}
-                                        margin="normal"
-                                        id="productCode"
-                                        name="productCode"
-                                        label="Product Code"
-                                        type="text"
-                                        fullWidth
-                                        onChange={handleChange}
-                                        error={error.productCode.status}
-                                        helperText={error.productCode.status ? defaultErrorMessage : ""}
-                                    />
-                                    <TextField
-                                        inputRef={inputSerialNumber}
-                                        key={formData.serialNumber}
-                                        defaultValue={formData.serialNumber || ""}
-                                        margin="normal"
-                                        id="serialNumber"
-                                        name="serialNumber"
-                                        label="Serial Number"
-                                        type="text"
-                                        variant="filled"
-                                        fullWidth
-                                        onBlur={handleChange}
-                                        required
-                                        error={error.serialNumber.status}
-                                        helperText={error.serialNumber.status ? defaultErrorMessage : ""}
-                                    />
-                                    <Button type="submit" fullWidth variant="contained" size="large" color="primary">
-                                        {"Submit"}
-                                    </Button>
+                                    <Grid container spacing={1}>
+                                        <Grid item xs={12} sm={12}>
+                                            <FormControl style={{ width: "100%" }} required error={error.locationId.status}>
+                                                <InputLabel id="location-label">{"Location"}</InputLabel>
+                                                <Select
+                                                    labelId="location-label"
+                                                    id="locationId"
+                                                    name="locationId"
+                                                    value={formData.locationId ? formData.locationId : ""}
+                                                    onChange={handleChange}
+                                                    error={error.locationId.status}
+                                                >
+                                                    {Object.values(locationData).map((data: any) => {
+                                                        return (
+                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                        )
+                                                    })}
+                                                </Select>
+                                                <FormHelperText>{error.locationId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <FormControl style={{ width: "100%" }} required error={error.actionId.status}>
+                                                <InputLabel id="action-label">{"Action"}</InputLabel>
+                                                <Select
+                                                    labelId="action-label"
+                                                    id="actionId"
+                                                    name="actionId"
+                                                    value={formData.actionId ? formData.actionId : ""}
+                                                    onChange={handleChange}
+                                                    error={error.actionId.status}
+                                                >
+                                                    {Object.values(actionData).map((data: any) => {
+                                                        return (
+                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                        )
+                                                    })}
+                                                </Select>
+                                                <FormHelperText>{error.actionId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <FormControl style={{ width: "100%" }} error={error.customerId.status}>
+                                                <InputLabel id="customer-label">{"Customer"}</InputLabel>
+                                                <Select
+                                                    labelId="customer-label"
+                                                    id="customerId"
+                                                    name="customerId"
+                                                    value={formData.customerId ? formData.customerId : ""}
+                                                    onChange={handleChange}
+                                                    error={error.customerId.status}
+                                                >
+                                                    {Object.values(customerData).map((data: any) => {
+                                                        return (
+                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                        )
+                                                    })}
+                                                </Select>
+                                                <FormHelperText>{error.customerId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <TextField
+                                                value={formData.productCode}
+                                                margin="normal"
+                                                id="productCode"
+                                                name="productCode"
+                                                label="Product Code"
+                                                type="text"
+                                                fullWidth
+                                                onChange={handleChange}
+                                                error={error.productCode.status}
+                                                helperText={error.productCode.status ? defaultErrorMessage : ""}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <TextField
+                                                inputRef={inputSerialNumber}
+                                                key={formData.serialNumber}
+                                                defaultValue={formData.serialNumber || ""}
+                                                margin="normal"
+                                                id="serialNumber"
+                                                name="serialNumber"
+                                                label="Serial Number"
+                                                type="text"
+                                                variant="filled"
+                                                fullWidth
+                                                onBlur={handleChange}
+                                                required
+                                                error={error.serialNumber.status}
+                                                helperText={error.serialNumber.status ? defaultErrorMessage : ""}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <Button type="submit" fullWidth variant="contained" size="large" color="primary">
+                                                {"Submit"}
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
                                 </form>
                             </Paper>
                         </Grid>

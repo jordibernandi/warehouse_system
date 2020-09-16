@@ -329,25 +329,36 @@ const StockReportPage = (props: any) => {
                                     autoComplete="off"
                                     noValidate
                                 >
-
-                                    <IconBtn icon={TodayIcon} tooltip={"Set Date"} handleClick={handleClickDateButton}></IconBtn>
-                                    <TextField
-                                        id="input-date"
-                                        label="Date"
-                                        fullWidth={true}
-                                        disabled
-                                        value={format(formData.endDate, "MMM d, yyyy")}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <TodayIcon></TodayIcon>
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                    <Button type="submit" fullWidth variant="contained" size="large" color="primary">
-                                        {"Search"}
-                                    </Button>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} sm={12}>
+                                            <Grid container spacing={1}>
+                                                <Grid item xs={12} sm={12}>
+                                                    <IconBtn icon={TodayIcon} tooltip={"Set Date"} handleClick={handleClickDateButton}></IconBtn>
+                                                </Grid>
+                                                <Grid item xs={12} sm={12}>
+                                                    <TextField
+                                                        id="input-date"
+                                                        label="Date"
+                                                        fullWidth={true}
+                                                        disabled
+                                                        value={format(formData.endDate, "MMM d, yyyy")}
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <TodayIcon></TodayIcon>
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <Button type="submit" fullWidth variant="contained" size="large" color="primary">
+                                                {"Search"}
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
                                 </form>
                             </Paper>
                         </Grid>
