@@ -37,7 +37,7 @@ const HomePage = (props: any) => {
         <div className={classes.wrapper}>
             <Grid container>
                 <Grid item xs={12} sm={12} className={classes.title}>
-                    {"KMJA & LKJA"}
+                    {"LKJA"}
                 </Grid>
             </Grid>
         </div>

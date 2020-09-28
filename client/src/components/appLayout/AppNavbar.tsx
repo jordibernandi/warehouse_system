@@ -211,7 +211,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title} onClick={onLogoClick}>
-            {"KMJA & LKJA"}
+            {"LKJA"}
           </Typography>
           <div className={classes.sectionDesktop}>
             <p className={classes.username}>{"Halo, " + userData.name}</p>
