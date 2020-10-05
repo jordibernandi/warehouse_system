@@ -7,7 +7,7 @@ import axios from 'axios';
 // User Model
 import User from '../../models/User';
 
-const { JWT_SECRET } = config;
+const { JWT_SECRET, RECAPTCHA_SECRET } = config;
 const router = Router();
 
 /**
@@ -20,7 +20,7 @@ router.post("/verifyCaptcha", (request, response) => {
   try {
     const ip = request.connection.remoteAddress;
     const { token } = request.body;
-    const jsonData = axios.get("https://www.google.com/recaptcha/api/siteverify?secret=" + JWT_SECRET + "&response=" + token + "&remoteip=" + ip);
+    const jsonData = axios.get("https://www.google.com/recaptcha/api/siteverify?secret=" + RECAPTCHA_SECRET + "&response=" + token + "&remoteip=" + ip);
     jsonData.then((res) => {
       response.status(200).json(res.data);
     })

@@ -11,6 +11,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import config from './config';
 
 // Auth Route
 import AuthRoute from './AuthRoute';
@@ -137,7 +138,7 @@ const App = () => {
     history.push(AUTH_ROUTES.WELCOME);
   }
 
-  const RECAPTCHA_KEY = "6LevV9wUAAAAAGdiDVHZfiooVPH5A10f0XLW7obF";
+  const { REACT_APP_RECAPTCHA_CLIENT } = config;
 
   const setupUserData = async () => {
     // Decode token to get user data
@@ -212,7 +213,7 @@ const App = () => {
                   <HomePage />
                 </Route>
                 <Route path={NON_AUTH_ROUTES.LOGIN}>
-                  <GoogleReCaptchaProvider reCaptchaKey={RECAPTCHA_KEY}>
+                  <GoogleReCaptchaProvider reCaptchaKey={REACT_APP_RECAPTCHA_CLIENT}>
                     <LoginPage />
                   </GoogleReCaptchaProvider>
                 </Route>

@@ -1,0 +1,3 @@
+export default {
+    REACT_APP_RECAPTCHA_CLIENT: process.env.REACT_APP_RECAPTCHA_CLIENT
+};

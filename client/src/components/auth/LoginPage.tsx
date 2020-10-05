@@ -154,7 +154,9 @@ const LoginPage = () => {
                     setIsLoading(false);
                 }
             }
-        })
+        }, (error: any) => {
+            setErrorMessage("Internal error during user login!");
+        });
     };
 
     return (
