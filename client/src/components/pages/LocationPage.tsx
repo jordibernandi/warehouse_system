@@ -54,8 +54,9 @@ const LocationPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataLocation: any;
 
             await LocationService.getAll().then((res: any) => {
@@ -74,10 +75,10 @@ const LocationPage = (props: any) => {
             setLocationData(activeDataLocation);
             setTableData(tempTableData);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData();
-        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {

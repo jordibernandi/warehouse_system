@@ -64,8 +64,9 @@ const UserPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataUser: any;
 
             await UserService.getAll().then((res: any) => {
@@ -84,10 +85,10 @@ const UserPage = (props: any) => {
             setUserData(activeDataUser);
             setTableData(tempTableData);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData()
-        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {

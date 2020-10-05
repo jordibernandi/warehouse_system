@@ -86,8 +86,9 @@ const StockReportPage = (props: any) => {
     const [dateInfo, setDateInfo] = useState("...");
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataUser: any;
             let activeDataProduct: any;
             let activeDataProductCode: any;
@@ -147,10 +148,10 @@ const StockReportPage = (props: any) => {
             setActionData(activeDataAction);
             setUserData(activeDataUser);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData();
-        setIsLoading(false);
     }, []);
 
     useEffect(() => {

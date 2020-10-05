@@ -92,8 +92,9 @@ const ShipmentReportPage = (props: any) => {
     const [isOpenShipmentSummaryDialog, setIsOpenShipmentSummaryDialog] = useState(false);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataUser: any;
             let activeDataProduct: any;
             let activeDataProductCode: any;
@@ -153,10 +154,10 @@ const ShipmentReportPage = (props: any) => {
             setActionData(activeDataAction);
             setUserData(activeDataUser);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData();
-        setIsLoading(false);
     }, []);
 
     const handleClickShipmentSummaryButton = useCallback(() => {

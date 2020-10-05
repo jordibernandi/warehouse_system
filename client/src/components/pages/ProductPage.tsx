@@ -67,8 +67,9 @@ const ProductPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataProduct: any;
             let activeDataBrand: any;
 
@@ -96,10 +97,10 @@ const ProductPage = (props: any) => {
             setBrandData(activeDataBrand);
             setTableData(tempTableData);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData();
-        setIsLoading(false);
     }, []);
 
     const handleSaveUpload = (uploadData: any) => {

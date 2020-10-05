@@ -67,8 +67,9 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
     const [dataMappingValue, setDataMappingValue] = useState({} as any);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataBrand: any;
 
             await BrandService.getAll().then((res: any) => {
@@ -77,10 +78,10 @@ const CsvUploadDialog = (props: ICsvUploadDialog) => {
 
             setBrandData(activeDataBrand);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData();
-        setIsLoading(false);
     }, []);
 
     useEffect(() => {

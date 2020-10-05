@@ -90,8 +90,9 @@ const ShipmentPage = (props: any) => {
     const inputSerialNumber = useRef(null as any);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataProduct: any;
             let activeDataProductCode: any;
             let activeDataBrand: any;
@@ -142,10 +143,10 @@ const ShipmentPage = (props: any) => {
             setCustomerData(activeDataCustomer);
             setActionData(activeDataAction);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData();
-        setIsLoading(false);
     }, []);
 
     useEffect(() => {

@@ -54,8 +54,9 @@ const BrandPage = (props: any) => {
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchData = async () => {
+            setIsLoading(true);
+
             let activeDataBrand: any;
 
             await BrandService.getAll().then((res: any) => {
@@ -74,10 +75,10 @@ const BrandPage = (props: any) => {
             setBrandData(activeDataBrand);
             setTableData(tempTableData);
             setIsLoaded(true);
+            setIsLoading(false);
         }
 
         fetchData()
-        setIsLoading(false);
     }, []);
 
     const handleCloseFormDialog = () => {
