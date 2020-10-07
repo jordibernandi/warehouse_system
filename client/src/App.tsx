@@ -217,7 +217,7 @@ const App = () => {
                     <LoginPage />
                   </GoogleReCaptchaProvider>
                 </Route>
-                <AuthRoute path={AUTH_ROUTES.WELCOME} Component={HomePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.WELCOME} Component={WelcomePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.USER} Component={UserPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.LOCATION} Component={LocationPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.BRAND} Component={BrandPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
