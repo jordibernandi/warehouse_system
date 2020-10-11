@@ -4,6 +4,8 @@ import { AppContext } from '../../App';
 import { v4 as uuidv4 } from 'uuid';
 
 import MUIDataTable from 'mui-datatables';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -19,6 +21,7 @@ import Select from '@material-ui/core/Select';
 import AddIcon from "@material-ui/icons/Add";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from '@material-ui/icons/Delete';
+import FingerprintIcon from '@material-ui/icons/Fingerprint';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
@@ -33,6 +36,83 @@ import FunctionUtil from '../../utils/FunctionUtil';
 // Services
 import ProductService from '../../services/ProductService';
 import BrandService from '../../services/BrandService';
+
+// PDF
+import { PDFViewer, PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+
+// QR Generator
+import QRCode from 'qrcode.react';
+
+// Create styles
+const styles = StyleSheet.create({
+    page: {
+        backgroundColor: '#FFFFFF',
+    },
+    section: {
+        margin: 20,
+        padding: 15,
+        border: '1pt solid black',
+        flexDirection: 'row',
+    },
+    sectionContentDesc: {
+        flexGrow: 1,
+        width: 350
+    },
+    sectionContentQR: {
+        flexGrow: 1,
+    },
+    brand: {
+        fontSize: 14,
+        marginBottom: 10
+    },
+    name: {
+        fontSize: 18,
+        marginBottom: 10
+    },
+    qrCode: {
+        width: 50,
+        marginBottom: 5
+    },
+    code: {
+        fontSize: 12
+    },
+    downloadLink: {
+        textDecoration: 'none',
+        color: 'gray'
+    }
+});
+
+const QRCodePage = (props: any) => {
+    const { selectedQRCodeData } = props;
+    return (
+        <Document>
+            <Page size="A4" style={styles.page}>
+                {selectedQRCodeData.map((qrCodeData: any, index: any) => {
+                    const qrCodeCanvas = document.querySelectorAll(
+                        "[data-qr='" + qrCodeData.code + "']"
+                    )[0];
+
+                    if (qrCodeCanvas) {
+                        const qrCodeDataUri = (qrCodeCanvas as any).toDataURL("image/png");
+
+                        return (
+                            <View style={styles.section} key={`qr${index}`}>
+                                <View style={styles.sectionContentDesc}>
+                                    <Text style={styles.brand}>{qrCodeData.brand.name}</Text>
+                                    <Text style={styles.name}>{qrCodeData.name}</Text>
+                                </View>
+                                <View style={styles.sectionContentQR}>
+                                    <Image style={styles.qrCode} src={qrCodeDataUri} />
+                                    <Text style={styles.code}>{qrCodeData.code}</Text>
+                                </View>
+                            </View>
+                        )
+                    }
+                })}
+            </Page>
+        </Document>
+    )
+}
 
 const ProductPage = (props: any) => {
     const {
@@ -60,10 +140,12 @@ const ProductPage = (props: any) => {
     const [isOpenFormDialog, setIsOpenFormDialog] = useState(false);
     const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
     const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
+    const [isOpenPrintQRCodeDialog, setIsOpenPrintQRCodeDialog] = useState(false);
     const [formData, setFormData] = useState(initialFormDataState as any);
     const [error, setError] = useState(initialErrorState as any);
     const [selectedDataIndex, setSelectedDataIndex] = useState(initialSelectedDataIndex);
     const [selectedData, setSelectedData] = useState([] as any[]);
+    const [selectedQRCodeData, setSelectedQRCodeData] = useState([] as any[]);
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
@@ -90,7 +172,7 @@ const ProductPage = (props: any) => {
             let tempTableData: any[] = [];
 
             Object.values(activeDataProduct).forEach((data: any) => {
-                tempTableData.push({ "_id": data._id, "brand": activeDataBrand[data.brandId], "code": data.code, "name": data.name });
+                tempTableData.push({ "_id": data._id, "brand": activeDataBrand[data.brandId], "code": data.code, "name": data.name, "qrCode": data.code });
             })
 
             setProductData(activeDataProduct);
@@ -113,7 +195,7 @@ const ProductPage = (props: any) => {
 
             if (!dataExist) {
                 tempUploadData.push(data);
-                tempTableData.push({ "_id": data._id, "brand": brandData[data.brandId], "code": data.code, "name": data.name });
+                tempTableData.push({ "_id": data._id, "brand": brandData[data.brandId], "code": data.code, "name": data.name, "qrCode": data.code });
             }
         })
 
@@ -140,6 +222,11 @@ const ProductPage = (props: any) => {
     const handleCloseConfirmationDialog = () => {
         setIsOpenConfirmationDialog(false);
         setSelectedData([]);
+    }
+
+    const handleClosePrintQRCodeDialog = () => {
+        setIsOpenPrintQRCodeDialog(false);
+        setSelectedQRCodeData([]);
     }
 
     const handleChange = (e: any) => {
@@ -170,6 +257,17 @@ const ProductPage = (props: any) => {
 
         setSelectedData(tempSelectedData);
         setIsOpenConfirmationDialog(true);
+    }
+
+    const handleClickPrintQRButton = (selectedRows: any) => {
+        let tempSelectedData: any[] = [];
+
+        selectedRows.data.forEach((sr: any) => {
+            tempSelectedData.push(tableData[sr.dataIndex]);
+        })
+
+        setSelectedQRCodeData(tempSelectedData);
+        setIsOpenPrintQRCodeDialog(true);
     }
 
     const handleDoubleClickRow = (dataIndex: any) => {
@@ -222,7 +320,7 @@ const ProductPage = (props: any) => {
             setIsLoading(true);
         }
 
-        const newTableData = { "_id": formData._id, "brand": { _id: formData.brandId, name: brandData[formData.brandId].name }, "code": formData.code, "name": formData.name };
+        const newTableData = { "_id": formData._id, "brand": { _id: formData.brandId, name: brandData[formData.brandId].name }, "code": formData.code, "name": formData.name, "qrCode": formData.code };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             ProductService.add(formData).then((res: any) => {
@@ -294,11 +392,22 @@ const ProductPage = (props: any) => {
         {
             name: "name", label: "Name"
         },
+        {
+            name: 'qrCode',
+            label: "QR Code",
+            options: {
+                customBodyRender: (value: any) => {
+                    return (
+                        <QRCode data-qr={value} value={value} />
+                    );
+                }
+            }
+        }
     ] as any;
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "brand": td.brand.name, "code": td.code, "name": td.name })
+        data.push({ "_id": td._id, "brand": td.brand.name, "code": td.code, "name": td.name, "qrCode": td.code })
     })
 
     const options = {
@@ -309,7 +418,11 @@ const ProductPage = (props: any) => {
                 handleDoubleClickRow(dataIndex);
             }
         }),
-        customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) => <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>,
+        customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) =>
+            <div style={{ display: "flex", alignItems: 'center', justifyContent: 'flex-end', }}>
+                <IconBtn icon={FingerprintIcon} tooltip={"Print"} handleClick={() => { handleClickPrintQRButton(selectedRows) }}></IconBtn>
+                <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>
+            </div>,
         customToolbar: () =>
             <>
                 <IconBtn icon={AddIcon} tooltip={"Register New Data"} handleClick={handleClickAddButton}></IconBtn>
@@ -432,6 +545,42 @@ const ProductPage = (props: any) => {
                             </Button>
                             <Button onClick={submitDelete} color="primary">
                                 {"Delete"}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                        open={isOpenPrintQRCodeDialog}
+                        onClose={handleClosePrintQRCodeDialog}
+                        aria-labelledby="qr-dialog-title"
+                        aria-describedby="qr-dialog-description"
+                    >
+                        <DialogTitle id="qr-dialog-title">{"Print QR Code"}</DialogTitle>
+                        <DialogContent>
+                            <Grid container>
+                                <Grid item md={12}>
+                                    <PDFViewer>
+                                        <QRCodePage selectedQRCodeData={selectedQRCodeData} />
+                                    </PDFViewer>
+                                </Grid>
+                                <Grid item md={12}>
+                                    <Typography variant="caption" display="block" gutterBottom>
+                                        {"Only print the QR Codes that are displayed on the current screen."}
+                                    </Typography>
+                                    <Typography variant="caption" display="block" gutterBottom>
+                                        {"Change 'Rows per page' to print more..."}
+                                    </Typography>
+                                    <Button variant="outlined" color="primary">
+                                        <PDFDownloadLink document={<QRCodePage selectedQRCodeData={selectedQRCodeData} />} fileName="qr_code.pdf">
+                                            {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download QR Code')}
+                                        </PDFDownloadLink>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClosePrintQRCodeDialog} color="primary" autoFocus>
+                                {"Close"}
                             </Button>
                         </DialogActions>
                     </Dialog>
