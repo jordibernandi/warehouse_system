@@ -252,6 +252,7 @@ const ShipmentPage = (props: any) => {
             setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
             setIsSubmit(true);
             setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SET_PRODUCT_SUCCESS);
+            setIsLoading(false);
             return;
         } else {
             if (productCodeData[formData.productCode]) {
@@ -307,11 +308,13 @@ const ShipmentPage = (props: any) => {
 
                     setSnackbarMessage(error.response.data.msg);
                     handleShowErrorSnackbar();
+                    setIsLoading(false);
                 });
             } else {
                 setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
                 setIsSubmit(true);
                 setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SET_PRODUCT_FAIL);
+                setIsLoading(false);
                 return;
             }
         }
@@ -507,6 +510,7 @@ const ShipmentPage = (props: any) => {
                                                 onChange={handleChange}
                                                 error={error.productCode.status}
                                                 helperText={error.productCode.status ? defaultErrorMessage : ""}
+                                                disabled
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
@@ -517,7 +521,7 @@ const ShipmentPage = (props: any) => {
                                                 margin="normal"
                                                 id="serialNumber"
                                                 name="serialNumber"
-                                                label="Serial Number"
+                                                label="Scan/Input Code Here!"
                                                 type="text"
                                                 variant="filled"
                                                 fullWidth
