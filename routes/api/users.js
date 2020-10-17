@@ -18,7 +18,7 @@ const router = Router();
  * @access  Private
  */
 
-router.get('/', auth([USER_ROLES.SUPER_ADMIN]), async (req, res) => {
+router.get('/', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
   try {
     const users = await User.find({ isActive: true });
     res.json(users);
