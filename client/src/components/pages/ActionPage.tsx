@@ -17,7 +17,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
@@ -44,9 +46,10 @@ const ActionPage = (props: any) => {
         name: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
         value: { type: [ERROR_TYPE.REQUIRED], status: false },
         checkFirst: { type: [ERROR_TYPE.REQUIRED], status: false },
+        withInvoice: { type: [], status: false },
         description: { type: [], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), name: '', value: 0, checkFirst: 'NONE', description: '' };
+    const initialFormDataState = { _id: uuidv4(), name: '', value: 0, checkFirst: 'NONE', withInvoice: false, description: '' };
     const initialSelectedDataIndex = 0;
     const defaultErrorMessage = "Value is Empty or Invalid";
 
@@ -83,7 +86,7 @@ const ActionPage = (props: any) => {
                         tempCheckFirstAction = data2;
                     }
                 })
-                tempTableData.push({ "_id": data._id, "name": data.name, "value": data.value, "checkFirst": tempCheckFirstAction, "description": data.description });
+                tempTableData.push({ "_id": data._id, "name": data.name, "value": data.value, "checkFirst": tempCheckFirstAction, "withInvoice": data.withInvoice, "description": data.description });
             })
 
             setActionData(activeDataAction);
@@ -108,7 +111,12 @@ const ActionPage = (props: any) => {
     }
 
     const handleChange = (e: any) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.value !== null) {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
+        if (e.target.checked !== null) {
+            setFormData({ ...formData, [e.target.name]: e.target.checked });
+        }
 
         if (e.target.value === "") {
             setError({ ...error, [e.target.name]: { ...error[e.target.name], status: true } })
@@ -137,7 +145,7 @@ const ActionPage = (props: any) => {
         const data = tableData[dataIndex];
 
         setDialogType(DIALOG_TYPE.EDIT);
-        setFormData({ _id: data._id, name: data.name, value: data.value, checkFirst: data.checkFirst === "NONE" ? "NONE" : data.checkFirst._id, description: data.description });
+        setFormData({ _id: data._id, name: data.name, value: data.value, checkFirst: data.checkFirst === "NONE" ? "NONE" : data.checkFirst._id, withInvoice: data.withInvoice, description: data.description });
         setIsOpenFormDialog(true);
         setSelectedDataIndex(dataIndex);
     }
@@ -191,7 +199,7 @@ const ActionPage = (props: any) => {
             }
         })
 
-        const newTableData = { "_id": formData._id, "name": formData.name, "value": formData.value, "checkFirst": tempCheckFirstAction, "description": formData.description };
+        const newTableData = { "_id": formData._id, "name": formData.name, "value": formData.value, "checkFirst": tempCheckFirstAction, "withInvoice": formData.withInvoice, "description": formData.description };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             ActionService.add(formData).then((res: any) => {
@@ -272,13 +280,16 @@ const ActionPage = (props: any) => {
             name: "checkFirstName", label: "Check First"
         },
         {
+            name: "withInvoice", label: "With Invoice"
+        },
+        {
             name: "description", label: "Description"
         }
     ] as any;
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "name": td.name, "value": td.value, "checkFirst": td.checkFirst === "NONE" ? "NONE" : td.checkFirst._id, "checkFirstName": td.checkFirst === "NONE" ? "NONE" : td.checkFirst.name, "description": td.description })
+        data.push({ "_id": td._id, "name": td.name, "value": td.value, "checkFirst": td.checkFirst === "NONE" ? "NONE" : td.checkFirst._id, "checkFirstName": td.checkFirst === "NONE" ? "NONE" : td.checkFirst.name, "withInvoice": td.withInvoice ? "Yes" : "No", "description": td.description })
     })
 
     const options = {
@@ -380,6 +391,11 @@ const ActionPage = (props: any) => {
                                     </Select>
                                     <FormHelperText>{error.checkFirst.status ? defaultErrorMessage : ""}</FormHelperText>
                                 </FormControl>
+                                <FormControlLabel
+                                    style={{ height: "48px" }}
+                                    control={<Checkbox checked={formData.withInvoice} onChange={handleChange} name="withInvoice" color="primary" />}
+                                    label="With Invoice"
+                                />
                                 <TextField
                                     value={formData.description}
                                     margin="normal"

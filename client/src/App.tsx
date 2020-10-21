@@ -30,6 +30,7 @@ import StockReportPage from './components/pages/StockReportPage';
 import CustomerPage from './components/pages/CustomerPage';
 import ActionPage from './components/pages/ActionPage';
 import ErrorPage from './components/pages/ErrorPage';
+import PrintInvoicePage from './components/pages/PrintInvoicePage';
 
 // Style
 import './App.css';
@@ -227,6 +228,7 @@ const App = () => {
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT} Component={ShipmentPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT_REPORT} Component={ShipmentReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.STOCK_REPORT} Component={StockReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.PRINT_INVOICE} Component={PrintInvoicePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <Route>
                   <ErrorPage />
                 </Route>

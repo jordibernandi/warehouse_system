@@ -18,6 +18,10 @@ export class ShipmentService {
         return axios.post(USER_API_BASE_URL + "shipments/specific", data, AuthService.tokenConfig());
     }
 
+    getInvoice(data: any) {
+        return axios.post(USER_API_BASE_URL + "shipments/invoice", data, AuthService.tokenConfig());
+    }
+
     edit(_id: any, data: any) {
         return axios.put(USER_API_BASE_URL + "shipments/edit/" + _id, data, AuthService.tokenConfig());
     }

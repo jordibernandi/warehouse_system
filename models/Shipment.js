@@ -25,6 +25,9 @@ const ShipmentSchema = new Schema({
         type: String,
         required: true
     },
+    invoice: {
+        type: String,
+    },
     serialNumber: {
         type: String,
         required: true

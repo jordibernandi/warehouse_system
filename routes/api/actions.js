@@ -33,7 +33,7 @@ router.get('/', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_A
  */
 
 router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
-    const { _id, name, value, checkFirst, description } = req.body;
+    const { _id, name, value, checkFirst, withInvoice, description } = req.body;
 
     try {
         // Simple validation
@@ -44,6 +44,7 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req
             name,
             value,
             checkFirst,
+            withInvoice,
             description
         });
 
@@ -67,7 +68,7 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req
 
 router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req, res) => {
     const _id = req.params._id;
-    const { name, value, checkFirst, description } = req.body;
+    const { name, value, checkFirst, withInvoice, description } = req.body;
 
     try {
         // Simple validation
@@ -79,6 +80,7 @@ router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async
         action.name = name;
         action.value = value;
         action.checkFirst = checkFirst;
+        action.withInvoice = withInvoice;
         action.description = description;
 
         const savedAction = await action.save();

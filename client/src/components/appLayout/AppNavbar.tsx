@@ -31,6 +31,7 @@ import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import PrintIcon from '@material-ui/icons/Print';
 
 // Enum
 import { USER_ROLES, AUTH_ROUTES } from '../../types/enum';
@@ -328,14 +329,24 @@ const AppNavbar = (props: IAppNavbarProps) => {
           )}
 
           {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)].includes(userData.role) && (
-            <Tooltip title={"Shipments"} placement="right">
-              <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT)}>
-                <ListItemIcon>
-                  <LocalShippingIcon />
-                </ListItemIcon>
-                <ListItemText primary="Shipments" />
-              </ListItem>
-            </Tooltip>
+            <>
+              <Tooltip title={"Shipments"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT)}>
+                  <ListItemIcon>
+                    <LocalShippingIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Shipments" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Print Invoice"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.PRINT_INVOICE)}>
+                  <ListItemIcon>
+                    <PrintIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Print Invoice" />
+                </ListItem>
+              </Tooltip>
+            </>
           )}
         </List>
       </Drawer>

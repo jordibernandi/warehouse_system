@@ -63,13 +63,34 @@ router.post('/specific', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_RO
 });
 
 /**
+ * @route   POST api/shipments/invoice
+ * @desc    Post specific invoices
+ * @access  Private
+ */
+
+router.post('/invoice', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
+    const { invoice } = req.body;
+
+    try {
+        let shipments = [];
+
+        if (invoice !== "") {
+            shipments = await Shipment.find({ invoice: invoice });
+        }
+        res.json(shipments);
+    } catch (e) {
+        res.status(400).json({ msg: e.message });
+    }
+});
+
+/**
  * @route   POST api/shipments/add
  * @desc    Add new shipment
  * @access  Private
  */
 
 router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
-    const { _id, productId, userId, locationId, customerId, actionId, checkFirst, serialNumber } = req.body;
+    const { _id, productId, userId, locationId, customerId, actionId, checkFirst, invoice, serialNumber } = req.body;
 
     try {
         // Simple validation
@@ -99,6 +120,7 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.N
                     locationId,
                     customerId,
                     actionId,
+                    invoice,
                     serialNumber
                 });
 

@@ -20,6 +20,11 @@ const ActionSchema = new Schema({
         default: "NONE",
         required: true
     },
+    withInvoice: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
     description: {
         type: String
     },

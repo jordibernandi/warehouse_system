@@ -63,9 +63,10 @@ const ShipmentPage = (props: any) => {
         customerId: { type: [], status: false },
         actionId: { type: [ERROR_TYPE.REQUIRED], status: false },
         productCode: { type: [], status: false },
+        invoice: { type: [ERROR_TYPE.REQUIRED], status: false },
         serialNumber: { type: [ERROR_TYPE.REQUIRED], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), locationId: '', customerId: '', actionId: '', productCode: '', serialNumber: '' };
+    const initialFormDataState = { _id: uuidv4(), locationId: '', customerId: '', actionId: '', productCode: '', invoice: '', serialNumber: '' };
     const defaultErrorMessage = "Value is Empty or Invalid";
 
     const [isLoaded, setIsLoaded] = useState(false);
@@ -219,11 +220,14 @@ const ShipmentPage = (props: any) => {
 
         Object.keys(formData).forEach((key: any) => {
             if (formData[key].toString().trim() === "" && error[key].type.includes(ERROR_TYPE.REQUIRED)) {
-                tempError[key] = {
-                    ...tempError[key],
-                    status: true
+                if (key === "invoice" && !actionData[formData.actionId].withInvoice) {
+                } else {
+                    tempError[key] = {
+                        ...tempError[key],
+                        status: true
+                    }
+                    isValid = false;
                 }
-                isValid = false;
             }
             if (error[key].type.includes(ERROR_TYPE.UNIQUE)) {
                 let tempTableData = [...tableData];
@@ -265,6 +269,7 @@ const ShipmentPage = (props: any) => {
                     "location": locationData[formData.locationId],
                     "customer": customerData[formData.customerId],
                     "action": actionData[formData.actionId],
+                    "invoice": formData.invoice,
                     "serialNumber": formData.serialNumber,
                     "user": userData,
                     "createdAt": new Date()
@@ -276,6 +281,7 @@ const ShipmentPage = (props: any) => {
                     "customerId": formData.customerId,
                     "actionId": formData.actionId,
                     "checkFirst": actionData[formData.actionId].checkFirst,
+                    "invoice": formData.invoice,
                     "serialNumber": formData.serialNumber,
                     "userId": userData._id,
                 };
@@ -352,6 +358,9 @@ const ShipmentPage = (props: any) => {
             }
         },
         {
+            name: "invoice", label: "Invoice"
+        },
+        {
             name: "brand", label: "Brand"
         },
         {
@@ -367,6 +376,9 @@ const ShipmentPage = (props: any) => {
             name: "action", label: "Action"
         },
         {
+            name: "location", label: "Location"
+        },
+        {
             name: "quantity", label: "Quantity"
         },
         {
@@ -379,7 +391,7 @@ const ShipmentPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "None", "action": td.action.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": td.invoice, "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "None", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     const options = {
@@ -478,6 +490,23 @@ const ShipmentPage = (props: any) => {
                                                 <FormHelperText>{error.actionId.status ? defaultErrorMessage : ""}</FormHelperText>
                                             </FormControl>
                                         </Grid>
+                                        {(formData.actionId && actionData[formData.actionId].withInvoice) && (
+                                            <Grid item xs={12} sm={12}>
+                                                <TextField
+                                                    required
+                                                    value={formData.invoice}
+                                                    margin="normal"
+                                                    id="invoice"
+                                                    name="invoice"
+                                                    label="Invoice"
+                                                    type="text"
+                                                    fullWidth
+                                                    onChange={handleChange}
+                                                    error={error.invoice.status}
+                                                    helperText={error.invoice.status ? defaultErrorMessage : ""}
+                                                />
+                                            </Grid>
+                                        )}
                                         <Grid item xs={12} sm={12}>
                                             <FormControl style={{ width: "100%" }} error={error.customerId.status}>
                                                 <InputLabel id="customer-label">{"Customer"}</InputLabel>

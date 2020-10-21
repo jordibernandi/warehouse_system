@@ -21,7 +21,7 @@ import Select from '@material-ui/core/Select';
 import AddIcon from "@material-ui/icons/Add";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from '@material-ui/icons/Delete';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
@@ -420,7 +420,7 @@ const ProductPage = (props: any) => {
         }),
         customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) =>
             <div style={{ display: "flex", alignItems: 'center', justifyContent: 'flex-end', }}>
-                <IconBtn icon={FingerprintIcon} tooltip={"Print"} handleClick={() => { handleClickPrintQRButton(selectedRows) }}></IconBtn>
+                <IconBtn icon={PictureAsPdfIcon} tooltip={"Print"} handleClick={() => { handleClickPrintQRButton(selectedRows) }}></IconBtn>
                 <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>
             </div>,
         customToolbar: () =>
