@@ -370,7 +370,7 @@ const ShipmentReportPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "invoice": td.invoice, "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "None", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     let productOptions: any[] = [];

@@ -67,7 +67,7 @@ const ShipmentPage = (props: any) => {
         _id: { type: [], status: false },
         brandId: { type: [ERROR_TYPE.REQUIRED], status: false },
         locationId: { type: [ERROR_TYPE.REQUIRED], status: false },
-        customerId: { type: [], status: false },
+        customerId: { type: [ERROR_TYPE.REQUIRED], status: false },
         actionId: { type: [ERROR_TYPE.REQUIRED], status: false },
         productCode: { type: [], status: false },
         invoice: { type: [ERROR_TYPE.REQUIRED], status: false },
@@ -231,7 +231,7 @@ const ShipmentPage = (props: any) => {
 
         Object.keys(formData).forEach((key: any) => {
             if (formData[key].toString().trim() === "" && error[key].type.includes(ERROR_TYPE.REQUIRED)) {
-                if (key === "invoice" && !actionData[formData.actionId].withInvoice) {
+                if ((key === "invoice" || key === "customerId") && !actionData[formData.actionId].withInvoice) {
                 } else {
                     tempError[key] = {
                         ...tempError[key],
@@ -407,7 +407,7 @@ const ShipmentPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "invoice": td.invoice, "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "None", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     const options = {
@@ -507,42 +507,44 @@ const ShipmentPage = (props: any) => {
                                             </FormControl>
                                         </Grid>
                                         {(formData.actionId && actionData[formData.actionId].withInvoice) && (
-                                            <Grid item xs={12} sm={12}>
-                                                <TextField
-                                                    required
-                                                    value={formData.invoice}
-                                                    margin="normal"
-                                                    id="invoice"
-                                                    name="invoice"
-                                                    label="Invoice"
-                                                    type="text"
-                                                    fullWidth
-                                                    onChange={handleChange}
-                                                    error={error.invoice.status}
-                                                    helperText={error.invoice.status ? defaultErrorMessage : ""}
-                                                />
-                                            </Grid>
+                                            <>
+                                                <Grid item xs={12} sm={12}>
+                                                    <TextField
+                                                        required
+                                                        value={formData.invoice}
+                                                        margin="normal"
+                                                        id="invoice"
+                                                        name="invoice"
+                                                        label="Invoice"
+                                                        type="text"
+                                                        fullWidth
+                                                        onChange={handleChange}
+                                                        error={error.invoice.status}
+                                                        helperText={error.invoice.status ? defaultErrorMessage : ""}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={12}>
+                                                    <FormControl style={{ width: "100%" }} required error={error.customerId.status}>
+                                                        <InputLabel id="customer-label">{"Customer"}</InputLabel>
+                                                        <Select
+                                                            labelId="customer-label"
+                                                            id="customerId"
+                                                            name="customerId"
+                                                            value={formData.customerId ? formData.customerId : ""}
+                                                            onChange={handleChange}
+                                                            error={error.customerId.status}
+                                                        >
+                                                            {Object.values(customerData).map((data: any) => {
+                                                                return (
+                                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                                )
+                                                            })}
+                                                        </Select>
+                                                        <FormHelperText>{error.customerId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                                    </FormControl>
+                                                </Grid>
+                                            </>
                                         )}
-                                        <Grid item xs={12} sm={12}>
-                                            <FormControl style={{ width: "100%" }} error={error.customerId.status}>
-                                                <InputLabel id="customer-label">{"Customer"}</InputLabel>
-                                                <Select
-                                                    labelId="customer-label"
-                                                    id="customerId"
-                                                    name="customerId"
-                                                    value={formData.customerId ? formData.customerId : ""}
-                                                    onChange={handleChange}
-                                                    error={error.customerId.status}
-                                                >
-                                                    {Object.values(customerData).map((data: any) => {
-                                                        return (
-                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                        )
-                                                    })}
-                                                </Select>
-                                                <FormHelperText>{error.customerId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                            </FormControl>
-                                        </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <TextField
                                                 value={formData.productCode}

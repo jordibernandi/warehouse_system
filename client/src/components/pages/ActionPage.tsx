@@ -111,12 +111,17 @@ const ActionPage = (props: any) => {
     }
 
     const handleChange = (e: any) => {
-        if (e.target.value !== null) {
-            setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+
+        if (e.target.value === "") {
+            setError({ ...error, [e.target.name]: { ...error[e.target.name], status: true } })
+        } else {
+            setError({ ...error, [e.target.name]: { ...error[e.target.name], status: false } })
         }
-        if (e.target.checked !== null) {
-            setFormData({ ...formData, [e.target.name]: e.target.checked });
-        }
+    }
+
+    const handleChangeCheckbox = (e: any) => {
+        setFormData({ ...formData, [e.target.name]: e.target.checked });
 
         if (e.target.value === "") {
             setError({ ...error, [e.target.name]: { ...error[e.target.name], status: true } })
@@ -393,7 +398,7 @@ const ActionPage = (props: any) => {
                                 </FormControl>
                                 <FormControlLabel
                                     style={{ height: "48px" }}
-                                    control={<Checkbox checked={formData.withInvoice} onChange={handleChange} name="withInvoice" color="primary" />}
+                                    control={<Checkbox checked={formData.withInvoice} onChange={handleChangeCheckbox} name="withInvoice" color="primary" />}
                                     label="With Invoice"
                                 />
                                 <TextField
