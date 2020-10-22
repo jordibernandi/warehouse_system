@@ -21,6 +21,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
+// Sound Effects
+import useSound from 'use-sound';
+
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
 import LabelIcon from '@material-ui/icons/Label';
@@ -43,6 +46,10 @@ import LocationService from '../../services/LocationService';
 import ShipmentService from '../../services/ShipmentService';
 import CustomerService from '../../services/CustomerService';
 import ActionService from '../../services/ActionService';
+
+const successSound = require('../soundEffects/successSound.mp3');
+const failSound = require('../soundEffects/failSound.mp3');
+const productSetSound = require('../soundEffects/productSetSound.mp3');
 
 const ShipmentPage = (props: any) => {
     const {
@@ -68,6 +75,10 @@ const ShipmentPage = (props: any) => {
     };
     const initialFormDataState = { _id: uuidv4(), locationId: '', customerId: '', actionId: '', productCode: '', invoice: '', serialNumber: '' };
     const defaultErrorMessage = "Value is Empty or Invalid";
+
+    const [playSuccess] = useSound(successSound);
+    const [playFail] = useSound(failSound);
+    const [playProductSet] = useSound(productSetSound);
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [locationData, setLocationData] = useState({} as any);
@@ -257,6 +268,7 @@ const ShipmentPage = (props: any) => {
             setIsSubmit(true);
             setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SET_PRODUCT_SUCCESS);
             setIsLoading(false);
+            playProductSet();
             return;
         } else {
             if (productCodeData[formData.productCode]) {
@@ -295,6 +307,7 @@ const ShipmentPage = (props: any) => {
 
                         setSnackbarMessage("Success!");
                         handleShowSuccessSnackbar();
+                        playSuccess();
                     } else {
                         setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
                         setIsSubmit(true);
@@ -306,6 +319,7 @@ const ShipmentPage = (props: any) => {
 
                         setSnackbarMessage("Something went wrong!");
                         handleShowErrorSnackbar();
+                        playFail();
                     }
                 }).catch((error: any) => {
                     setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
@@ -315,12 +329,14 @@ const ShipmentPage = (props: any) => {
                     setSnackbarMessage(error.response.data.msg);
                     handleShowErrorSnackbar();
                     setIsLoading(false);
+                    playFail();
                 });
             } else {
                 setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
                 setIsSubmit(true);
                 setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SET_PRODUCT_FAIL);
                 setIsLoading(false);
+                playFail();
                 return;
             }
         }
