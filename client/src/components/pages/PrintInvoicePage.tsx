@@ -33,12 +33,11 @@ import { PDFViewer, PDFDownloadLink, Document, Page, Text, View, StyleSheet, Ima
 const styles = StyleSheet.create({
     page: {
         backgroundColor: '#FFFFFF',
-        padding: 50
+        padding: 30
     },
     sectionProduct: {
-        marginLeft: 30,
         border: '1pt solid black',
-        padding: 20,
+        padding: 5,
         marginBottom: 5
     },
     sectionSerialNumber: {
@@ -48,24 +47,28 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         width: 200,
     },
-    invoice: {
+    title: {
         fontSize: 20,
-        marginBottom: 10,
+        marginBottom: 15,
+        textAlign: "center"
+    },
+    subTitle: {
+        fontSize: 14,
+        marginBottom: 5,
     },
     brand: {
-        fontSize: 18,
-        marginTop: 20,
-        marginLeft: 15,
-        marginBottom: 15,
+        fontSize: 14,
+        marginTop: 10,
+        marginBottom: 5,
     },
     product: {
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: 800,
         marginBottom: 10,
     },
     serialNumber: {
-        fontSize: 12,
-        marginBottom: 5,
+        fontSize: 10,
+        marginBottom: 3,
     },
 });
 
@@ -96,7 +99,11 @@ const InvoicePage = (props: any) => {
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                <Text style={styles.invoice}>{"INVOICE:"} {selectedInvoiceData[0].invoice}</Text>
+                <Text style={styles.title}>{"Surat Jalan"}</Text>
+                <Text style={styles.subTitle}>{"Invoice:"} {selectedInvoiceData[0].invoice}</Text>
+                <Text style={styles.subTitle}>{"Customer:"} {selectedInvoiceData[0].customer.name}</Text>
+                <Text style={styles.subTitle}>{"Date:"} {format(new Date(selectedInvoiceData[0].createdAt), "MMM d, yyyy")}</Text>
+
                 {invoiceSummary.map((brand: any, index: any) => (
                     <View key={`brand${index}`}>
                         <Text style={styles.brand}>{"~"} {brand.brand}</Text>
