@@ -15,10 +15,10 @@ interface IAuthRoute {
 
 const AuthRoute = ({ Component, path, exact = false, requiredRoles }: IAuthRoute): JSX.Element => {
     const {
-        userData,
-        setupUserData,
-        setupUserDataDone,
-        setSetupUserDataDone,
+        loginData,
+        setupLoginData,
+        setupLoginDataDone,
+        setSetupLoginDataDone,
         checkIfTokenExpired,
         logoutAction,
     } = useContext(AppContext);
@@ -33,13 +33,13 @@ const AuthRoute = ({ Component, path, exact = false, requiredRoles }: IAuthRoute
 
     return (
         <>
-            {setupUserDataDone && (
+            {setupLoginDataDone && (
                 <Route
                     exact={exact}
                     path={path}
                     render={(props: RouteComponentProps) => {
 
-                        return AuthService.getUserInfo() && !checkIfTokenExpired() && requiredRoles.includes(userData.role) ?
+                        return AuthService.getUserInfo() && !checkIfTokenExpired() && requiredRoles.includes(loginData.role) ?
                             (<Component {...props}></Component>)
                             :
                             (<Redirect to={{ pathname: (AuthService.getUserInfo() && !checkIfTokenExpired()) ? "/welcome" : "/login" }}></Redirect>)

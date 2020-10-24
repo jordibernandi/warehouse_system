@@ -27,6 +27,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Typography from '@material-ui/core/Typography';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
@@ -49,8 +50,12 @@ import ShipmentService from '../../services/ShipmentService';
 import CustomerService from '../../services/CustomerService';
 import ActionService from '../../services/ActionService';
 
+// Enum
+import { USER_ROLES } from '../../types/enum';
+
 const ShipmentReportPage = (props: any) => {
     const {
+        loginData,
         setIsLoading,
         handleShowSuccessSnackbar,
         handleShowErrorSnackbar,
@@ -383,7 +388,19 @@ const ShipmentReportPage = (props: any) => {
     const options = {
         filterType: "dropdown" as any,
         responsive: "scroll" as any,
-        customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) => <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>,
+        customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) => {
+            if (loginData.role === USER_ROLES.NON_ADMIN && format(formData.startDate, "MMM d, yyyy") !== format(new Date(), "MMM d, yyyy")) {
+                return (
+                    <Typography style={{ marginRight: "24px", marginTop: "10px" }} variant="caption" display="block" gutterBottom>
+                        {"Ask admin to delete!"}
+                    </Typography>
+                )
+            } else {
+                return (
+                    <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>
+                )
+            }
+        },
         downloadOptions:
         {
             filename: 'listShipment ' + dateInfo + " " + productInfo + '.csv',

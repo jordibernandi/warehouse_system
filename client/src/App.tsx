@@ -47,16 +47,16 @@ const AppContextProvider = AppContext.Provider;
 // Interface
 export interface IAppContextInterface {
   setIsLoading: any,
-  userData: object,
-  setUserData: any,
+  loginData: object,
+  setLoginData: any,
   token: string,
   setToken: any,
   captchaData: object,
   setCaptchaData: any,
-  setupUserData: any,
+  setupLoginData: any,
   checkIfTokenExpired: any,
-  setupUserDataDone: boolean,
-  setSetupUserDataDone: any,
+  setupLoginDataDone: boolean,
+  setSetupLoginDataDone: any,
   logoutAction: any,
   redirectToWelcome: any,
 
@@ -96,8 +96,8 @@ const App = () => {
   const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState({} as any);
-  const [setupUserDataDone, setSetupUserDataDone] = useState(false);
+  const [loginData, setLoginData] = useState({} as any);
+  const [setupLoginDataDone, setSetupLoginDataDone] = useState(false);
   const [token, setToken] = useState("");
   const [captchaData, setCaptchaData] = useState({} as any);
   const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
@@ -109,10 +109,10 @@ const App = () => {
       if (checkIfTokenExpired()) {
         logoutAction();
       } else {
-        setupUserData();
+        setupLoginData();
       }
     } else {
-      setSetupUserDataDone(true);
+      setSetupLoginDataDone(true);
     }
   }, []);
 
@@ -123,14 +123,14 @@ const App = () => {
   const logout = (e: any) => {
     e.preventDefault();
     AuthService.logOut();
-    setUserData({});
+    setLoginData({});
     redirectToLogin(history);
   };
 
   const logoutAction = () => {
     AuthService.logOut();
-    setUserData({});
-    setSetupUserDataDone(false);
+    setLoginData({});
+    setSetupLoginDataDone(false);
     setSnackbarMessage("Your session has expired!");
     handleShowErrorSnackbar();
   }
@@ -141,16 +141,16 @@ const App = () => {
 
   const { REACT_APP_RECAPTCHA_CLIENT } = config;
 
-  const setupUserData = async () => {
+  const setupLoginData = async () => {
     // Decode token to get user data
     const decoded = jwt_decode(await AuthService.getUserInfo());
     // Set token
     await AuthService.setUserToken(AuthService.getUserInfo());
     // Set current user
     await AuthService.getUserById(decoded.id).then((res: any) => {
-      setUserData(res.data);
+      setLoginData(res.data);
       console.log("refresh user data...")
-      setSetupUserDataDone(true);
+      setSetupLoginDataDone(true);
     })
   };
 
@@ -178,16 +178,16 @@ const App = () => {
 
   const AppContextValue: IAppContextInterface = {
     setIsLoading: setIsLoading,
-    userData: userData,
-    setUserData: setUserData,
+    loginData: loginData,
+    setLoginData: setLoginData,
     token: token,
     setToken: setToken,
     captchaData: captchaData,
     setCaptchaData: setCaptchaData,
-    setupUserData: setupUserData,
-    setSetupUserDataDone: setSetupUserDataDone,
+    setupLoginData: setupLoginData,
     checkIfTokenExpired: checkIfTokenExpired,
-    setupUserDataDone: setupUserDataDone,
+    setupLoginDataDone: setupLoginDataDone,
+    setSetupLoginDataDone: setSetupLoginDataDone,
     logoutAction: logoutAction,
     redirectToWelcome: redirectToWelcome,
 
@@ -226,8 +226,8 @@ const App = () => {
                 <AuthRoute path={AUTH_ROUTES.ACTION} Component={ActionPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.PRODUCT} Component={ProductPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT} Component={ShipmentPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
-                <AuthRoute path={AUTH_ROUTES.SHIPMENT_REPORT} Component={ShipmentReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
-                <AuthRoute path={AUTH_ROUTES.STOCK_REPORT} Component={StockReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.SHIPMENT_REPORT} Component={ShipmentReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.STOCK_REPORT} Component={StockReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.PRINT_INVOICE} Component={PrintInvoicePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <Route>
                   <ErrorPage />

@@ -118,7 +118,7 @@ interface IAppNavbarProps {
 
 const AppNavbar = (props: IAppNavbarProps) => {
   const {
-    userData,
+    loginData,
   } = useContext(AppContext);
 
   const classes = useStyles();
@@ -215,7 +215,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
             {"LKJA"}
           </Typography>
           <div className={classes.sectionDesktop}>
-            <p className={classes.username}>{"Halo, " + userData.name}</p>
+            <p className={classes.username}>{"Halo, " + loginData.name}</p>
             <IconButton
               edge="end"
               aria-label="account of current user"
@@ -256,7 +256,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
         </div>
         <Divider />
         <List>
-          {[String(USER_ROLES.SUPER_ADMIN)].includes(userData.role) && (
+          {[String(USER_ROLES.SUPER_ADMIN)].includes(loginData.role) && (
             <Tooltip title={"Users"} placement="right">
               <ListItem button onClick={() => history.push(AUTH_ROUTES.USER)}>
                 <ListItemIcon>
@@ -267,7 +267,7 @@ const AppNavbar = (props: IAppNavbarProps) => {
             </Tooltip>
           )}
 
-          {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)].includes(userData.role) && (
+          {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)].includes(loginData.role) && (
             <>
               <Tooltip title={"Locations"} placement="right">
                 <ListItem button onClick={() => history.push(AUTH_ROUTES.LOCATION)}>
@@ -309,26 +309,10 @@ const AppNavbar = (props: IAppNavbarProps) => {
                   <ListItemText primary="Products" />
                 </ListItem>
               </Tooltip>
-              <Tooltip title={"Shipments Report"} placement="right">
-                <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT_REPORT)}>
-                  <ListItemIcon>
-                    <AssignmentIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Shipments Report" />
-                </ListItem>
-              </Tooltip>
-              <Tooltip title={"Stocks Report"} placement="right">
-                <ListItem button onClick={() => history.push(AUTH_ROUTES.STOCK_REPORT)}>
-                  <ListItemIcon>
-                    <AssignmentIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Stocks Report" />
-                </ListItem>
-              </Tooltip>
             </>
           )}
 
-          {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)].includes(userData.role) && (
+          {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)].includes(loginData.role) && (
             <>
               <Tooltip title={"Shipments"} placement="right">
                 <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT)}>
@@ -344,6 +328,22 @@ const AppNavbar = (props: IAppNavbarProps) => {
                     <PrintIcon />
                   </ListItemIcon>
                   <ListItemText primary="Print Invoice" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Shipments Report"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT_REPORT)}>
+                  <ListItemIcon>
+                    <AssignmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Shipments Report" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Stocks Report"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.STOCK_REPORT)}>
+                  <ListItemIcon>
+                    <AssignmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Stocks Report" />
                 </ListItem>
               </Tooltip>
             </>
