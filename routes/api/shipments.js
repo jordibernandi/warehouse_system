@@ -144,36 +144,36 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.N
     }
 });
 
-/**
- * @route   POST api/shipments/edit/:id
- * @desc    Edit shipment
- * @access  Private
- */
+// /**
+//  * @route   POST api/shipments/edit/:id
+//  * @desc    Edit shipment
+//  * @access  Private
+//  */
 
-router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
-    const _id = req.params._id;
-    const { name } = req.body;
+// router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
+//     const _id = req.params._id;
+//     const { name } = req.body;
 
-    try {
-        // Simple validation
-        if (!name) throw Error('No data');
+//     try {
+//         // Simple validation
+//         if (!name) throw Error('No data');
 
-        const shipment = await Shipment.findOne({ _id: _id });
-        if (!shipment) throw Error('Data is not found');
+//         const shipment = await Shipment.findOne({ _id: _id });
+//         if (!shipment) throw Error('Data is not found');
 
-        shipment.name = name;
+//         shipment.name = name;
 
-        const savedShipment = await shipment.save();
-        if (!savedShipment) throw Error('Something went wrong saving the data');
+//         const savedShipment = await shipment.save();
+//         if (!savedShipment) throw Error('Something went wrong saving the data');
 
-        res.status(200).json({
-            success: true,
-            msg: 'Data successfully updated'
-        });
-    } catch (e) {
-        res.status(400).json({ msg: e.message });
-    }
-});
+//         res.status(200).json({
+//             success: true,
+//             msg: 'Data successfully updated'
+//         });
+//     } catch (e) {
+//         res.status(400).json({ msg: e.message });
+//     }
+// });
 
 /**
  * @route   POST api/shipments/Delete
