@@ -60,7 +60,7 @@ const ShipmentPage = (props: any) => {
     } = useContext(AppContext);
 
     const {
-        userData
+        loginData
     } = useContext(AppContext)
 
     const initialErrorState = {
@@ -283,7 +283,7 @@ const ShipmentPage = (props: any) => {
                     "action": actionData[formData.actionId],
                     "invoice": formData.invoice,
                     "serialNumber": formData.serialNumber,
-                    "user": userData,
+                    "user": loginData,
                     "createdAt": new Date()
                 };
                 const newShipmentData = {
@@ -295,7 +295,7 @@ const ShipmentPage = (props: any) => {
                     "checkFirst": actionData[formData.actionId].checkFirst,
                     "invoice": formData.invoice,
                     "serialNumber": formData.serialNumber,
-                    "userId": userData._id,
+                    "userId": loginData._id,
                 };
 
                 ShipmentService.add(newShipmentData).then((res: any) => {

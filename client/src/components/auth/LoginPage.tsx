@@ -50,8 +50,8 @@ const LoginPage = () => {
 
     const {
         setIsLoading,
-        userData,
-        setUserData,
+        loginData,
+        setLoginData,
         token,
         setToken,
         captchaData,
