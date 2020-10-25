@@ -56,7 +56,7 @@ const LoginPage = () => {
         setToken,
         captchaData,
         setCaptchaData,
-        setupUserData,
+        setupLoginData,
         redirectToWelcome
     } = useContext(AppContext);
 
@@ -131,7 +131,7 @@ const LoginPage = () => {
                             AuthService.setUserToken(res.data.token);
 
                             // Set current user
-                            setupUserData();
+                            setupLoginData();
                             history.push(AUTH_ROUTES.WELCOME);
                         } else {
                             setEmailError(true)
