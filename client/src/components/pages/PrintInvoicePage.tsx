@@ -49,6 +49,11 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
+        marginBottom: 5,
+        textAlign: "center"
+    },
+    company: {
+        fontSize: 16,
         marginBottom: 15,
         textAlign: "center"
     },
@@ -100,6 +105,7 @@ const InvoicePage = (props: any) => {
         <Document>
             <Page size="A4" style={styles.page}>
                 <Text style={styles.title}>{"Surat Jalan"}</Text>
+                <Text style={styles.company}>{"PT. Lakone Komunika Jaya Abadi"}</Text>
                 <Text style={styles.subTitle}>{"Invoice:"} {selectedInvoiceData[0].invoice}</Text>
                 <Text style={styles.subTitle}>{"Customer:"} {selectedInvoiceData[0].customer.name}</Text>
                 <Text style={styles.subTitle}>{"Date:"} {format(new Date(selectedInvoiceData[0].createdAt), "MMM d, yyyy")}</Text>
@@ -109,26 +115,15 @@ const InvoicePage = (props: any) => {
                         <Text style={styles.brand}>{"~"} {brand.brand}</Text>
                         {brand.products.map((product: any, index: any) => (
                             <View key={`product${index}`} style={styles.sectionProduct}>
-                                <Text style={styles.product}>{product.product}</Text>
+                                <Text style={styles.product}>{product.product}          {`Qty: ${product.serialNumbers.length}`}</Text>
                                 <View style={styles.sectionSerialNumber}>
-                                    <View style={styles.sectionContentSerialNumber}>
-                                        {product.serialNumbers.map((serialNumber: any, index: any) => {
-                                            if (index % 2 === 0) {
-                                                return (
-                                                    <Text key={`serialNumber${index}`} style={styles.serialNumber}>{index + 1}{"."}   {serialNumber}</Text>
-                                                )
-                                            }
-                                        })}
-                                    </View>
-                                    <View style={styles.sectionContentSerialNumber}>
-                                        {product.serialNumbers.map((serialNumber: any, index: any) => {
-                                            if (index % 2 === 1) {
-                                                return (
-                                                    <Text key={`serialNumber${index}`} style={styles.serialNumber}>{index + 1}{"."}   {serialNumber}</Text>
-                                                )
-                                            }
-                                        })}
-                                    </View>
+                                    <Text style={styles.serialNumber}>
+                                        {product.serialNumbers.map((serialNumber: any, index: any) => (
+                                            <>
+                                                {serialNumber}{" ; "}
+                                            </>
+                                        ))}
+                                    </Text>
                                 </View>
                             </View>
                         ))}
