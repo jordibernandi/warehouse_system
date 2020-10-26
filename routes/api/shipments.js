@@ -84,6 +84,27 @@ router.post('/invoice', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROL
 });
 
 /**
+ * @route   POST api/shipments/serialNumber
+ * @desc    Post specific serial numbers
+ * @access  Private
+ */
+
+router.post('/serialNumber', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
+    const { serialNumber } = req.body;
+
+    try {
+        let shipments = [];
+
+        if (serialNumber !== "") {
+            shipments = await Shipment.find({ serialNumber: serialNumber });
+        }
+        res.json(shipments);
+    } catch (e) {
+        res.status(400).json({ msg: e.message });
+    }
+});
+
+/**
  * @route   POST api/shipments/add
  * @desc    Add new shipment
  * @access  Private

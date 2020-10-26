@@ -16,6 +16,7 @@ export enum AUTH_ROUTES {
   SHIPMENT_REPORT = '/shipmentReport',
   STOCK_REPORT = '/stockReport',
   PRINT_INVOICE = '/printInvoice',
+  CHECK_SERIAL_NUMBER = '/checkSerialNumber',
 }
 
 export enum NON_AUTH_ROUTES {

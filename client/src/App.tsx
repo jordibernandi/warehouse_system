@@ -31,6 +31,7 @@ import CustomerPage from './components/pages/CustomerPage';
 import ActionPage from './components/pages/ActionPage';
 import ErrorPage from './components/pages/ErrorPage';
 import PrintInvoicePage from './components/pages/PrintInvoicePage';
+import CheckSerialNumberPage from './components/pages/CheckSerialNumberPage';
 
 // Style
 import './App.css';
@@ -229,6 +230,7 @@ const App = () => {
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT_REPORT} Component={ShipmentReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.STOCK_REPORT} Component={StockReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.PRINT_INVOICE} Component={PrintInvoicePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.CHECK_SERIAL_NUMBER} Component={CheckSerialNumberPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <Route>
                   <ErrorPage />
                 </Route>

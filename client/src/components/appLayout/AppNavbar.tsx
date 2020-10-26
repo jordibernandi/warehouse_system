@@ -32,6 +32,7 @@ import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PrintIcon from '@material-ui/icons/Print';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 // Enum
 import { USER_ROLES, AUTH_ROUTES } from '../../types/enum';
@@ -328,6 +329,14 @@ const AppNavbar = (props: IAppNavbarProps) => {
                     <PrintIcon />
                   </ListItemIcon>
                   <ListItemText primary="Print Invoice" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Check Serial Number"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.CHECK_SERIAL_NUMBER)}>
+                  <ListItemIcon>
+                    <FindInPageIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Check Serial Number" />
                 </ListItem>
               </Tooltip>
               <Tooltip title={"Shipments Report"} placement="right">
