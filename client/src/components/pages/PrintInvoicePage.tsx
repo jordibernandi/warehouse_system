@@ -40,13 +40,6 @@ const styles = StyleSheet.create({
         padding: 5,
         marginBottom: 5
     },
-    sectionSerialNumber: {
-        flexDirection: 'row',
-    },
-    sectionContentSerialNumber: {
-        flexGrow: 1,
-        width: 200,
-    },
     title: {
         fontSize: 20,
         marginBottom: 5,
@@ -75,6 +68,23 @@ const styles = StyleSheet.create({
         fontSize: 10,
         marginBottom: 3,
     },
+    sectionSignature: {
+        flexDirection: 'row',
+        marginTop: 20
+    },
+    sectionContentSignature: {
+        flexGrow: 1,
+        width: 150,
+    },
+    signature: {
+        fontSize: 12,
+        textAlign: "center"
+    },
+    signatureDots: {
+        fontSize: 12,
+        textAlign: "center",
+        marginTop: 50
+    }
 });
 
 const InvoicePage = (props: any) => {
@@ -116,19 +126,31 @@ const InvoicePage = (props: any) => {
                         {brand.products.map((product: any, index: any) => (
                             <View key={`product${index}`} style={styles.sectionProduct}>
                                 <Text style={styles.product}>{product.product}          {`Qty: ${product.serialNumbers.length}`}</Text>
-                                <View style={styles.sectionSerialNumber}>
-                                    <Text style={styles.serialNumber}>
-                                        {product.serialNumbers.map((serialNumber: any, index: any) => (
-                                            <>
-                                                {serialNumber}{" ; "}
-                                            </>
-                                        ))}
-                                    </Text>
-                                </View>
+                                <Text style={styles.serialNumber}>
+                                    {product.serialNumbers.map((serialNumber: any, index: any) => (
+                                        <>
+                                            {serialNumber}{" ; "}
+                                        </>
+                                    ))}
+                                </Text>
                             </View>
                         ))}
                     </View>
                 ))}
+                <View style={styles.sectionSignature}>
+                    <View style={styles.sectionContentSignature}>
+                        <Text style={styles.signature}>{"Penerima"}</Text>
+                        <Text style={styles.signatureDots}>{"............"}</Text>
+                    </View>
+                    <View style={styles.sectionContentSignature}>
+                        <Text style={styles.signature}>{"Pengirim"}</Text>
+                        <Text style={styles.signatureDots}>{"............"}</Text>
+                    </View>
+                    <View style={styles.sectionContentSignature}>
+                        <Text style={styles.signature}>{"Penanggung Jawab"}</Text>
+                        <Text style={styles.signatureDots}>{"............"}</Text>
+                    </View>
+                </View>
             </Page>
         </Document>
     )
