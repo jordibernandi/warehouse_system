@@ -97,9 +97,9 @@ const LoginPage = () => {
     const login = async (e: any) => {
         e.preventDefault();
 
-        if (!executeRecaptcha) {
-            return;
-        }
+        // if (!executeRecaptcha) {
+        //     return;
+        // }
 
         if (email === "" || password === "") {
             setEmailError(true)
@@ -112,51 +112,51 @@ const LoginPage = () => {
 
         setIsLoading(true);
 
-        const result = await executeRecaptcha("login");
+        // const result = await executeRecaptcha("login");
 
-        setToken(result);
+        // setToken(result);
 
         // verify request
-        const dataToken = { token: result }
+        // const dataToken = { token: result }
 
-        AuthService.verifyCaptcha(dataToken).then((res: any) => {
-            setCaptchaData(res.data);
-            if (res.data && res.data.success) {
-                const credentials = { email: email, password: password };
-                if (res.data.score > 0.5) {
-                    AuthService.login(credentials).then((res: any) => {
-                        if (res.data.user) {
-                            localStorage.setItem("userInfo", JSON.stringify(res.data.token));
+        // AuthService.verifyCaptcha(dataToken).then((res: any) => {
+        //     setCaptchaData(res.data);
+        //     if (res.data && res.data.success) {
+        const credentials = { email: email, password: password };
+        // if (res.data.score > 0.5) {
+        AuthService.login(credentials).then((res: any) => {
+            if (res.data.user) {
+                localStorage.setItem("userInfo", JSON.stringify(res.data.token));
 
-                            AuthService.setUserToken(res.data.token);
+                AuthService.setUserToken(res.data.token);
 
-                            // Set current user
-                            setupLoginData();
-                            history.push(AUTH_ROUTES.WELCOME);
-                        } else {
-                            setEmailError(true)
-                            setPasswordError(true)
-                            if (!res.data.success) {
-                                setErrorMessage(res.data.msg);
-                            } else {
-                                setErrorMessage("Email or Password is incorrect!");
-                            }
-                            setIsLoading(false);
-                        }
-                    }, (error: any) => {
-                        setErrorMessage("Internal error during user login!");
-                    });
+                // Set current user
+                setupLoginData();
+                history.push(AUTH_ROUTES.WELCOME);
+            } else {
+                setEmailError(true)
+                setPasswordError(true)
+                if (!res.data.success) {
+                    setErrorMessage(res.data.msg);
                 } else {
-                    setEmailError(true);
-                    setPasswordError(true);
-                    setErrorMessage("You are not HUMAN!");
-
-                    setIsLoading(false);
+                    setErrorMessage("Email or Password is incorrect!");
                 }
+                setIsLoading(false);
             }
         }, (error: any) => {
             setErrorMessage("Internal error during user login!");
         });
+        //         } else {
+        //             setEmailError(true);
+        //             setPasswordError(true);
+        //             setErrorMessage("You are not HUMAN!");
+
+        //             setIsLoading(false);
+        //         }
+        //     }
+        // }, (error: any) => {
+        //     setErrorMessage("Internal error during user login!");
+        // });
     };
 
     return (
