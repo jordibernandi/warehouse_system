@@ -1,6 +1,6 @@
 import { SHIPMENT_INFORMATION_TYPE, USER_ROLES } from "./enum";
 
-export const USER_API_BASE_URL = 'http://localhost:3000/api/';
+export const USER_API_BASE_URL = '/api/';
 
 export const userRoles = {
     admins: [String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)],
