@@ -51,18 +51,18 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     subTitle: {
-        fontSize: 14,
-        marginBottom: 5,
+        fontSize: 12,
+        marginBottom: 3,
     },
     brand: {
-        fontSize: 14,
-        marginTop: 10,
+        fontSize: 12,
+        marginTop: 5,
         marginBottom: 5,
     },
     product: {
         fontSize: 12,
         fontWeight: 800,
-        marginBottom: 10,
+        marginBottom: 5,
     },
     serialNumber: {
         fontSize: 10,
@@ -115,8 +115,8 @@ const InvoicePage = (props: any) => {
         <Document>
             <Page size="A4" style={styles.page}>
                 <Text style={styles.title}>{"Surat Jalan"}</Text>
-                <Text style={styles.company}>{"PT. Lakone Komunika Jaya Abadi"}</Text>
-                <Text style={styles.subTitle}>{"Invoice:"} {selectedInvoiceData[0].invoice}</Text>
+                {/* <Text style={styles.company}>{"PT. Lakone Komunika Jaya Abadi"}</Text> */}
+                <Text style={styles.subTitle}>{"No. Nota:"} {selectedInvoiceData[0].invoice}</Text>
                 <Text style={styles.subTitle}>{"Customer:"} {selectedInvoiceData[0].customer.name}</Text>
                 <Text style={styles.subTitle}>{"Date:"} {format(new Date(selectedInvoiceData[0].createdAt), "MMM d, yyyy")}</Text>
 
@@ -147,7 +147,7 @@ const InvoicePage = (props: any) => {
                         <Text style={styles.signatureDots}>{"............"}</Text>
                     </View>
                     <View style={styles.sectionContentSignature}>
-                        <Text style={styles.signature}>{"Penanggung Jawab"}</Text>
+                        <Text style={styles.signature}>{"Mengetahui"}</Text>
                         <Text style={styles.signatureDots}>{"............"}</Text>
                     </View>
                 </View>
