@@ -192,7 +192,11 @@ const ShipmentPage = (props: any) => {
     }
 
     const handleChange = (e: any) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
+        if (e.target.name === "actionId") {
+            setFormData({ ...formData, [e.target.name]: e.target.value, "invoice": "", "customerId": "" })
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value })
+        }
 
         if (e.target.value === "") {
             setError({ ...error, [e.target.name]: { ...error[e.target.name], status: true } })
