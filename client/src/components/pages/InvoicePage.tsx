@@ -19,13 +19,10 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import AddIcon from "@material-ui/icons/Add";
-import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from '@material-ui/icons/Delete';
-import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
-import CsvUploadDialog from '../appLayout/CsvUploadDialog';
 
 // Types
 import { DIALOG_TYPE, ERROR_TYPE, DATA_MODEL_TYPE } from '../../types/enum';
@@ -34,87 +31,10 @@ import { DIALOG_TYPE, ERROR_TYPE, DATA_MODEL_TYPE } from '../../types/enum';
 import FunctionUtil from '../../utils/FunctionUtil';
 
 // Services
-import ProductService from '../../services/ProductService';
-import BrandService from '../../services/BrandService';
+import InvoiceService from '../../services/InvoiceService';
+import CustomerService from '../../services/CustomerService';
 
-// PDF
-import { PDFViewer, PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-
-// QR Generator
-import QRCode from 'qrcode.react';
-
-// Create styles
-const styles = StyleSheet.create({
-    page: {
-        backgroundColor: '#FFFFFF',
-    },
-    section: {
-        margin: 20,
-        padding: 15,
-        border: '1pt solid black',
-        flexDirection: 'row',
-    },
-    sectionContentDesc: {
-        flexGrow: 1,
-        width: 350
-    },
-    sectionContentQR: {
-        flexGrow: 1,
-    },
-    brand: {
-        fontSize: 14,
-        marginBottom: 10
-    },
-    name: {
-        fontSize: 18,
-        marginBottom: 10
-    },
-    qrCode: {
-        width: 50,
-        marginBottom: 5
-    },
-    code: {
-        fontSize: 12
-    },
-    downloadLink: {
-        textDecoration: 'none',
-        color: 'gray'
-    }
-});
-
-const QRCodePage = (props: any) => {
-    const { selectedQRCodeData } = props;
-    return (
-        <Document>
-            <Page size="A4" style={styles.page}>
-                {selectedQRCodeData.map((qrCodeData: any, index: any) => {
-                    const qrCodeCanvas = document.querySelectorAll(
-                        "[data-qr='" + qrCodeData.code + "']"
-                    )[0];
-
-                    if (qrCodeCanvas) {
-                        const qrCodeDataUri = (qrCodeCanvas as any).toDataURL("image/png");
-
-                        return (
-                            <View style={styles.section} key={`qr${index}`}>
-                                <View style={styles.sectionContentDesc}>
-                                    <Text style={styles.brand}>{qrCodeData.brand.name}</Text>
-                                    <Text style={styles.name}>{qrCodeData.name}</Text>
-                                </View>
-                                <View style={styles.sectionContentQR}>
-                                    <Image style={styles.qrCode} src={qrCodeDataUri} />
-                                    <Text style={styles.code}>{qrCodeData.code}</Text>
-                                </View>
-                            </View>
-                        )
-                    }
-                })}
-            </Page>
-        </Document>
-    )
-}
-
-const ProductPage = (props: any) => {
+const InvoicePage = (props: any) => {
     const {
         setIsLoading,
         handleShowSuccessSnackbar,
@@ -124,46 +44,43 @@ const ProductPage = (props: any) => {
 
     const initialErrorState = {
         _id: { type: [], status: false },
-        brandId: { type: [ERROR_TYPE.REQUIRED], status: false },
-        code: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
+        customerId: { type: [ERROR_TYPE.REQUIRED], status: false },
+        description: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
         name: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), brandId: '', code: '', name: '' };
-    const dataModel = { _id: DATA_MODEL_TYPE.KEY, brandId: DATA_MODEL_TYPE.FOREIGN_KEY_BRAND, code: DATA_MODEL_TYPE.DATA, name: DATA_MODEL_TYPE.DATA };
+    const initialFormDataState = { _id: uuidv4(), customerId: '', description: '', name: '' };
+    const dataModel = { _id: DATA_MODEL_TYPE.KEY, customerId: DATA_MODEL_TYPE.FOREIGN_KEY_BRAND, description: DATA_MODEL_TYPE.DATA, name: DATA_MODEL_TYPE.DATA };
     const initialSelectedDataIndex = 0;
     const defaultErrorMessage = "Value is Empty or Invalid";
 
     const [isLoaded, setIsLoaded] = useState(false);
-    const [productData, setProductData] = useState({} as any);
-    const [brandData, setBrandData] = useState({} as any);
+    const [invoiceData, setInvoiceData] = useState({} as any);
+    const [customerData, setCustomerData] = useState({} as any);
     const [tableData, setTableData] = useState([] as any);
     const [isOpenFormDialog, setIsOpenFormDialog] = useState(false);
-    const [isOpenUploadDialog, setIsOpenUploadDialog] = useState(false);
     const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
-    const [isOpenPrintQRCodeDialog, setIsOpenPrintQRCodeDialog] = useState(false);
     const [formData, setFormData] = useState(initialFormDataState as any);
     const [error, setError] = useState(initialErrorState as any);
     const [selectedDataIndex, setSelectedDataIndex] = useState(initialSelectedDataIndex);
     const [selectedData, setSelectedData] = useState([] as any[]);
-    const [selectedQRCodeData, setSelectedQRCodeData] = useState([] as any[]);
     const [dialogType, setDialogType] = useState(DIALOG_TYPE.REGISTER as DIALOG_TYPE);
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataProduct: any;
-            let activeDataBrand: any;
+            let activeDataInvoice: any;
+            let activeDataCustomer: any;
 
-            await ProductService.getAll().then((res: any) => {
-                activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
+            await InvoiceService.getAll().then((res: any) => {
+                activeDataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
-            await BrandService.getAll().then((res: any) => {
-                activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
+            await CustomerService.getAll().then((res: any) => {
+                activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -171,12 +88,12 @@ const ProductPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataProduct).forEach((data: any) => {
-                tempTableData.push({ "_id": data._id, "brand": activeDataBrand[data.brandId], "code": data.code, "name": data.name, "qrCode": data.code });
+            Object.values(activeDataInvoice).forEach((data: any) => {
+                tempTableData.push({ "_id": data._id, "customer": activeDataCustomer[data.customerId], "name": data.name, "description": data.description });
             })
 
-            setProductData(activeDataProduct);
-            setBrandData(activeDataBrand);
+            setInvoiceData(activeDataInvoice);
+            setCustomerData(activeDataCustomer);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);
@@ -185,29 +102,6 @@ const ProductPage = (props: any) => {
         fetchData();
     }, []);
 
-    const handleSaveUpload = async (uploadData: any) => {
-        let tempUploadData: any[] = [];
-        let tempTableData: any[] = []
-        uploadData.forEach((data: any) => {
-            var dataExist = tableData.some(function (el: any) {
-                return (el.name === data.name);
-            });
-
-            if (!dataExist) {
-                tempUploadData.push(data);
-                tempTableData.push({ "_id": data._id, "brand": brandData[data.brandId], "code": data.code, "name": data.name, "qrCode": data.code });
-            }
-        })
-
-        await ProductService.saveUpload(tempUploadData).then((res: any) => {
-            var newArray = tableData.concat(tempTableData);
-            setTableData(newArray);
-        }).catch((error: any) => {
-            setSnackbarMessage(error.response.data.msg);
-            handleShowErrorSnackbar();
-        });
-    }
-
     const handleCloseFormDialog = () => {
         setIsOpenFormDialog(false);
         setFormData(initialFormDataState);
@@ -215,18 +109,9 @@ const ProductPage = (props: any) => {
         setSelectedDataIndex(initialSelectedDataIndex);
     }
 
-    const handleCloseUploadDialog = () => {
-        setIsOpenUploadDialog(false);
-    }
-
     const handleCloseConfirmationDialog = () => {
         setIsOpenConfirmationDialog(false);
         setSelectedData([]);
-    }
-
-    const handleClosePrintQRCodeDialog = () => {
-        setIsOpenPrintQRCodeDialog(false);
-        setSelectedQRCodeData([]);
     }
 
     const handleChange = (e: any) => {
@@ -244,10 +129,6 @@ const ProductPage = (props: any) => {
         setDialogType(DIALOG_TYPE.REGISTER);
     }
 
-    const handleClickUploadButton = () => {
-        setIsOpenUploadDialog(true);
-    }
-
     const handleClickDeleteButton = (selectedRows: any) => {
         let tempSelectedData: any[] = [];
 
@@ -259,22 +140,11 @@ const ProductPage = (props: any) => {
         setIsOpenConfirmationDialog(true);
     }
 
-    const handleClickPrintQRButton = (selectedRows: any) => {
-        let tempSelectedData: any[] = [];
-
-        selectedRows.data.forEach((sr: any) => {
-            tempSelectedData.push(tableData[sr.dataIndex]);
-        })
-
-        setSelectedQRCodeData(tempSelectedData);
-        setIsOpenPrintQRCodeDialog(true);
-    }
-
     const handleDoubleClickRow = (dataIndex: any) => {
         const data = tableData[dataIndex]
 
         setDialogType(DIALOG_TYPE.EDIT);
-        setFormData({ _id: data._id, brandId: data.brand._id, code: data.code, name: data.name })
+        setFormData({ _id: data._id, customerId: data.customer._id, description: data.description, name: data.name })
         setIsOpenFormDialog(true);
         setSelectedDataIndex(dataIndex);
     }
@@ -320,10 +190,10 @@ const ProductPage = (props: any) => {
             setIsLoading(true);
         }
 
-        const newTableData = { "_id": formData._id, "brand": { _id: formData.brandId, name: brandData[formData.brandId].name }, "code": formData.code, "name": formData.name, "qrCode": formData.code };
+        const newTableData = { "_id": formData._id, "customer": { _id: formData.customerId, name: customerData[formData.customerId].name }, "description": formData.description, "name": formData.name, "qrDescription": formData.description };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
-            await ProductService.add(formData).then((res: any) => {
+            await InvoiceService.add(formData).then((res: any) => {
                 setTableData([...tableData, newTableData]);
                 handleCloseFormDialog();
                 setFormData(initialFormDataState);
@@ -335,7 +205,7 @@ const ProductPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
-            await ProductService.edit(formData._id, formData).then((res: any) => {
+            await InvoiceService.edit(formData._id, formData).then((res: any) => {
                 const tempTableData = [...tableData];
                 tempTableData[selectedDataIndex] = newTableData;
                 setTableData(tempTableData);
@@ -358,7 +228,7 @@ const ProductPage = (props: any) => {
 
         setIsLoading(true);
 
-        await ProductService.softDelete({ selectedData: selectedData }).then((res: any) => {
+        await InvoiceService.softDelete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.indexOf(data._id) === -1;
@@ -384,30 +254,19 @@ const ProductPage = (props: any) => {
             }
         },
         {
-            name: "brand", label: "Brand"
-        },
-        {
-            name: "code", label: "Code"
-        },
-        {
             name: "name", label: "Name"
         },
         {
-            name: 'qrCode',
-            label: "QR Code",
-            options: {
-                customBodyRender: (value: any) => {
-                    return (
-                        <QRCode data-qr={value} value={value} />
-                    );
-                }
-            }
-        }
+            name: "customer", label: "Customer"
+        },
+        {
+            name: "description", label: "Description"
+        },
     ] as any;
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "brand": td.brand.name, "code": td.code, "name": td.name, "qrCode": td.code })
+        data.push({ "_id": td._id, "name": td.name, "customer": td.customer.name, "description": td.description })
     })
 
     const options = {
@@ -418,19 +277,11 @@ const ProductPage = (props: any) => {
                 handleDoubleClickRow(dataIndex);
             }
         }),
-        customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) =>
-            <div style={{ display: "flex", alignItems: 'center', justifyContent: 'flex-end', }}>
-                <IconBtn icon={PictureAsPdfIcon} tooltip={"Print"} handleClick={() => { handleClickPrintQRButton(selectedRows) }}></IconBtn>
-                <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>
-            </div>,
-        customToolbar: () =>
-            <>
-                <IconBtn icon={AddIcon} tooltip={"Register New Data"} handleClick={handleClickAddButton}></IconBtn>
-                <IconBtn icon={PublishIcon} tooltip={"Upload Data"} handleClick={handleClickUploadButton}></IconBtn>
-            </>,
+        customToolbarSelect: (selectedRows: any, displayData: any, setSelectedRows: any) => <IconBtn style={{ marginRight: "24px" }} icon={DeleteIcon} tooltip={"Delete"} handleClick={() => { handleClickDeleteButton(selectedRows) }}></IconBtn>,
+        customToolbar: () => <IconBtn icon={AddIcon} tooltip={"Register New Data"} handleClick={handleClickAddButton}></IconBtn>,
         downloadOptions:
         {
-            filename: 'listProduct.csv',
+            filename: 'listBrand.csv',
             separator: ',',
             filterOptions: {
                 useDisplayedColumnsOnly: true,
@@ -455,7 +306,7 @@ const ProductPage = (props: any) => {
                 <>
                     <MuiThemeProvider theme={theme}>
                         <MUIDataTable
-                            title={"List of Products"}
+                            title={"List of Invoices"}
                             data={data}
                             columns={columns}
                             options={options}
@@ -468,39 +319,8 @@ const ProductPage = (props: any) => {
                             autoComplete="off"
                             noValidate
                         >
-                            <DialogTitle id="form-dialog-title">{dialogType === DIALOG_TYPE.REGISTER ? "Register New Product" : "Edit Product"}</DialogTitle>
+                            <DialogTitle id="form-dialog-title">{dialogType === DIALOG_TYPE.REGISTER ? "Register New Invoice" : "Edit Invoice"}</DialogTitle>
                             <DialogContent>
-                                <FormControl style={{ width: "100%" }} required error={error.brandId.status}>
-                                    <InputLabel id="brand-label">{"Brand"}</InputLabel>
-                                    <Select
-                                        labelId="brand-label"
-                                        id="brandId"
-                                        name="brandId"
-                                        value={formData.brandId ? formData.brandId : ""}
-                                        onChange={handleChange}
-                                        error={error.brandId.status}
-                                    >
-                                        {Object.values(brandData).map((data: any) => {
-                                            return (
-                                                <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                            )
-                                        })}
-                                    </Select>
-                                    <FormHelperText>{error.brandId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                </FormControl>
-                                <TextField
-                                    value={formData.code}
-                                    margin="normal"
-                                    id="code"
-                                    name="code"
-                                    label="Code"
-                                    type="text"
-                                    fullWidth
-                                    onChange={handleChange}
-                                    required
-                                    error={error.code.status}
-                                    helperText={error.code.status ? defaultErrorMessage : ""}
-                                />
                                 <TextField
                                     value={formData.name}
                                     margin="normal"
@@ -513,6 +333,37 @@ const ProductPage = (props: any) => {
                                     required
                                     error={error.name.status}
                                     helperText={error.name.status ? defaultErrorMessage : ""}
+                                />
+                                <FormControl style={{ width: "100%" }} required error={error.customerId.status}>
+                                    <InputLabel id="customer-label">{"Customer"}</InputLabel>
+                                    <Select
+                                        labelId="customer-label"
+                                        id="customerId"
+                                        name="customerId"
+                                        value={formData.customerId ? formData.customerId : ""}
+                                        onChange={handleChange}
+                                        error={error.customerId.status}
+                                    >
+                                        {Object.values(customerData).map((data: any) => {
+                                            return (
+                                                <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                    <FormHelperText>{error.customerId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                </FormControl>
+                                <TextField
+                                    value={formData.description}
+                                    margin="normal"
+                                    id="description"
+                                    name="description"
+                                    label="Description"
+                                    type="text"
+                                    fullWidth
+                                    onChange={handleChange}
+                                    required
+                                    error={error.description.status}
+                                    helperText={error.description.status ? defaultErrorMessage : ""}
                                 />
                             </DialogContent>
                             <DialogActions>
@@ -548,44 +399,6 @@ const ProductPage = (props: any) => {
                             </Button>
                         </DialogActions>
                     </Dialog>
-
-                    <Dialog
-                        open={isOpenPrintQRCodeDialog}
-                        onClose={handleClosePrintQRCodeDialog}
-                        aria-labelledby="qr-dialog-title"
-                        aria-describedby="qr-dialog-description"
-                    >
-                        <DialogTitle id="qr-dialog-title">{"Print QR Code"}</DialogTitle>
-                        <DialogContent>
-                            <Grid container>
-                                <Grid item md={12}>
-                                    <PDFViewer>
-                                        <QRCodePage selectedQRCodeData={selectedQRCodeData} />
-                                    </PDFViewer>
-                                </Grid>
-                                <Grid item md={12}>
-                                    <Typography variant="caption" display="block" gutterBottom>
-                                        {"Only print the QR Codes that are displayed on the current screen."}
-                                    </Typography>
-                                    <Typography variant="caption" display="block" gutterBottom>
-                                        {"Change 'Rows per page' to print more..."}
-                                    </Typography>
-                                    <Button variant="outlined" color="primary">
-                                        <PDFDownloadLink document={<QRCodePage selectedQRCodeData={selectedQRCodeData} />} fileName="qr_code.pdf">
-                                            {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download QR Code')}
-                                        </PDFDownloadLink>
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClosePrintQRCodeDialog} color="primary" autoFocus>
-                                {"Close"}
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-
-                    <CsvUploadDialog setIsLoading={setIsLoading} dataModel={dataModel} handleSaveUpload={handleSaveUpload} title={"Upload CSV List Product"} isDialogOpen={isOpenUploadDialog} handleCloseDialog={handleCloseUploadDialog}></CsvUploadDialog>
                 </>
             )}
         </>
@@ -593,4 +406,4 @@ const ProductPage = (props: any) => {
     );
 }
 
-export default ProductPage;
+export default InvoicePage;

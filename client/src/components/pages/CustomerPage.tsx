@@ -174,7 +174,7 @@ const CustomerPage = (props: any) => {
         const newTableData = { "_id": formData._id, "name": formData.name, "description": formData.description };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
-            CustomerService.add(formData).then((res: any) => {
+            await CustomerService.add(formData).then((res: any) => {
                 setTableData([...tableData, newTableData]);
                 handleCloseFormDialog();
                 setFormData(initialFormDataState);
@@ -186,7 +186,7 @@ const CustomerPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
-            CustomerService.edit(formData._id, formData).then((res: any) => {
+            await CustomerService.edit(formData._id, formData).then((res: any) => {
                 const tempTableData = [...tableData];
                 tempTableData[selectedDataIndex] = newTableData;
                 setTableData(tempTableData);
@@ -209,7 +209,7 @@ const CustomerPage = (props: any) => {
 
         setIsLoading(true);
 
-        CustomerService.softDelete({ selectedData: selectedData }).then((res: any) => {
+        await CustomerService.softDelete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.indexOf(data._id) === -1;

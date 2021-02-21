@@ -12,6 +12,7 @@ export enum AUTH_ROUTES {
   CUSTOMER = '/customer',
   ACTION = '/action',
   PRODUCT = '/product',
+  INVOICE = '/invoice',
   SHIPMENT = '/shipment',
   SHIPMENT_REPORT = '/shipmentReport',
   STOCK_REPORT = '/stockReport',
@@ -65,7 +66,11 @@ export enum SHIPMENT_INFORMATION_TYPE {
 }
 
 export enum LIST_DATA_TYPE {
-  ALL = 'All',
+  ALL = 'ALL',
+}
+
+export enum SHIPMENT_INVOICE_TYPE {
+  AUTO_GENERATED = 'AUTO_GENERATED',
 }
 
 

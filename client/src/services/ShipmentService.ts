@@ -10,15 +10,11 @@ export class ShipmentService {
         return axios.post(USER_API_BASE_URL + "shipments/add", data, AuthService.tokenConfig());
     }
 
-    getAll() {
-        return axios.get(USER_API_BASE_URL + "shipments", AuthService.tokenConfig());
-    }
-
     getSpecific(data: any) {
         return axios.post(USER_API_BASE_URL + "shipments/specific", data, AuthService.tokenConfig());
     }
 
-    getInvoice(data: any) {
+    getByInvoiceId(data: any) {
         return axios.post(USER_API_BASE_URL + "shipments/invoice", data, AuthService.tokenConfig());
     }
 

@@ -8,23 +8,11 @@ import auth from '../../middleware/auth';
 
 // Shipment Model
 import Shipment from '../../models/Shipment';
+import ErasedShipment from '../../models/ErasedShipment';
+
+const { v4: uuidv4 } = require('uuid');
 
 const router = Router();
-
-/**
- * @route   GET api/shipments
- * @desc    Get all shipments
- * @access  Private
- */
-
-router.get('/', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
-    try {
-        const shipments = await Shipment.find({ isActive: true });
-        res.json(shipments);
-    } catch (e) {
-        res.status(400).json({ msg: e.message });
-    }
-});
 
 /**
  * @route   POST api/shipments/specific
@@ -69,13 +57,13 @@ router.post('/specific', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_RO
  */
 
 router.post('/invoice', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
-    const { invoice } = req.body;
+    const { invoiceId } = req.body;
 
     try {
         let shipments = [];
 
-        if (invoice !== "") {
-            shipments = await Shipment.find({ invoice: invoice });
+        if (invoiceId !== "") {
+            shipments = await Shipment.find({ invoiceId: invoiceId });
         }
         res.json(shipments);
     } catch (e) {
@@ -111,7 +99,7 @@ router.post('/serialNumber', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USE
  */
 
 router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
-    const { _id, productId, userId, locationId, customerId, actionId, checkFirst, invoice, serialNumber } = req.body;
+    const { _id, productId, userId, locationId, actionId, checkFirst, invoiceId, serialNumber } = req.body;
 
     try {
         // Simple validation
@@ -139,9 +127,8 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.N
                     productId,
                     userId,
                     locationId,
-                    customerId,
                     actionId,
-                    invoice,
+                    invoiceId,
                     serialNumber
                 });
 
@@ -209,8 +196,23 @@ router.put('/delete', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES
     if (!selectedData) throw Error('No data');
 
     try {
-        for (const _id of selectedData) {
-            const deleteShipment = await Shipment.remove({ _id: _id });
+        for (const shipment of selectedData) {
+            const newErasedShipment = new ErasedShipment({
+                _id: uuidv4(),
+                previousShipmentId: shipment._id,
+                productId: shipment.product ? shipment.product._id : "",
+                userId: shipment.user ? shipment.user._id : "",
+                locationId: shipment.location ? shipment.location._id : "",
+                actionId: shipment.action ? shipment.action._id : "",
+                invoiceId: shipment.invoice ? shipment.invoice._id : "",
+                serialNumber: shipment.serialNumber
+            });
+            newErasedShipment.isNew = true;
+
+            const savedErasedShipment = await newErasedShipment.save();
+            if (!savedErasedShipment) throw Error('Something went wrong saving the data');
+
+            const deleteShipment = await Shipment.remove({ _id: shipment._id });
             if (!deleteShipment) throw Error('Something went wrong deleting the data');
         }
 

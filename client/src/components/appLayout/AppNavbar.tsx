@@ -33,6 +33,7 @@ import OpenWithIcon from '@material-ui/icons/OpenWith';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PrintIcon from '@material-ui/icons/Print';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 
 // Enum
 import { USER_ROLES, AUTH_ROUTES } from '../../types/enum';
@@ -308,6 +309,14 @@ const AppNavbar = (props: IAppNavbarProps) => {
                     <LabelIcon />
                   </ListItemIcon>
                   <ListItemText primary="Products" />
+                </ListItem>
+              </Tooltip>
+              <Tooltip title={"Invoices"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.INVOICE)}>
+                  <ListItemIcon>
+                    <AccountBalanceWalletIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Invoices" />
                 </ListItem>
               </Tooltip>
             </>

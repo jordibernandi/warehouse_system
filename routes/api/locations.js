@@ -50,7 +50,6 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req
         res.status(200).json({
             success: true,
             msg: 'Data successfully added',
-            value: savedLocation
         });
     } catch (e) {
         res.status(400).json({ msg: e.message });

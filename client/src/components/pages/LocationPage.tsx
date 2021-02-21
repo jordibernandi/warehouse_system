@@ -173,7 +173,7 @@ const LocationPage = (props: any) => {
         const newTableData = { "_id": formData._id, "name": formData.name };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
-            LocationService.add(formData).then((res: any) => {
+            await LocationService.add(formData).then((res: any) => {
                 setTableData([...tableData, newTableData]);
                 handleCloseFormDialog();
                 setFormData(initialFormDataState);
@@ -185,7 +185,7 @@ const LocationPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
-            LocationService.edit(formData._id, formData).then((res: any) => {
+            await LocationService.edit(formData._id, formData).then((res: any) => {
                 const tempTableData = [...tableData];
                 tempTableData[selectedDataIndex] = newTableData;
                 setTableData(tempTableData);
@@ -208,7 +208,7 @@ const LocationPage = (props: any) => {
 
         setIsLoading(true);
 
-        LocationService.softDelete({ selectedData: selectedData }).then((res: any) => {
+        await LocationService.softDelete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.indexOf(data._id) === -1;

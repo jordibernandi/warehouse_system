@@ -25,6 +25,7 @@ import LocationService from '../../services/LocationService';
 import ShipmentService from '../../services/ShipmentService';
 import CustomerService from '../../services/CustomerService';
 import ActionService from '../../services/ActionService';
+import InvoiceService from '../../services/InvoiceService';
 
 const CheckSerialNumberPage = (props: any) => {
     const {
@@ -44,6 +45,7 @@ const CheckSerialNumberPage = (props: any) => {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [userData, setUserData] = useState({} as any);
+    const [invoiceData, setInvoiceData] = useState({} as any);
     const [locationData, setLocationData] = useState({} as any);
     const [customerData, setCustomerData] = useState({} as any);
     const [actionData, setActionData] = useState({} as any);
@@ -59,6 +61,7 @@ const CheckSerialNumberPage = (props: any) => {
             setIsLoading(true);
 
             let activeDataUser: any;
+            let activeDataInvoice: any;
             let activeDataProduct: any;
             let activeDataProductCode: any;
             let activeDataBrand: any;
@@ -68,6 +71,13 @@ const CheckSerialNumberPage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
+
+            await InvoiceService.getAll().then((res: any) => {
+                activeDataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -109,6 +119,7 @@ const CheckSerialNumberPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
 
+            setInvoiceData(activeDataInvoice);
             setProductData(activeDataProduct);
             setProductCodeData(activeDataProductCode);
             setBrandData(activeDataBrand);
@@ -173,18 +184,19 @@ const CheckSerialNumberPage = (props: any) => {
         }
 
         // Valid data        
-        ShipmentService.getSerialNumber(formData).then((res: any) => {
+        await ShipmentService.getSerialNumber(formData).then((res: any) => {
             let tempTableData: any[] = [];
 
             res.data.forEach((shipment: any) => {
                 const productFound = productData[shipment.productId];
+                const invoiceFound = invoiceData[shipment.invoiceId];
                 tempTableData.push({
                     "_id": shipment._id,
-                    "invoice": shipment.invoice,
-                    "product": productFound,
-                    "brand": brandData[productFound.brandId],
+                    "invoice": invoiceFound ? invoiceFound : null,
+                    "product": productFound ? productFound : null,
+                    "brand": productFound ? brandData[productFound.brandId] : null,
                     "location": locationData[shipment.locationId],
-                    "customer": customerData[shipment.customerId],
+                    "customer": invoiceFound ? customerData[invoiceFound.customerId] : null,
                     "action": actionData[shipment.actionId],
                     "serialNumber": formData.serialNumber,
                     "user": userData[shipment.userId],
@@ -209,6 +221,9 @@ const CheckSerialNumberPage = (props: any) => {
         },
         {
             name: "invoice", label: "Invoice"
+        },
+        {
+            name: "description", label: "Description"
         },
         {
             name: "brand", label: "Brand"
@@ -241,7 +256,7 @@ const CheckSerialNumberPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice.name : "-", "description": td.invoice ? td.invoice.description : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     const options = {

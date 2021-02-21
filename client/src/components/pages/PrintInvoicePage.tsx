@@ -25,6 +25,7 @@ import LocationService from '../../services/LocationService';
 import ShipmentService from '../../services/ShipmentService';
 import CustomerService from '../../services/CustomerService';
 import ActionService from '../../services/ActionService';
+import InvoiceService from '../../services/InvoiceService';
 
 // PDF
 import { PDFViewer, PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
@@ -116,7 +117,7 @@ const InvoicePage = (props: any) => {
             <Page size="A4" style={styles.page}>
                 <Text style={styles.title}>{"Surat Jalan"}</Text>
                 {/* <Text style={styles.company}>{"PT. Lakone Komunika Jaya Abadi"}</Text> */}
-                <Text style={styles.subTitle}>{"No. Nota:"} {selectedInvoiceData[0].invoice}</Text>
+                <Text style={styles.subTitle}>{"No. Nota:"} {selectedInvoiceData[0].invoice.name}</Text>
                 <Text style={styles.subTitle}>{"Customer:"} {selectedInvoiceData[0].customer.name}</Text>
                 <Text style={styles.subTitle}>{"Date:"} {format(new Date(selectedInvoiceData[0].createdAt), "MMM d, yyyy")}</Text>
 
@@ -165,15 +166,16 @@ const PrintInvoicePage = (props: any) => {
     } = useContext(AppContext);
 
     const initialErrorState = {
-        invoice: { type: [ERROR_TYPE.REQUIRED], status: false },
+        invoiceName: { type: [ERROR_TYPE.REQUIRED], status: false },
     };
     const initialFormDataState = {
-        invoice: ''
+        invoiceName: ''
     };
     const defaultErrorMessage = "Value is Empty or Invalid";
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [userData, setUserData] = useState({} as any);
+    const [invoiceData, setInvoiceData] = useState({} as any);
     const [locationData, setLocationData] = useState({} as any);
     const [customerData, setCustomerData] = useState({} as any);
     const [actionData, setActionData] = useState({} as any);
@@ -189,6 +191,7 @@ const PrintInvoicePage = (props: any) => {
             setIsLoading(true);
 
             let activeDataUser: any;
+            let activeDataInvoice: any;
             let activeDataProduct: any;
             let activeDataProductCode: any;
             let activeDataBrand: any;
@@ -198,6 +201,13 @@ const PrintInvoicePage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
+
+            await InvoiceService.getAll().then((res: any) => {
+                activeDataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -239,6 +249,7 @@ const PrintInvoicePage = (props: any) => {
                 handleShowErrorSnackbar();
             });
 
+            setInvoiceData(activeDataInvoice);
             setProductData(activeDataProduct);
             setProductCodeData(activeDataProductCode);
             setBrandData(activeDataBrand);
@@ -302,30 +313,43 @@ const PrintInvoicePage = (props: any) => {
             setIsLoading(true);
         }
 
-        // Valid data        
-        ShipmentService.getInvoice(formData).then((res: any) => {
-            let tempTableData: any[] = [];
-
-            res.data.forEach((shipment: any) => {
-                const productFound = productData[shipment.productId];
-                tempTableData.push({
-                    "_id": shipment._id,
-                    "invoice": formData.invoice,
-                    "product": productFound,
-                    "brand": brandData[productFound.brandId],
-                    "location": locationData[shipment.locationId],
-                    "customer": customerData[shipment.customerId],
-                    "action": actionData[shipment.actionId],
-                    "serialNumber": shipment.serialNumber,
-                    "user": userData[shipment.userId],
-                    "createdAt": shipment.createdAt,
-                });
-            })
-            setTableData(tempTableData);
+        // Valid data    
+        let invoiceFound: any;
+        await InvoiceService.findExisting({ name: formData.invoiceName }).then((res: any) => {
+            if (res.data) {
+                invoiceFound = res.data;
+            }
         }).catch((error: any) => {
             setSnackbarMessage(error.response.data.msg);
             handleShowErrorSnackbar();
         });
+
+        if (invoiceFound) {
+            await ShipmentService.getByInvoiceId({ invoiceId: invoiceFound._id }).then((res: any) => {
+                let tempTableData: any[] = [];
+
+                res.data.forEach((shipment: any) => {
+                    const productFound = productData[shipment.productId];
+                    const invoiceFound = invoiceData[shipment.invoiceId];
+                    tempTableData.push({
+                        "_id": shipment._id,
+                        "invoice": invoiceFound ? invoiceFound : null,
+                        "product": productFound ? productFound : null,
+                        "brand": productFound ? brandData[productFound.brandId] : null,
+                        "location": locationData[shipment.locationId],
+                        "customer": invoiceFound ? customerData[invoiceFound.customerId] : null,
+                        "action": actionData[shipment.actionId],
+                        "serialNumber": shipment.serialNumber,
+                        "user": userData[shipment.userId],
+                        "createdAt": shipment.createdAt,
+                    });
+                })
+                setTableData(tempTableData);
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
+        }
         setIsLoading(false);
     };
 
@@ -339,6 +363,9 @@ const PrintInvoicePage = (props: any) => {
         },
         {
             name: "invoice", label: "Invoice"
+        },
+        {
+            name: "description", label: "Description"
         },
         {
             name: "brand", label: "Brand"
@@ -371,7 +398,7 @@ const PrintInvoicePage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice.name : "-", "description": td.invoice ? td.invoice.description : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     const options = {
@@ -380,7 +407,7 @@ const PrintInvoicePage = (props: any) => {
         selectableRows: "none" as any,
         downloadOptions:
         {
-            filename: 'invoice ' + `${tableData.length > 0 ? tableData[0].invoice : "Not Found!"}` + '.csv',
+            filename: 'invoice ' + `${tableData.length > 0 ? tableData[0].invoice.name : "Not Found!"}` + '.csv',
             separator: ',',
             filterOptions: {
                 useDisplayedColumnsOnly: true,
@@ -407,7 +434,7 @@ const PrintInvoicePage = (props: any) => {
                         <Grid item xs={12} sm={5} style={{ paddingLeft: "40px", position: "relative" }}>
                             <DescriptionIcon style={{ fontSize: "30px", position: "absolute", left: "0px" }}></DescriptionIcon>
                             <h2 style={{ marginTop: "0px", color: "black" }}>
-                                {`Invoice: ${tableData.length > 0 ? tableData[0].invoice : "Not Found!"}`}
+                                {`Invoice: ${tableData.length > 0 ? tableData[0].invoice.name : "Not Found!"}`}
                             </h2>
                         </Grid>
                         <Grid item xs={12} sm={5} style={{ paddingLeft: "40px", position: "relative" }}>
@@ -433,16 +460,16 @@ const PrintInvoicePage = (props: any) => {
                                         <Grid item xs={12} sm={12}>
                                             <TextField
                                                 required
-                                                value={formData.invoice}
+                                                value={formData.invoiceName}
                                                 margin="normal"
-                                                id="invoice"
-                                                name="invoice"
+                                                id="invoiceName"
+                                                name="invoiceName"
                                                 label="Invoice"
                                                 type="text"
                                                 fullWidth
                                                 onChange={handleChange}
-                                                error={error.invoice.status}
-                                                helperText={error.invoice.status ? defaultErrorMessage : ""}
+                                                error={error.invoiceName.status}
+                                                helperText={error.invoiceName.status ? defaultErrorMessage : ""}
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
@@ -454,12 +481,12 @@ const PrintInvoicePage = (props: any) => {
                                 </form>
                                 {tableData.length > 0 && (
                                     <Grid item xs={12} sm={12} style={{ marginTop: 40, textAlign: "center" }}>
-                                        <PDFViewer>
+                                        <PDFViewer key={Math.random()}>
                                             <InvoicePage selectedInvoiceData={tableData} />
                                         </PDFViewer>
                                         <Button variant="outlined" color="primary">
-                                            <PDFDownloadLink document={<InvoicePage selectedInvoiceData={tableData} />} fileName={`invoice_${tableData.length > 0 ? tableData[0].invoice : "NONE"}.pdf`}>
-                                                {({ blob, url, loading, error }) => (loading ? 'Loading document...' : `Download Invoice ${tableData.length > 0 ? tableData[0].invoice : "Not Found!"}`)}
+                                            <PDFDownloadLink key={Math.random()} document={<InvoicePage selectedInvoiceData={tableData} />} fileName={`invoice_${tableData.length > 0 ? tableData[0].invoice.name : "NONE"}.pdf`}>
+                                                {({ blob, url, loading, error }) => (loading ? 'Loading document...' : `Download Invoice ${tableData.length > 0 ? tableData[0].invoice.name : "Not Found!"}`)}
                                             </PDFDownloadLink>
                                         </Button>
                                     </Grid>

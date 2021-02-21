@@ -49,6 +49,7 @@ import LocationService from '../../services/LocationService';
 import ShipmentService from '../../services/ShipmentService';
 import CustomerService from '../../services/CustomerService';
 import ActionService from '../../services/ActionService';
+import InvoiceService from '../../services/InvoiceService';
 
 // Enum
 import { USER_ROLES } from '../../types/enum';
@@ -78,6 +79,7 @@ const ShipmentReportPage = (props: any) => {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [userData, setUserData] = useState({} as any);
+    const [invoiceData, setInvoiceData] = useState({} as any);
     const [locationData, setLocationData] = useState({} as any);
     const [customerData, setCustomerData] = useState({} as any);
     const [actionData, setActionData] = useState({} as any);
@@ -101,6 +103,7 @@ const ShipmentReportPage = (props: any) => {
             setIsLoading(true);
 
             let activeDataUser: any;
+            let activeDataInvoice: any;
             let activeDataProduct: any;
             let activeDataProductCode: any;
             let activeDataBrand: any;
@@ -110,6 +113,13 @@ const ShipmentReportPage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
+
+            await InvoiceService.getAll().then((res: any) => {
+                activeDataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -151,6 +161,7 @@ const ShipmentReportPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
 
+            setInvoiceData(activeDataInvoice);
             setProductData(activeDataProduct);
             setProductCodeData(activeDataProductCode);
             setBrandData(activeDataBrand);
@@ -227,7 +238,7 @@ const ShipmentReportPage = (props: any) => {
         let tempSelectedData: any[] = [];
 
         selectedRows.data.forEach((sr: any) => {
-            tempSelectedData.push(tableData[sr.dataIndex]._id);
+            tempSelectedData.push(tableData[sr.dataIndex]);
         })
 
         setSelectedData(tempSelectedData);
@@ -275,18 +286,19 @@ const ShipmentReportPage = (props: any) => {
         }
 
         // Valid data        
-        ShipmentService.getSpecific(formData).then((res: any) => {
+        await ShipmentService.getSpecific(formData).then((res: any) => {
             let tempTableData: any[] = [];
 
             res.data.forEach((shipment: any) => {
                 const productFound = productData[shipment.productId];
+                const invoiceFound = invoiceData[shipment.invoiceId];
                 tempTableData.push({
                     "_id": shipment._id,
-                    "invoice": shipment.invoice,
-                    "product": productFound,
-                    "brand": brandData[productFound.brandId],
+                    "invoice": invoiceFound ? invoiceFound : null,
+                    "product": productFound ? productFound : null,
+                    "brand": productFound ? brandData[productFound.brandId] : null,
                     "location": locationData[shipment.locationId],
-                    "customer": customerData[shipment.customerId],
+                    "customer": invoiceFound ? customerData[invoiceFound.customerId] : null,
                     "action": actionData[shipment.actionId],
                     "serialNumber": shipment.serialNumber,
                     "user": userData[shipment.userId],
@@ -319,7 +331,7 @@ const ShipmentReportPage = (props: any) => {
         ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
-                return selectedData.indexOf(data._id) === -1;
+                return selectedData.findIndex(sd => sd._id === data._id) === -1;
             }));
             handleCloseConfirmationDialog();
             setSelectedData([]);
@@ -343,6 +355,9 @@ const ShipmentReportPage = (props: any) => {
         },
         {
             name: "invoice", label: "Invoice"
+        },
+        {
+            name: "description", label: "Description"
         },
         {
             name: "brand", label: "Brand"
@@ -375,7 +390,7 @@ const ShipmentReportPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice.name : "-", "description": td.invoice ? td.invoice.description : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     let productOptions: any[] = [];

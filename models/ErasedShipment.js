@@ -1,8 +1,12 @@
 import { Schema, model } from 'mongoose';
 
 // Create Schema
-const ShipmentSchema = new Schema({
+const ErasedShipmentSchema = new Schema({
     _id: {
+        type: String,
+        required: true
+    },
+    previousShipmentId: {
         type: String,
         required: true
     },
@@ -22,7 +26,7 @@ const ShipmentSchema = new Schema({
         type: String,
         required: true
     },
-    invoiceId: {
+    invoice: {
         type: String,
     },
     serialNumber: {
@@ -33,6 +37,6 @@ const ShipmentSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const Shipment = model('shipment', ShipmentSchema);
+const ErasedShipment = model('erasedShipment', ErasedShipmentSchema);
 
-export default Shipment;
+export default ErasedShipment;

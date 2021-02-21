@@ -207,7 +207,7 @@ const ActionPage = (props: any) => {
         const newTableData = { "_id": formData._id, "name": formData.name, "value": formData.value, "checkFirst": tempCheckFirstAction, "withInvoice": formData.withInvoice, "description": formData.description };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
-            ActionService.add(formData).then((res: any) => {
+            await ActionService.add(formData).then((res: any) => {
                 setTableData([...tableData, newTableData]);
                 handleCloseFormDialog();
                 setFormData(initialFormDataState);
@@ -219,7 +219,7 @@ const ActionPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
         } else if (dialogType === DIALOG_TYPE.EDIT) {
-            ActionService.edit(formData._id, formData).then((res: any) => {
+            await ActionService.edit(formData._id, formData).then((res: any) => {
                 const tempTableData = [...tableData];
                 tempTableData[selectedDataIndex] = newTableData;
                 setTableData(tempTableData);
@@ -242,7 +242,7 @@ const ActionPage = (props: any) => {
 
         setIsLoading(true);
 
-        ActionService.softDelete({ selectedData: selectedData }).then((res: any) => {
+        await ActionService.softDelete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.indexOf(data._id) === -1;
