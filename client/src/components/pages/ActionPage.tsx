@@ -49,7 +49,7 @@ const ActionPage = (props: any) => {
         withInvoice: { type: [], status: false },
         description: { type: [], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), name: '', value: 0, checkFirst: 'NONE', withInvoice: false, description: '' };
+    const initialFormDataState = { _id: uuidv4(), name: '', value: 0, checkFirst: 0, withInvoice: false, description: '' };
     const initialSelectedDataIndex = 0;
     const defaultErrorMessage = "Value is Empty or Invalid";
 
@@ -80,13 +80,7 @@ const ActionPage = (props: any) => {
             let tempTableData: any[] = [];
 
             Object.values(activeDataAction).forEach((data: any) => {
-                let tempCheckFirstAction: any = "NONE";
-                Object.values(activeDataAction).forEach((data2: any) => {
-                    if (data.checkFirst === data2._id) {
-                        tempCheckFirstAction = data2;
-                    }
-                })
-                tempTableData.push({ "_id": data._id, "name": data.name, "value": data.value, "checkFirst": tempCheckFirstAction, "withInvoice": data.withInvoice, "description": data.description });
+                tempTableData.push({ "_id": data._id, "name": data.name, "value": data.value, "checkFirst": data.checkFirst, "withInvoice": data.withInvoice, "description": data.description });
             })
 
             setActionData(activeDataAction);
@@ -150,7 +144,7 @@ const ActionPage = (props: any) => {
         const data = tableData[dataIndex];
 
         setDialogType(DIALOG_TYPE.EDIT);
-        setFormData({ _id: data._id, name: data.name, value: data.value, checkFirst: data.checkFirst === "NONE" ? "NONE" : data.checkFirst._id, withInvoice: data.withInvoice, description: data.description });
+        setFormData({ _id: data._id, name: data.name, value: data.value, checkFirst: data.checkFirst, withInvoice: data.withInvoice, description: data.description });
         setIsOpenFormDialog(true);
         setSelectedDataIndex(dataIndex);
     }
@@ -197,14 +191,7 @@ const ActionPage = (props: any) => {
             setIsLoading(true);
         }
 
-        let tempCheckFirstAction = "NONE";
-        tableData.forEach((data: any) => {
-            if (data._id === formData.checkFirst) {
-                tempCheckFirstAction = data;
-            }
-        })
-
-        const newTableData = { "_id": formData._id, "name": formData.name, "value": formData.value, "checkFirst": tempCheckFirstAction, "withInvoice": formData.withInvoice, "description": formData.description };
+        const newTableData = { "_id": formData._id, "name": formData.name, "value": formData.value, "checkFirst": formData.checkFirst, "withInvoice": formData.withInvoice, "description": formData.description };
 
         if (dialogType === DIALOG_TYPE.REGISTER) {
             await ActionService.add(formData).then((res: any) => {
@@ -277,12 +264,6 @@ const ActionPage = (props: any) => {
         {
             name: "checkFirst",
             label: "Check First",
-            options: {
-                display: false,
-            }
-        },
-        {
-            name: "checkFirstName", label: "Check First"
         },
         {
             name: "withInvoice", label: "With Invoice"
@@ -294,7 +275,7 @@ const ActionPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "name": td.name, "value": td.value, "checkFirst": td.checkFirst === "NONE" ? "NONE" : td.checkFirst._id, "checkFirstName": td.checkFirst === "NONE" ? "NONE" : td.checkFirst.name, "withInvoice": td.withInvoice ? "Yes" : "No", "description": td.description })
+        data.push({ "_id": td._id, "name": td.name, "value": td.value, "checkFirst": td.checkFirst, "withInvoice": td.withInvoice ? "Yes" : "No", "description": td.description })
     })
 
     const options = {
@@ -375,27 +356,19 @@ const ActionPage = (props: any) => {
                                     error={error.value.status}
                                     helperText={error.value.status ? defaultErrorMessage : ""}
                                 />
-                                <FormControl style={{ width: "100%" }} required error={error.checkFirst.status}>
-                                    <InputLabel id="checkFirst-label">{"Check First"}</InputLabel>
-                                    <Select
-                                        labelId="checkFirst-label"
-                                        id="checkFirst"
-                                        name="checkFirst"
-                                        value={formData.checkFirst}
-                                        onChange={handleChange}
-                                        error={error.checkFirst.status}
-                                    >
-                                        <MenuItem key={"NONE"} value={"NONE"}>{"NONE"}</MenuItem>
-                                        {Object.values(tableData).map((data: any) => {
-                                            if (formData._id !== data._id) {
-                                                return (
-                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                )
-                                            }
-                                        })}
-                                    </Select>
-                                    <FormHelperText>{error.checkFirst.status ? defaultErrorMessage : ""}</FormHelperText>
-                                </FormControl>
+                                <TextField
+                                    value={formData.checkFirst}
+                                    margin="normal"
+                                    id="checkFirst"
+                                    name="checkFirst"
+                                    label="Check First"
+                                    type="number"
+                                    fullWidth
+                                    onChange={handleChange}
+                                    required
+                                    error={error.checkFirst.status}
+                                    helperText={error.checkFirst.status ? defaultErrorMessage : ""}
+                                />
                                 <FormControlLabel
                                     style={{ height: "48px" }}
                                     control={<Checkbox checked={formData.withInvoice} onChange={handleChangeCheckbox} name="withInvoice" color="primary" />}

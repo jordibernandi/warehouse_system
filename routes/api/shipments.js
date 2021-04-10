@@ -9,6 +9,7 @@ import auth from '../../middleware/auth';
 // Shipment Model
 import Shipment from '../../models/Shipment';
 import ErasedShipment from '../../models/ErasedShipment';
+import Action from '../../models/Action';
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -99,51 +100,126 @@ router.post('/serialNumber', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USE
  */
 
 router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
-    const { _id, productId, userId, locationId, actionId, checkFirst, invoiceId, serialNumber } = req.body;
+    const { _id, productId, userId, locationId, actionId, invoiceId, serialNumber } = req.body;
 
     try {
         // Simple validation
-        if (!_id || !productId || !userId || !locationId || !actionId || !checkFirst || !serialNumber) throw Error('No data');
+        if (!_id || !productId || !userId || !locationId || !actionId || !serialNumber) throw Error('No data');
 
-        const shipment = await Shipment.findOne({ productId: productId, serialNumber: serialNumber, actionId: actionId, locationId: locationId });
-        if (shipment) {
+        let productStock = 0;
+        const selectedAction = await Action.findOne({ _id: actionId });
+        const shipments = await Shipment.find({ productId: productId, serialNumber: serialNumber, locationId: locationId });
+
+        for (const shipment of shipments) {
+            const action = await Action.findOne({ _id: shipment.actionId });
+            productStock += action.value;
+        }
+
+        if (productStock === selectedAction.checkFirst) {
+            const newShipment = new Shipment({
+                _id,
+                productId,
+                userId,
+                locationId,
+                actionId,
+                invoiceId,
+                serialNumber
+            });
+
+            const savedShipment = await newShipment.save();
+            if (!savedShipment) throw Error('Something went wrong saving the data');
+
+            res.status(200).json({
+                success: true,
+                msg: 'Data successfully added'
+            });
+        } else {
             res.status(200).json({
                 success: false,
                 cause: 'errorDuplicate',
                 msg: 'Duplicate data'
             });
+        }
+    } catch (e) {
+        res.status(400).json({ msg: e.message });
+    }
+});
+
+/**
+ * @route   POST api/shipments/addChangeWH
+ * @desc    Add new shipment change WH
+ * @access  Private
+ */
+
+router.post('/addChangeWH', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
+    const { changeWHDataIdFrom, changeWHDataIdTo, productId, userId, locationChangeWHFromId, locationChangeWHToId, actionId, invoiceId, serialNumber } = req.body;
+    console.log("KESINI")
+    try {
+        // Simple validation
+        if (!changeWHDataIdFrom || !changeWHDataIdTo || !productId || !userId || !locationChangeWHFromId || !locationChangeWHToId || !actionId || !serialNumber) throw Error('No data');
+
+        let productStockFrom = 0;
+        let productStockTo = 0;
+
+        const selectedActionFrom = await Action.findOne({ _id: "CHANGE_WH_FROM" });
+        const selectedActionTo = await Action.findOne({ _id: "CHANGE_WH_TO" });
+
+        const shipmentsFrom = await Shipment.find({ productId: productId, serialNumber: serialNumber, locationId: locationChangeWHFromId });
+        const shipmentsTo = await Shipment.find({ productId: productId, serialNumber: serialNumber, locationId: locationChangeWHToId });
+
+        for (const shipmentFrom of shipmentsFrom) {
+            const actionFrom = await Action.findOne({ _id: shipmentFrom.actionId });
+            productStockFrom += actionFrom.value;
+        }
+
+        for (const shipmentTo of shipmentsTo) {
+            const actionTo = await Action.findOne({ _id: shipmentTo.actionId });
+            productStockTo += actionTo.value;
+        }
+
+        if (productStockFrom === selectedActionFrom.checkFirst && productStockTo === selectedActionTo.checkFirst) {
+            const newShipmentFrom = new Shipment({
+                _id: changeWHDataIdFrom,
+                productId,
+                userId,
+                locationId: locationChangeWHFromId,
+                actionId: "CHANGE_WH_FROM",
+                invoiceId,
+                serialNumber
+            });
+
+            const newShipmentTo = new Shipment({
+                _id: changeWHDataIdTo,
+                productId,
+                userId,
+                locationId: locationChangeWHToId,
+                actionId: "CHANGE_WH_TO",
+                invoiceId,
+                serialNumber
+            });
+
+            const savedShipmentFrom = await newShipmentFrom.save();
+            const savedShipmentTo = await newShipmentTo.save();
+
+            if (!savedShipmentFrom) throw Error('Something went wrong saving the data');
+            if (!savedShipmentTo) throw Error('Something went wrong saving the data');
+
+            res.status(200).json({
+                success: true,
+                msg: 'Data successfully added'
+            });
         } else {
-            let checkFirstValid = true;
-            if (checkFirst !== "NONE") {
-                const shipment = await Shipment.findOne({ productId: productId, serialNumber: serialNumber, actionId: checkFirst, locationId: locationId });
-                if (!shipment) {
-                    checkFirstValid = false;
-                }
-            }
-
-            if (checkFirstValid) {
-                const newShipment = new Shipment({
-                    _id,
-                    productId,
-                    userId,
-                    locationId,
-                    actionId,
-                    invoiceId,
-                    serialNumber
-                });
-
-                const savedShipment = await newShipment.save();
-                if (!savedShipment) throw Error('Something went wrong saving the data');
-
-                res.status(200).json({
-                    success: true,
-                    msg: 'Data successfully added'
-                });
-            } else {
+            if (productStockFrom !== selectedActionFrom.checkFirst) {
                 res.status(200).json({
                     success: false,
-                    cause: "errorCheckFirst",
-                    msg: 'Check first data not found'
+                    cause: 'errorDuplicateChangeWHFrom',
+                    msg: 'Duplicate data'
+                });
+            } else if (productStockTo !== selectedActionTo.checkFirst) {
+                res.status(200).json({
+                    success: false,
+                    cause: 'errorDuplicateChangeWHTo',
+                    msg: 'Duplicate data'
                 });
             }
         }

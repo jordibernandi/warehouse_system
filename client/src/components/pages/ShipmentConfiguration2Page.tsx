@@ -17,7 +17,7 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
 // Types
-import { SHIPMENT_INVOICE_TYPE } from '../../types/enum';
+import { SHIPMENT_INVOICE_TYPE, ACTION_TYPE } from '../../types/enum';
 
 // Services
 import InvoiceService from '../../services/InvoiceService';
@@ -80,14 +80,29 @@ const ShipmentConfiguration2Page = (props: any) => {
                     <Grid container spacing={1}>
                         <Grid item xs={12} sm={12}>
                             <Typography variant="h6" gutterBottom>
-                                {`Location: ${locationData[configData.locationConfigId].name}`} {error.locationConfigId.status && "ERROR"}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <Typography variant="h6" gutterBottom>
                                 {`Action: ${actionData[configData.actionConfigId].name}`} {error.actionConfigId.status && "ERROR"}
                             </Typography>
                         </Grid>
+                        {configData.actionConfigId === ACTION_TYPE.CHANGE_WH ? (
+                            <>
+                                <Grid item xs={12} sm={12}>
+                                    <Typography variant="h6" gutterBottom>
+                                        {`Location From: ${locationData[configData.locationChangeWHFromConfigId].name}`} {error.locationChangeWHFromConfigId.status && "ERROR"}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Typography variant="h6" gutterBottom>
+                                        {`Location To: ${locationData[configData.locationChangeWHToConfigId].name}`} {error.locationChangeWHToConfigId.status && "ERROR"}
+                                    </Typography>
+                                </Grid>
+                            </>
+                        ) : (
+                            <Grid item xs={12} sm={12}>
+                                <Typography variant="h6" gutterBottom>
+                                    {`Location: ${locationData[configData.locationConfigId].name}`} {error.locationConfigId.status && "ERROR"}
+                                </Typography>
+                            </Grid>
+                        )}
                         {(configData.actionConfigId && actionData[configData.actionConfigId].withInvoice) && (
                             <>
                                 <Grid item xs={12} sm={12}>
@@ -125,44 +140,44 @@ const ShipmentConfiguration2Page = (props: any) => {
                                         </IconButton>
                                     </Grid>
                                 ) : (
-                                        <>
-                                            <Grid item xs={12} sm={12}>
-                                                <FormControl style={{ width: "100%" }} required error={error.customerConfigId.status}>
-                                                    <InputLabel id="customer-label">{"Customer"}</InputLabel>
-                                                    <Select
-                                                        labelId="customer-label"
-                                                        id="customerConfigId"
-                                                        name="customerConfigId"
-                                                        value={configData.customerConfigId ? configData.customerConfigId : ""}
-                                                        onChange={handleChange}
-                                                        error={error.customerConfigId.status}
-                                                    >
-                                                        {Object.values(customerData).map((data: any) => {
-                                                            return (
-                                                                <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                                            )
-                                                        })}
-                                                    </Select>
-                                                    <FormHelperText>{error.customerConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid item xs={12} sm={12}>
-                                                <TextField
-                                                    required
-                                                    value={configData.descriptionConfig}
-                                                    margin="normal"
-                                                    id="descriptionConfig"
-                                                    name="descriptionConfig"
-                                                    label="Description"
-                                                    type="text"
-                                                    fullWidth
+                                    <>
+                                        <Grid item xs={12} sm={12}>
+                                            <FormControl style={{ width: "100%" }} required error={error.customerConfigId.status}>
+                                                <InputLabel id="customer-label">{"Customer"}</InputLabel>
+                                                <Select
+                                                    labelId="customer-label"
+                                                    id="customerConfigId"
+                                                    name="customerConfigId"
+                                                    value={configData.customerConfigId ? configData.customerConfigId : ""}
                                                     onChange={handleChange}
-                                                    error={error.descriptionConfig.status}
-                                                    helperText={error.descriptionConfig.status ? defaultErrorMessage : ""}
-                                                />
-                                            </Grid>
-                                        </>
-                                    )}
+                                                    error={error.customerConfigId.status}
+                                                >
+                                                    {Object.values(customerData).map((data: any) => {
+                                                        return (
+                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                        )
+                                                    })}
+                                                </Select>
+                                                <FormHelperText>{error.customerConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <TextField
+                                                required
+                                                value={configData.descriptionConfig}
+                                                margin="normal"
+                                                id="descriptionConfig"
+                                                name="descriptionConfig"
+                                                label="Description"
+                                                type="text"
+                                                fullWidth
+                                                onChange={handleChange}
+                                                error={error.descriptionConfig.status}
+                                                helperText={error.descriptionConfig.status ? defaultErrorMessage : ""}
+                                            />
+                                        </Grid>
+                                    </>
+                                )}
                                 <Grid item xs={12} sm={12}>
                                     <FormControlLabel
                                         control={<Checkbox checked={useExistingInvoice} onChange={handleChangeUseExistingInvoice} name="useExistingInvoice" color="primary" />}

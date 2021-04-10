@@ -16,8 +16,8 @@ const ActionSchema = new Schema({
         required: true
     },
     checkFirst: {
-        type: String,
-        default: "NONE",
+        type: Number,
+        default: 0,
         required: true
     },
     withInvoice: {

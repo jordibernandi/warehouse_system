@@ -32,7 +32,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import ShipmentSummaryDialog from '../appLayout/ShipmentSummaryDialog';
 
 // Types
-import { ERROR_TYPE, SHIPMENT_INFORMATION_TYPE } from '../../types/enum';
+import { ERROR_TYPE, SHIPMENT_INFORMATION_TYPE, ACTION_TYPE } from '../../types/enum';
 
 // Constants
 import { getShipmentInformation } from '../../types/constants'
@@ -67,14 +67,27 @@ const ShipmentFormPage = (props: any) => {
 
     const initialErrorState = {
         _id: { type: [], status: false },
-        brandId: { type: [ERROR_TYPE.REQUIRED], status: false },
-        locationId: { type: [ERROR_TYPE.REQUIRED], status: false },
-        actionId: { type: [ERROR_TYPE.REQUIRED], status: false },
+        brandId: { type: [], status: false },
+        locationId: { type: [], status: false },
+        locationChangeWHFromId: { type: [], status: false },
+        locationChangeWHToId: { type: [], status: false },
+        customerId: { type: [], status: false },
+        actionId: { type: [], status: false },
         productCode: { type: [], status: false },
-        invoiceId: { type: [ERROR_TYPE.REQUIRED], status: false },
-        serialNumber: { type: [ERROR_TYPE.REQUIRED], status: false },
+        invoiceId: { type: [], status: false },
+        serialNumber: { type: [], status: false },
     };
-    const initialFormDataState = { _id: uuidv4(), locationId: configData.locationConfigId, actionId: configData.actionConfigId, productCode: '', invoiceId: configData.invoiceConfigId, serialNumber: '' };
+    const initialFormDataState = {
+        _id: uuidv4(),
+        locationId: configData.locationConfigId,
+        locationChangeWHFromId: configData.locationChangeWHFromConfigId,
+        locationChangeWHToId: configData.locationChangeWHToConfigId,
+        customerId: configData.customerConfigId,
+        actionId: configData.actionConfigId,
+        invoiceId: configData.invoiceConfigId,
+        productCode: '',
+        serialNumber: ''
+    };
     const defaultErrorMessage = "Value is Empty or Invalid";
 
     const [playSuccess] = useSound(successSound);
@@ -273,14 +286,14 @@ const ShipmentFormPage = (props: any) => {
 
         Object.keys(formData).forEach((key: any) => {
             if (formData[key].toString().trim() === "" && error[key].type.includes(ERROR_TYPE.REQUIRED)) {
-                if ((key === "invoiceId") && !actionData[formData.actionId].withInvoice) {
-                } else {
-                    tempError[key] = {
-                        ...tempError[key],
-                        status: true
-                    }
-                    isValid = false;
+                // if ((key === "invoiceId") && !actionData[formData.actionId].withInvoice) {
+                // } else {
+                tempError[key] = {
+                    ...tempError[key],
+                    status: true
                 }
+                isValid = false;
+                // }
             }
             if (error[key].type.includes(ERROR_TYPE.UNIQUE)) {
                 let tempTableData = [...tableData];
@@ -305,6 +318,7 @@ const ShipmentFormPage = (props: any) => {
             setIsLoading(true);
         }
 
+        // Set Product Code
         if (productCodeData[formData.serialNumber]) {
             setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
             setIsSubmit(true);
@@ -316,67 +330,146 @@ const ShipmentFormPage = (props: any) => {
             if (productCodeData[formData.productCode]) {
                 // Valid data
                 const productFound = productCodeData[formData.productCode];
-                const invoiceFound = (formData.invoiceId === configData.invoiceConfigId) ? {
+                const invoiceFound = (configData.invoiceConfigId && formData.invoiceId === configData.invoiceConfigId) ? {
                     customerId: configData.customerConfigId,
                     name: configData.nameConfig,
                     description: configData.descriptionConfig,
                 } : {}
-                const newTableData = {
-                    "_id": formData._id,
-                    "product": productData[productFound._id],
-                    "brand": brandData[productFound.brandId],
-                    "location": locationData[formData.locationId],
-                    "customer": customerData[invoiceFound.customerId], // INI
-                    "action": actionData[formData.actionId],
-                    "invoice": invoiceFound,
-                    "serialNumber": formData.serialNumber,
-                    "user": loginData,
-                    "createdAt": new Date()
-                };
-                const newShipmentData = {
-                    "_id": formData._id,
-                    "productId": productFound._id,
-                    "locationId": formData.locationId,
-                    "actionId": formData.actionId,
-                    "checkFirst": actionData[formData.actionId].checkFirst,
-                    "invoiceId": formData.invoiceId,
-                    "serialNumber": formData.serialNumber,
-                    "userId": loginData._id,
-                };
 
-                ShipmentService.add(newShipmentData).then((res: any) => {
-                    if (res.data.success) {
-                        setTableData([...tableData, newTableData]);
-                        setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
-                        setIsSubmit(true);
-                        setShipmentStatus(SHIPMENT_INFORMATION_TYPE.ADD_SERIAL_NUMBER);
+                if (formData.actionId === ACTION_TYPE.CHANGE_WH) {
+                    const changeWHDataIdFrom = uuidv4();
+                    const changeWHDataIdTo = uuidv4();
 
-                        setSnackbarMessage("Success!");
-                        handleShowSuccessSnackbar();
-                        playSuccess();
-                    } else {
-                        setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
-                        setIsSubmit(true);
-                        if (res.data.cause === "errorDuplicate") {
-                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA);
-                        } else if (res.data.cause === "errorCheckFirst") {
-                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.CHECK_FIRST_ERROR);
-                        }
+                    const newTableDataFrom = {
+                        "_id": changeWHDataIdFrom,
+                        "product": productData[productFound._id],
+                        "brand": brandData[productFound.brandId],
+                        "location": locationData[formData.locationChangeWHFromId],
+                        "customer": customerData[invoiceFound.customerId],
+                        "action": actionData[ACTION_TYPE.CHANGE_WH_FROM],
+                        "invoice": invoiceFound,
+                        "serialNumber": formData.serialNumber,
+                        "user": loginData,
+                        "createdAt": new Date()
+                    };
 
-                        setSnackbarMessage("Something went wrong!");
-                        handleShowErrorSnackbar();
-                        playFail();
+                    const newTableDataTo = {
+                        "_id": changeWHDataIdTo,
+                        "product": productData[productFound._id],
+                        "brand": brandData[productFound.brandId],
+                        "location": locationData[formData.locationChangeWHToId],
+                        "customer": customerData[invoiceFound.customerId],
+                        "action": actionData[ACTION_TYPE.CHANGE_WH_TO],
+                        "invoice": invoiceFound,
+                        "serialNumber": formData.serialNumber,
+                        "user": loginData,
+                        "createdAt": new Date()
+                    };
+
+                    const newShipmentData = {
+                        "changeWHDataIdFrom": changeWHDataIdFrom,
+                        "changeWHDataIdTo": changeWHDataIdTo,
+                        "productId": productFound._id,
+                        "locationChangeWHFromId": formData.locationChangeWHFromId,
+                        "locationChangeWHToId": formData.locationChangeWHToId,
+                        "actionId": formData.actionId,
+                        "invoiceId": formData.invoiceId,
+                        "serialNumber": formData.serialNumber,
+                        "userId": loginData._id,
                     }
-                }).catch((error: any) => {
-                    setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
-                    setIsSubmit(true);
-                    setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SOMETHING_ERROR);
 
-                    setSnackbarMessage(error.response.data.msg);
-                    handleShowErrorSnackbar();
-                    setIsLoading(false);
-                    playFail();
-                });
+                    ShipmentService.addChangeWH(newShipmentData).then((res: any) => {
+                        if (res.data.success) {
+                            const newTableData = [...tableData];
+                            newTableData.push(newTableDataFrom);
+                            newTableData.push(newTableDataTo);
+                            setTableData(newTableData);
+                            setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                            setIsSubmit(true);
+                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.ADD_SERIAL_NUMBER);
+
+                            setSnackbarMessage("Success!");
+                            handleShowSuccessSnackbar();
+                            playSuccess();
+                        } else {
+                            setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                            setIsSubmit(true);
+                            if (res.data.cause === "errorDuplicateChangeWHFrom") {
+                                setShipmentStatus(SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA_CHANGE_WH_FROM);
+                            } else if (res.data.cause === "errorDuplicateChangeWHTo") {
+                                setShipmentStatus(SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA_CHANGE_WH_TO);
+                            }
+
+                            setSnackbarMessage("Something went wrong!");
+                            handleShowErrorSnackbar();
+                            playFail();
+                        }
+                    }).catch((error: any) => {
+                        setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                        setIsSubmit(true);
+                        setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SOMETHING_ERROR);
+
+                        setSnackbarMessage(error.response.data.msg);
+                        handleShowErrorSnackbar();
+                        setIsLoading(false);
+                        playFail();
+                    });
+                } else {
+                    const newTableData = {
+                        "_id": formData._id,
+                        "product": productData[productFound._id],
+                        "brand": brandData[productFound.brandId],
+                        "location": locationData[formData.locationId],
+                        "customer": customerData[invoiceFound.customerId],
+                        "action": actionData[formData.actionId],
+                        "invoice": invoiceFound,
+                        "serialNumber": formData.serialNumber,
+                        "user": loginData,
+                        "createdAt": new Date()
+                    };
+
+                    const newShipmentData = {
+                        "_id": formData._id,
+                        "productId": productFound._id,
+                        "locationId": formData.locationId,
+                        "actionId": formData.actionId,
+                        "invoiceId": formData.invoiceId,
+                        "serialNumber": formData.serialNumber,
+                        "userId": loginData._id,
+                    }
+
+                    ShipmentService.add(newShipmentData).then((res: any) => {
+                        if (res.data.success) {
+                            setTableData([...tableData, newTableData]);
+                            setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                            setIsSubmit(true);
+                            setShipmentStatus(SHIPMENT_INFORMATION_TYPE.ADD_SERIAL_NUMBER);
+
+                            setSnackbarMessage("Success!");
+                            handleShowSuccessSnackbar();
+                            playSuccess();
+                        } else {
+                            setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                            setIsSubmit(true);
+                            if (res.data.cause === "errorDuplicate") {
+                                setShipmentStatus(SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA);
+                            }
+
+                            setSnackbarMessage("Something went wrong!");
+                            handleShowErrorSnackbar();
+                            playFail();
+                        }
+                    }).catch((error: any) => {
+                        setFormData({ ...formData, _id: initialFormDataState._id, serialNumber: initialFormDataState.serialNumber });
+                        setIsSubmit(true);
+                        setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SOMETHING_ERROR);
+
+                        setSnackbarMessage(error.response.data.msg);
+                        handleShowErrorSnackbar();
+                        setIsLoading(false);
+                        playFail();
+                    });
+                }
             } else {
                 setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
                 setIsSubmit(true);
@@ -519,15 +612,6 @@ const ShipmentFormPage = (props: any) => {
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={12}>
                                                     <Typography style={{ margin: "0px" }} variant="body1" display="block" gutterBottom>
-                                                        {"Location"}
-                                                    </Typography>
-                                                    <Typography variant="caption" gutterBottom>
-                                                        {formData.locationId ? locationData[formData.locationId].name : ""}
-                                                    </Typography>
-                                                    {error.locationId.status ? defaultErrorMessage : ""}
-                                                </Grid>
-                                                <Grid item xs={12} sm={12}>
-                                                    <Typography style={{ margin: "0px" }} variant="body1" display="block" gutterBottom>
                                                         {"Action"}
                                                     </Typography>
                                                     <Typography variant="caption" gutterBottom>
@@ -535,6 +619,38 @@ const ShipmentFormPage = (props: any) => {
                                                     </Typography>
                                                     {error.actionId.status ? defaultErrorMessage : ""}
                                                 </Grid>
+                                                {configData.actionConfigId === ACTION_TYPE.CHANGE_WH ? (
+                                                    <>
+                                                        <Grid item xs={12} sm={12}>
+                                                            <Typography style={{ margin: "0px" }} variant="body1" display="block" gutterBottom>
+                                                                {"Location From"}
+                                                            </Typography>
+                                                            <Typography variant="caption" gutterBottom>
+                                                                {formData.locationChangeWHFromId ? locationData[formData.locationChangeWHFromId].name : ""}
+                                                            </Typography>
+                                                            {error.locationChangeWHFromId.status ? defaultErrorMessage : ""}
+                                                        </Grid>
+                                                        <Grid item xs={12} sm={12}>
+                                                            <Typography style={{ margin: "0px" }} variant="body1" display="block" gutterBottom>
+                                                                {"Location To"}
+                                                            </Typography>
+                                                            <Typography variant="caption" gutterBottom>
+                                                                {formData.locationChangeWHToId ? locationData[formData.locationChangeWHToId].name : ""}
+                                                            </Typography>
+                                                            {error.locationChangeWHToId.status ? defaultErrorMessage : ""}
+                                                        </Grid>
+                                                    </>
+                                                ) : (
+                                                    <Grid item xs={12} sm={12}>
+                                                        <Typography style={{ margin: "0px" }} variant="body1" display="block" gutterBottom>
+                                                            {"Location"}
+                                                        </Typography>
+                                                        <Typography variant="caption" gutterBottom>
+                                                            {formData.locationId ? locationData[formData.locationId].name : ""}
+                                                        </Typography>
+                                                        {error.locationId.status ? defaultErrorMessage : ""}
+                                                    </Grid>
+                                                )}
                                                 {(formData.actionId && actionData[formData.actionId].withInvoice) && (
                                                     <>
                                                         <Grid item xs={12} sm={12}>

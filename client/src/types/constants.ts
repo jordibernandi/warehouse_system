@@ -30,9 +30,14 @@ export const getShipmentInformation = (shipmentInformation: any) => {
                 "message": "Duplicate Data",
                 "fontColor": "orange"
             };
-        case SHIPMENT_INFORMATION_TYPE.CHECK_FIRST_ERROR:
+        case SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA_CHANGE_WH_FROM:
             return {
-                "message": "Check First Data Not Found",
+                "message": "Duplicate Data At 'From' Location",
+                "fontColor": "orange"
+            };
+        case SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA_CHANGE_WH_TO:
+            return {
+                "message": "Duplicate Data At 'To' Location",
                 "fontColor": "orange"
             };
         case SHIPMENT_INFORMATION_TYPE.SOMETHING_ERROR:

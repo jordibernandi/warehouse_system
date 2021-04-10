@@ -88,7 +88,7 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(4),
   },
   backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: 999999999,
     color: '#fff',
   },
 }))

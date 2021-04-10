@@ -12,7 +12,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 
 // Types
-import { ERROR_TYPE, SHIPMENT_INVOICE_TYPE } from '../../types/enum';
+import { ACTION_TYPE, ERROR_TYPE, SHIPMENT_INVOICE_TYPE } from '../../types/enum';
 
 // Pages
 import ShipmentConfiguration1Page from './ShipmentConfiguration1Page';
@@ -69,6 +69,8 @@ const ShipmentPage = (props: any) => {
 
     const initialErrorState = {
         locationConfigId: { type: [ERROR_TYPE.REQUIRED], status: false },
+        locationChangeWHFromConfigId: { type: [ERROR_TYPE.REQUIRED], status: false },
+        locationChangeWHToConfigId: { type: [ERROR_TYPE.REQUIRED], status: false },
         actionConfigId: { type: [ERROR_TYPE.REQUIRED], status: false },
         invoiceConfigId: { type: [ERROR_TYPE.REQUIRED], status: false },
         customerConfigId: { type: [ERROR_TYPE.REQUIRED], status: false },
@@ -77,6 +79,8 @@ const ShipmentPage = (props: any) => {
     };
     const initialConfigDataState = {
         locationConfigId: '',
+        locationChangeWHFromConfigId: '',
+        locationChangeWHToConfigId: '',
         actionConfigId: '',
         invoiceConfigId: SHIPMENT_INVOICE_TYPE.AUTO_GENERATED,
         customerConfigId: '',
@@ -158,8 +162,21 @@ const ShipmentPage = (props: any) => {
 
         Object.keys(configData).forEach((key: any) => {
             if (configData[key].toString().trim() === "" && error[key].type.includes(ERROR_TYPE.REQUIRED)) {
-                if (activeStep === 0 && (key === "invoiceConfigId" || key === "customerConfigId" || key === "nameConfig" || key === "descriptionConfig")) {
-                } else if (activeStep === 1 && (key === "invoiceConfigId" || key === "customerConfigId" || key === "nameConfig" || key === "descriptionConfig") && !actionData[configData.actionConfigId].withInvoice) {
+                if (activeStep === 0 && (
+                    key === "invoiceConfigId" ||
+                    key === "customerConfigId" ||
+                    key === "nameConfig" ||
+                    key === "descriptionConfig" ||
+                    (key === "locationConfigId" && configData["actionConfigId"] && (configData["actionConfigId"] === ACTION_TYPE.CHANGE_WH)) ||
+                    ((key === "locationChangeWHFromConfigId" || key === "locationChangeWHToConfigId") && (configData["actionConfigId"] !== ACTION_TYPE.CHANGE_WH))
+                )) {
+                    // Pass                    
+                } else if (activeStep === 1 && (
+                    ((key === "invoiceConfigId" || key === "customerConfigId" || key === "nameConfig" || key === "descriptionConfig") && !actionData[configData.actionConfigId].withInvoice) ||
+                    (key === "locationConfigId" && configData["actionConfigId"] && (configData["actionConfigId"] === ACTION_TYPE.CHANGE_WH)) ||
+                    ((key === "locationChangeWHFromConfigId" || key === "locationChangeWHToConfigId") && (configData["actionConfigId"] !== ACTION_TYPE.CHANGE_WH))
+                )) {
+                    // Pass
                 } else {
                     tempError[key] = {
                         ...tempError[key],
@@ -266,41 +283,41 @@ const ShipmentPage = (props: any) => {
                         customerData={customerData}
                     />
                 ) : (
-                        <Grid container>
-                            <Grid item xs={12} sm={12}>
-                                <Paper className={classes.paper}>
-                                    <Typography component="h1" variant="h4" align="center">
-                                        {"Shipment Configuration"}
-                                    </Typography>
-                                    <Stepper activeStep={activeStep} className={classes.stepper}>
-                                        {steps.map((label) => (
-                                            <Step key={label}>
-                                                <StepLabel>{label}</StepLabel>
-                                            </Step>
-                                        ))}
-                                    </Stepper>
-                                    <>
-                                        {getStepContent(activeStep)}
-                                        <div className={classes.buttons}>
-                                            {activeStep !== 0 && (
-                                                <Button onClick={handleBack} className={classes.button}>
-                                                    {"Back"}
-                                                </Button>
-                                            )}
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={submitNext}
-                                                className={classes.button}
-                                            >
-                                                {activeStep === steps.length - 1 ? 'Start Scanning' : 'Next'}
+                    <Grid container>
+                        <Grid item xs={12} sm={12}>
+                            <Paper className={classes.paper}>
+                                <Typography component="h1" variant="h4" align="center">
+                                    {"Shipment Configuration"}
+                                </Typography>
+                                <Stepper activeStep={activeStep} className={classes.stepper}>
+                                    {steps.map((label) => (
+                                        <Step key={label}>
+                                            <StepLabel>{label}</StepLabel>
+                                        </Step>
+                                    ))}
+                                </Stepper>
+                                <>
+                                    {getStepContent(activeStep)}
+                                    <div className={classes.buttons}>
+                                        {activeStep !== 0 && (
+                                            <Button onClick={handleBack} className={classes.button}>
+                                                {"Back"}
                                             </Button>
-                                        </div>
-                                    </>
-                                </Paper>
-                            </Grid>
+                                        )}
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={submitNext}
+                                            className={classes.button}
+                                        >
+                                            {activeStep === steps.length - 1 ? 'Start Scanning' : 'Next'}
+                                        </Button>
+                                    </div>
+                                </>
+                            </Paper>
                         </Grid>
-                    )}
+                    </Grid>
+                )}
             </>)}
         </>
     );

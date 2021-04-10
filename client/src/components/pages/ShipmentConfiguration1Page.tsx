@@ -12,7 +12,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
 // Types
-import { ERROR_TYPE, SHIPMENT_INFORMATION_TYPE } from '../../types/enum';
+import { ERROR_TYPE, SHIPMENT_INFORMATION_TYPE, ACTION_TYPE } from '../../types/enum';
 
 // Utils
 import FunctionUtil from '../../utils/FunctionUtil';
@@ -49,76 +49,80 @@ const ShipmentConfiguration1Page = (props: any) => {
                                     onChange={handleChange}
                                     error={error.actionConfigId.status}
                                 >
-                                    {Object.values(actionData).map((data: any) => {
+                                    {Object.values(actionData).filter((action: any) => action._id !== ACTION_TYPE.CHANGE_WH_FROM && action._id !== ACTION_TYPE.CHANGE_WH_TO).map((data: any) => {
                                         return (
                                             <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                         )
                                     })}
-                                    <MenuItem key={"CHANGE_WH"} value={"CHANGE_WH"}>{"Pindah Gudang"}</MenuItem>
                                 </Select>
                                 <FormHelperText>{error.actionConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <FormControl style={{ width: "100%" }} required error={error.locationConfigId.status}>
-                                <InputLabel id="location-label">{"Location"}</InputLabel>
-                                <Select
-                                    labelId="location-label"
-                                    id="locationConfigId"
-                                    name="locationConfigId"
-                                    value={configData.locationConfigId ? configData.locationConfigId : ""}
-                                    onChange={handleChange}
-                                    error={error.locationConfigId.status}
-                                >
-                                    {Object.values(locationData).map((data: any) => {
-                                        return (
-                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                                <FormHelperText>{error.locationConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={6} sm={6}>
-                            <FormControl style={{ width: "100%" }} required error={error.locationConfigId.status}>
-                                <InputLabel id="location-label">{"Location"}</InputLabel>
-                                <Select
-                                    labelId="location-label"
-                                    id="locationConfigId"
-                                    name="locationConfigId"
-                                    value={configData.locationConfigId ? configData.locationConfigId : ""}
-                                    onChange={handleChange}
-                                    error={error.locationConfigId.status}
-                                >
-                                    {Object.values(locationData).map((data: any) => {
-                                        return (
-                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                                <FormHelperText>{error.locationConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={6} sm={6}>
-                            <FormControl style={{ width: "100%" }} required error={error.locationConfigId.status}>
-                                <InputLabel id="location-label">{"Location"}</InputLabel>
-                                <Select
-                                    labelId="location-label"
-                                    id="locationConfigId"
-                                    name="locationConfigId"
-                                    value={configData.locationConfigId ? configData.locationConfigId : ""}
-                                    onChange={handleChange}
-                                    error={error.locationConfigId.status}
-                                >
-                                    {Object.values(locationData).map((data: any) => {
-                                        return (
-                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                                <FormHelperText>{error.locationConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
-                            </FormControl>
-                        </Grid>
+                        {configData.actionConfigId === ACTION_TYPE.CHANGE_WH ? (
+                            <>
+                                <Grid item xs={6} sm={6}>
+                                    <FormControl style={{ width: "100%" }} required error={error.locationChangeWHFromConfigId.status}>
+                                        <InputLabel id="location-from-label">{"Location From"}</InputLabel>
+                                        <Select
+                                            labelId="location-from-label"
+                                            id="locationChangeWHFromConfigId"
+                                            name="locationChangeWHFromConfigId"
+                                            value={configData.locationChangeWHFromConfigId ? configData.locationChangeWHFromConfigId : ""}
+                                            onChange={handleChange}
+                                            error={error.locationChangeWHFromConfigId.status}
+                                        >
+                                            {Object.values(locationData).filter((location: any) => location._id !== configData.locationChangeWHToConfigId).map((data: any) => {
+                                                return (
+                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                )
+                                            })}
+                                        </Select>
+                                        <FormHelperText>{error.locationChangeWHFromConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={6} sm={6}>
+                                    <FormControl style={{ width: "100%" }} required error={error.locationChangeWHToConfigId.status}>
+                                        <InputLabel id="location-to-label">{"Location To"}</InputLabel>
+                                        <Select
+                                            labelId="location-to-label"
+                                            id="locationChangeWHToConfigId"
+                                            name="locationChangeWHToConfigId"
+                                            value={configData.locationChangeWHToConfigId ? configData.locationChangeWHToConfigId : ""}
+                                            onChange={handleChange}
+                                            error={error.locationChangeWHToConfigId.status}
+                                        >
+                                            {Object.values(locationData).filter((location: any) => location._id !== configData.locationChangeWHFromConfigId).map((data: any) => {
+                                                return (
+                                                    <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                )
+                                            })}
+                                        </Select>
+                                        <FormHelperText>{error.locationChangeWHToConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                            </>
+                        ) : (
+                            <Grid item xs={12} sm={12}>
+                                <FormControl style={{ width: "100%" }} required error={error.locationConfigId.status}>
+                                    <InputLabel id="location-label">{"Location"}</InputLabel>
+                                    <Select
+                                        labelId="location-label"
+                                        id="locationConfigId"
+                                        name="locationConfigId"
+                                        value={configData.locationConfigId ? configData.locationConfigId : ""}
+                                        onChange={handleChange}
+                                        error={error.locationConfigId.status}
+                                    >
+                                        {Object.values(locationData).map((data: any) => {
+                                            return (
+                                                <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                    <FormHelperText>{error.locationConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                </FormControl>
+                            </Grid>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>

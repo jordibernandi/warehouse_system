@@ -10,6 +10,10 @@ export class ShipmentService {
         return axios.post(USER_API_BASE_URL + "shipments/add", data, AuthService.tokenConfig());
     }
 
+    addChangeWH(data: any) {
+        return axios.post(USER_API_BASE_URL + "shipments/addChangeWH", data, AuthService.tokenConfig());
+    }
+
     getSpecific(data: any) {
         return axios.post(USER_API_BASE_URL + "shipments/specific", data, AuthService.tokenConfig());
     }

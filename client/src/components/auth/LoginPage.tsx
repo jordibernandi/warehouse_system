@@ -145,6 +145,7 @@ const LoginPage = () => {
             }
         }, (error: any) => {
             setErrorMessage("Internal error during user login!");
+            setIsLoading(false);
         });
         //         } else {
         //             setEmailError(true);

@@ -37,7 +37,7 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async (req
 
     try {
         // Simple validation
-        if (!_id || !name || value === "" || !checkFirst) throw Error('No data');
+        if (!_id || !name) throw Error('No data');
 
         const newAction = new Action({
             _id,
@@ -72,7 +72,7 @@ router.put('/edit/:_id', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), async
 
     try {
         // Simple validation
-        if (!name || !value || !checkFirst) throw Error('No data');
+        if (!name) throw Error('No data');
 
         const action = await Action.findOne({ _id: _id });
         if (!action) throw Error('Data is not found');
