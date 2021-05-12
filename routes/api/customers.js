@@ -19,7 +19,7 @@ const router = Router();
 
 router.get('/', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
     try {
-        const customers = await Customer.find({ isActive: true });
+        const customers = await Customer.find();
         res.json(customers);
     } catch (e) {
         res.status(400).json({ msg: e.message });

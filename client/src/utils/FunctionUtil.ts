@@ -29,6 +29,10 @@ class FunctionUtil {
     public static getMakeCode(length: number) {
         return makeCode(length);
     }
+
+    public static activeFilterFunction(item: any) {
+        return (item.isActive);
+    }
 }
 
 export default FunctionUtil;

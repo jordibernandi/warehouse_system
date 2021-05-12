@@ -97,9 +97,9 @@ const ShipmentPage = (props: any) => {
     const [locationData, setLocationData] = useState({} as any);
     const [customerData, setCustomerData] = useState({} as any);
     const [actionData, setActionData] = useState({} as any);
-    const [brandData, setBrandData] = useState({} as any);
-    const [productData, setProductData] = useState({} as any);
-    const [productCodeData, setProductCodeData] = useState({} as any);
+    // const [brandData, setBrandData] = useState({} as any);
+    // const [productData, setProductData] = useState({} as any);
+    // const [productCodeData, setProductCodeData] = useState({} as any);
 
     const handleNext = () => {
         setActiveStep(activeStep + 1);
@@ -215,55 +215,55 @@ const ShipmentPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataProduct: any;
-            let activeDataProductCode: any;
-            let activeDataBrand: any;
-            let activeDataLocation: any;
-            let activeDataCustomer: any;
-            let activeDataAction: any;
+            // let dataProduct: any;
+            // let dataProductCode: any;
+            // let dataBrand: any;
+            let dataLocation: any;
+            let dataCustomer: any;
+            let dataAction: any;
 
-            await ProductService.getAll().then((res: any) => {
-                activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
-                activeDataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
-            }).catch((error: any) => {
-                setSnackbarMessage(error.response.data.msg);
-                handleShowErrorSnackbar();
-            });
+            // await ProductService.getAll().then((res: any) => {
+            //     dataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
+            //     dataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
+            // }).catch((error: any) => {
+            //     setSnackbarMessage(error.response.data.msg);
+            //     handleShowErrorSnackbar();
+            // });
 
-            await BrandService.getAll().then((res: any) => {
-                activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
-            }).catch((error: any) => {
-                setSnackbarMessage(error.response.data.msg);
-                handleShowErrorSnackbar();
-            });
+            // await BrandService.getAll().then((res: any) => {
+            //     dataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
+            // }).catch((error: any) => {
+            //     setSnackbarMessage(error.response.data.msg);
+            //     handleShowErrorSnackbar();
+            // });
 
             await LocationService.getAll().then((res: any) => {
-                activeDataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await CustomerService.getAll().then((res: any) => {
-                activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await ActionService.getAll().then((res: any) => {
-                activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
-            setProductData(activeDataProduct);
-            setProductCodeData(activeDataProductCode);
-            setBrandData(activeDataBrand);
-            setLocationData(activeDataLocation);
-            setCustomerData(activeDataCustomer);
-            setActionData(activeDataAction);
+            // setProductData(dataProduct);
+            // setProductCodeData(dataProductCode);
+            // setBrandData(dataBrand);
+            setLocationData(dataLocation);
+            setCustomerData(dataCustomer);
+            setActionData(dataAction);
             setIsLoaded(true);
             setIsLoading(false);
         }
@@ -281,6 +281,9 @@ const ShipmentPage = (props: any) => {
                         actionData={actionData}
                         locationData={locationData}
                         customerData={customerData}
+                    // brandData={brandData}
+                    // productData={productData}
+                    // productCodeData={productCodeData}
                     />
                 ) : (
                     <Grid container>

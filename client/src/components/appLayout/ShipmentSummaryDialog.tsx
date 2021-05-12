@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { format, isSameDay } from 'date-fns'
 
 import { makeStyles } from '@material-ui/core/styles';
-import MUIDataTable from 'mui-datatables';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';

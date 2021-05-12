@@ -26,21 +26,21 @@ router.post('/specific', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_RO
 
     try {
         let shipments = [];
-        if (startDate !== "" && endDate !== "" && productId !== "") {
+        if (startDate && endDate && productId) {
             shipments = await Shipment.find({
                 createdAt: {
                     $gte: startDate,
                     $lt: endDate
                 }, productId: productId
             });
-        } else if (startDate !== "" && endDate !== "") {
+        } else if (startDate && endDate) {
             shipments = await Shipment.find({
                 createdAt: {
                     $gte: startDate,
                     $lt: endDate
                 }
             });
-        } else if (productId !== "") {
+        } else if (productId) {
             shipments = await Shipment.find({ productId: productId });
         } else {
             shipments = await Shipment.find();
@@ -63,7 +63,7 @@ router.post('/invoice', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROL
     try {
         let shipments = [];
 
-        if (invoiceId !== "") {
+        if (invoiceId) {
             shipments = await Shipment.find({ invoiceId: invoiceId });
         }
         res.json(shipments);
@@ -84,7 +84,7 @@ router.post('/serialNumber', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USE
     try {
         let shipments = [];
 
-        if (serialNumber !== "") {
+        if (serialNumber) {
             shipments = await Shipment.find({ serialNumber: serialNumber });
         }
         res.json(shipments);
@@ -153,7 +153,7 @@ router.post('/add', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.N
 
 router.post('/addChangeWH', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES.NON_ADMIN]), async (req, res) => {
     const { changeWHDataIdFrom, changeWHDataIdTo, productId, userId, locationChangeWHFromId, locationChangeWHToId, actionId, invoiceId, serialNumber } = req.body;
-    console.log("KESINI")
+
     try {
         // Simple validation
         if (!changeWHDataIdFrom || !changeWHDataIdTo || !productId || !userId || !locationChangeWHFromId || !locationChangeWHToId || !actionId || !serialNumber) throw Error('No data');

@@ -120,24 +120,24 @@ const ShipmentFormPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataProduct: any;
-            let activeDataProductCode: any;
-            let activeDataBrand: any;
+            let dataProduct: any;
+            let dataProductCode: any;
+            let dataBrand: any;
             // let activeDataLocation: any;
             // let activeDataCustomer: any;
             // let activeDataAction: any;
-            let activeDataUser: any;
+            let dataUser: any;
 
             await ProductService.getAll().then((res: any) => {
-                activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
-                activeDataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
+                dataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await BrandService.getAll().then((res: any) => {
-                activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -165,7 +165,7 @@ const ShipmentFormPage = (props: any) => {
             // });
 
             await UserService.getAll().then((res: any) => {
-                activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -176,7 +176,7 @@ const ShipmentFormPage = (props: any) => {
                     let tempTableData: any[] = [];
 
                     res.data.forEach((shipment: any) => {
-                        const productFound = activeDataProduct[shipment.productId];
+                        const productFound = dataProduct[shipment.productId];
                         const invoiceFound = (shipment.invoiceId === configData.invoiceConfigId) ? {
                             customerId: configData.customerConfigId,
                             name: configData.nameConfig,
@@ -186,12 +186,12 @@ const ShipmentFormPage = (props: any) => {
                             "_id": shipment._id,
                             "invoice": invoiceFound ? invoiceFound : null,
                             "product": productFound ? productFound : null,
-                            "brand": productFound ? activeDataBrand[productFound.brandId] : null,
+                            "brand": productFound ? dataBrand[productFound.brandId] : null,
                             "location": locationData[shipment.locationId],
                             "customer": invoiceFound ? customerData[invoiceFound.customerId] : null,
                             "action": actionData[shipment.actionId],
                             "serialNumber": shipment.serialNumber,
-                            "user": activeDataUser[shipment.userId],
+                            "user": dataUser[shipment.userId],
                             "createdAt": shipment.createdAt,
                         });
                     })
@@ -202,13 +202,13 @@ const ShipmentFormPage = (props: any) => {
                 });
             }
 
-            setProductData(activeDataProduct);
-            setProductCodeData(activeDataProductCode);
-            setBrandData(activeDataBrand);
+            setProductData(dataProduct);
+            setProductCodeData(dataProductCode);
+            setBrandData(dataBrand);
             // setLocationData(activeDataLocation);
             // setCustomerData(activeDataCustomer);
             // setActionData(activeDataAction);
-            setUserData(activeDataUser);
+            setUserData(dataUser);
             setIsLoaded(true);
             setIsLoading(false);
         }
@@ -319,7 +319,7 @@ const ShipmentFormPage = (props: any) => {
         }
 
         // Set Product Code
-        if (productCodeData[formData.serialNumber]) {
+        if (Object.values(productCodeData).filter(FunctionUtil.activeFilterFunction).some((data: any) => data.code === formData.serialNumber)) {
             setFormData({ ...formData, _id: initialFormDataState._id, productCode: formData.serialNumber, serialNumber: initialFormDataState.serialNumber });
             setIsSubmit(true);
             setShipmentStatus(SHIPMENT_INFORMATION_TYPE.SET_PRODUCT_SUCCESS);
@@ -327,14 +327,14 @@ const ShipmentFormPage = (props: any) => {
             playProductSet();
             return;
         } else {
-            if (productCodeData[formData.productCode]) {
+            if (Object.values(productCodeData).filter(FunctionUtil.activeFilterFunction).some((data: any) => data.code === formData.productCode)) {
                 // Valid data
                 const productFound = productCodeData[formData.productCode];
                 const invoiceFound = (configData.invoiceConfigId && formData.invoiceId === configData.invoiceConfigId) ? {
                     customerId: configData.customerConfigId,
                     name: configData.nameConfig,
                     description: configData.descriptionConfig,
-                } : {}
+                } : {};
 
                 if (formData.actionId === ACTION_TYPE.CHANGE_WH) {
                     const changeWHDataIdFrom = uuidv4();
@@ -549,7 +549,7 @@ const ShipmentFormPage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
-        data.push({ "_id": td._id, "invoice": td.invoice ? td.invoice.name : "-", "description": td.invoice ? td.invoice.description : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
+        data.push({ "_id": td._id, "invoice": Object.values(td.invoice).length > 0 ? td.invoice.name : "-", "description": Object.values(td.invoice).length > 0 ? td.invoice.description : "-", "brand": td.brand.name, "product": td.product.name, "serialNumber": td.serialNumber, "customer": td.customer ? td.customer.name : "-", "action": td.action.name, "location": td.location.name, "quantity": td.action.value, "user": td.user.name, "createdAt": format(new Date(td.createdAt), "MMM d, yyyy HH:mm:ss") })
     })
 
     const options = {
@@ -584,7 +584,7 @@ const ShipmentFormPage = (props: any) => {
                     <Grid container>
                         <Grid item xs={12} sm={5} style={{ paddingLeft: "40px", position: "relative" }}>
                             <LabelIcon style={{ fontSize: "30px", position: "absolute", left: "0px" }}></LabelIcon>
-                            {productCodeData[formData.productCode] ?
+                            {Object.values(productCodeData).filter(FunctionUtil.activeFilterFunction).some((data: any) => data.code === formData.productCode) ?
                                 (
                                     <h2 style={{ marginTop: "0px", color: "green" }}>{brandData[productCodeData[formData.productCode].brandId].name} - {productCodeData[formData.productCode].name}</h2>
                                 ) : (

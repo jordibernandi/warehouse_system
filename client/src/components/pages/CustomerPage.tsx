@@ -58,10 +58,10 @@ const CustomerPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataCustomer: any;
+            let dataCustomer: any;
 
             await CustomerService.getAll().then((res: any) => {
-                activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -69,11 +69,11 @@ const CustomerPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataCustomer).forEach((data: any) => {
+            Object.values(dataCustomer).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
                 tempTableData.push({ "_id": data._id, "name": data.name, "description": data.description });
             })
 
-            setCustomerData(activeDataCustomer);
+            setCustomerData(dataCustomer);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);

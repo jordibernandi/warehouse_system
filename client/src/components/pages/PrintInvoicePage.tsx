@@ -190,73 +190,73 @@ const PrintInvoicePage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataUser: any;
-            let activeDataInvoice: any;
-            let activeDataProduct: any;
-            let activeDataProductCode: any;
-            let activeDataBrand: any;
-            let activeDataLocation: any;
-            let activeDataCustomer: any;
-            let activeDataAction: any;
+            let dataUser: any;
+            let dataInvoice: any;
+            let dataProduct: any;
+            let dataProductCode: any;
+            let dataBrand: any;
+            let dataLocation: any;
+            let dataCustomer: any;
+            let dataAction: any;
 
             await UserService.getAll().then((res: any) => {
-                activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await InvoiceService.getAll().then((res: any) => {
-                activeDataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await ProductService.getAll().then((res: any) => {
-                activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
-                activeDataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
+                dataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataProductCode = FunctionUtil.getConvertArrayToAssoc(res.data, "code");
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await BrandService.getAll().then((res: any) => {
-                activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await LocationService.getAll().then((res: any) => {
-                activeDataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await CustomerService.getAll().then((res: any) => {
-                activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await ActionService.getAll().then((res: any) => {
-                activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
-            setInvoiceData(activeDataInvoice);
-            setProductData(activeDataProduct);
-            setProductCodeData(activeDataProductCode);
-            setBrandData(activeDataBrand);
-            setLocationData(activeDataLocation);
-            setCustomerData(activeDataCustomer);
-            setActionData(activeDataAction);
-            setUserData(activeDataUser);
+            setInvoiceData(dataInvoice);
+            setProductData(dataProduct);
+            setProductCodeData(dataProductCode);
+            setBrandData(dataBrand);
+            setLocationData(dataLocation);
+            setCustomerData(dataCustomer);
+            setActionData(dataAction);
+            setUserData(dataUser);
             setIsLoaded(true);
             setIsLoading(false);
         }

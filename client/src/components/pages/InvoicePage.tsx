@@ -49,7 +49,6 @@ const InvoicePage = (props: any) => {
         name: { type: [ERROR_TYPE.REQUIRED, ERROR_TYPE.UNIQUE], status: false },
     };
     const initialFormDataState = { _id: uuidv4(), customerId: '', description: '', name: '' };
-    const dataModel = { _id: DATA_MODEL_TYPE.KEY, customerId: DATA_MODEL_TYPE.FOREIGN_KEY_BRAND, description: DATA_MODEL_TYPE.DATA, name: DATA_MODEL_TYPE.DATA };
     const initialSelectedDataIndex = 0;
     const defaultErrorMessage = "Value is Empty or Invalid";
 
@@ -69,18 +68,18 @@ const InvoicePage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataInvoice: any;
-            let activeDataCustomer: any;
+            let dataInvoice: any;
+            let dataCustomer: any;
 
             await InvoiceService.getAll().then((res: any) => {
-                activeDataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await CustomerService.getAll().then((res: any) => {
-                activeDataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataCustomer = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -88,12 +87,12 @@ const InvoicePage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataInvoice).forEach((data: any) => {
-                tempTableData.push({ "_id": data._id, "customer": activeDataCustomer[data.customerId], "name": data.name, "description": data.description });
+            Object.values(dataInvoice).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
+                tempTableData.push({ "_id": data._id, "customer": dataCustomer[data.customerId], "name": data.name, "description": data.description });
             })
 
-            setInvoiceData(activeDataInvoice);
-            setCustomerData(activeDataCustomer);
+            setInvoiceData(dataInvoice);
+            setCustomerData(dataCustomer);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);
@@ -266,6 +265,7 @@ const InvoicePage = (props: any) => {
 
     let data: any[] = [];
     tableData.forEach((td: any) => {
+        console.log(td)
         data.push({ "_id": td._id, "name": td.name, "customer": td.customer.name, "description": td.description })
     })
 
@@ -344,7 +344,7 @@ const InvoicePage = (props: any) => {
                                         onChange={handleChange}
                                         error={error.customerId.status}
                                     >
-                                        {Object.values(customerData).map((data: any) => {
+                                        {Object.values(customerData).filter(FunctionUtil.activeFilterFunction).map((data: any) => {
                                             return (
                                                 <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                             )

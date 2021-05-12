@@ -152,18 +152,18 @@ const ProductPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataProduct: any;
-            let activeDataBrand: any;
+            let dataProduct: any;
+            let dataBrand: any;
 
             await ProductService.getAll().then((res: any) => {
-                activeDataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataProduct = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
             });
 
             await BrandService.getAll().then((res: any) => {
-                activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -171,12 +171,12 @@ const ProductPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataProduct).forEach((data: any) => {
-                tempTableData.push({ "_id": data._id, "brand": activeDataBrand[data.brandId], "code": data.code, "name": data.name, "qrCode": data.code });
+            Object.values(dataProduct).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
+                tempTableData.push({ "_id": data._id, "brand": dataBrand[data.brandId], "code": data.code, "name": data.name, "qrCode": data.code });
             })
 
-            setProductData(activeDataProduct);
-            setBrandData(activeDataBrand);
+            setProductData(dataProduct);
+            setBrandData(dataBrand);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);
@@ -480,7 +480,7 @@ const ProductPage = (props: any) => {
                                         onChange={handleChange}
                                         error={error.brandId.status}
                                     >
-                                        {Object.values(brandData).map((data: any) => {
+                                        {Object.values(brandData).filter(FunctionUtil.activeFilterFunction).map((data: any) => {
                                             return (
                                                 <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                             )

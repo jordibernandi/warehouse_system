@@ -57,10 +57,10 @@ const BrandPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataBrand: any;
+            let dataBrand: any;
 
             await BrandService.getAll().then((res: any) => {
-                activeDataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataBrand = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -68,11 +68,11 @@ const BrandPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataBrand).forEach((data: any) => {
+            Object.values(dataBrand).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
                 tempTableData.push({ "_id": data._id, "name": data.name });
             })
 
-            setBrandData(activeDataBrand);
+            setBrandData(dataBrand);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);

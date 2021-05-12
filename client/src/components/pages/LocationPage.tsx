@@ -57,10 +57,10 @@ const LocationPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataLocation: any;
+            let dataLocation: any;
 
             await LocationService.getAll().then((res: any) => {
-                activeDataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataLocation = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -68,11 +68,11 @@ const LocationPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataLocation).forEach((data: any) => {
+            Object.values(dataLocation).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
                 tempTableData.push({ "_id": data._id, "name": data.name });
             })
 
-            setLocationData(activeDataLocation);
+            setLocationData(dataLocation);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);

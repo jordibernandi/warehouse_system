@@ -364,6 +364,14 @@ const AppNavbar = (props: IAppNavbarProps) => {
                   <ListItemText primary="Stocks Report" />
                 </ListItem>
               </Tooltip>
+              <Tooltip title={"Products Report"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.PRODUCT_REPORT)}>
+                  <ListItemIcon>
+                    <AssignmentIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Products Report" />
+                </ListItem>
+              </Tooltip>
             </>
           )}
         </List>

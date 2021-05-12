@@ -1,32 +1,20 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { AppContext } from '../../App';
 import { v4 as uuidv4 } from 'uuid';
-import { format, startOfDay, endOfDay } from 'date-fns';
-import { Calendar } from 'react-date-range';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import { format, isSameDay } from 'date-fns'
 
 import MUIDataTable from 'mui-datatables';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import InputAdornment from '@material-ui/core/InputAdornment';
 
 // Layouts
 import IconBtn from '../appLayout/IconBtn';
@@ -47,31 +35,33 @@ import LocationService from '../../services/LocationService';
 import ShipmentService from '../../services/ShipmentService';
 import CustomerService from '../../services/CustomerService';
 import ActionService from '../../services/ActionService';
+import InvoiceService from '../../services/InvoiceService';
 
-const StockReportPage = (props: any) => {
+// Enum
+import { USER_ROLES } from '../../types/enum';
+
+const ShipmentReportPage = (props: any) => {
     const {
+        loginData,
         setIsLoading,
-        setSnackbarMessage,
-        handleShowErrorSnackbar
+        handleShowSuccessSnackbar,
+        handleShowErrorSnackbar,
+        setSnackbarMessage
     } = useContext(AppContext);
 
     const initialErrorState = {
-        startDate: { type: [], status: false },
-        endDate: { type: [], status: false },
         brandId: { type: [ERROR_TYPE.REQUIRED], status: false },
         productId: { type: [ERROR_TYPE.REQUIRED], status: false },
     };
     const initialFormDataState = {
-        startDate: startOfDay(0),
-        endDate: endOfDay(new Date()),
-        brandId: LIST_DATA_TYPE.ALL,
+        brandId: '',
         productId: ''
     };
-
     const defaultErrorMessage = "Value is Empty or Invalid";
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [userData, setUserData] = useState({} as any);
+    const [invoiceData, setInvoiceData] = useState({} as any);
     const [locationData, setLocationData] = useState({} as any);
     const [customerData, setCustomerData] = useState({} as any);
     const [actionData, setActionData] = useState({} as any);
@@ -79,17 +69,17 @@ const StockReportPage = (props: any) => {
     const [productData, setProductData] = useState({} as any);
     const [productCodeData, setProductCodeData] = useState({} as any);
     const [tableData, setTableData] = useState([] as any);
-    const [initialTableData, setInitialTableData] = useState([] as any);
-    const [isOpenCalendar, setIsOpenCalendar] = useState(false);
     const [formData, setFormData] = useState(initialFormDataState as any);
     const [error, setError] = useState(initialErrorState as any);
-    const [dateInfo, setDateInfo] = useState("...");
+    const [isChangeBrand, setIsChangeBrand] = useState(uuidv4());
+    const [productInfo, setProductInfo] = useState("...");
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
 
             let dataUser: any;
+            let dataInvoice: any;
             let dataProduct: any;
             let dataProductCode: any;
             let dataBrand: any;
@@ -99,6 +89,13 @@ const StockReportPage = (props: any) => {
 
             await UserService.getAll().then((res: any) => {
                 dataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+            }).catch((error: any) => {
+                setSnackbarMessage(error.response.data.msg);
+                handleShowErrorSnackbar();
+            });
+
+            await InvoiceService.getAll().then((res: any) => {
+                dataInvoice = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -140,6 +137,7 @@ const StockReportPage = (props: any) => {
                 handleShowErrorSnackbar();
             });
 
+            setInvoiceData(dataInvoice);
             setProductData(dataProduct);
             setProductCodeData(dataProductCode);
             setBrandData(dataBrand);
@@ -154,29 +152,28 @@ const StockReportPage = (props: any) => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        if (isLoaded && productData) {
-            let tempTableData: any[] = [];
-            Object.values(productData).forEach((product: any) => {
-                tempTableData.push({
-                    "brand": brandData[product.brandId],
-                    "product": product,
-                });
-            })
-            setInitialTableData(tempTableData);
+    const handleChangeAutoComplete = (e: any, values: any) => {
+        if (values) {
+            setFormData({ ...formData, productId: values._id })
+            setError({ ...error, productId: { ...error.productId, status: false } })
+        } else {
+            setError({ ...error, productId: { ...error.productId, status: true } })
         }
-    }, [isLoaded]);
-
-    const handleClickDateButton = () => {
-        setIsOpenCalendar(true);
     }
 
-    const handleCloseCalendarDialog = () => {
-        setIsOpenCalendar(false);
-    }
+    const handleChange = (e: any) => {
+        if (e.target.name === "brandId") {
+            setIsChangeBrand(uuidv4())
+            setFormData({ ...formData, [e.target.name]: e.target.value, productId: "" })
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value })
+        }
 
-    const handleSelectDate = (date: any) => {
-        setFormData({ ...formData, endDate: endOfDay(date) })
+        if (e.target.value === "") {
+            setError({ ...error, [e.target.name]: { ...error[e.target.name], status: true } })
+        } else {
+            setError({ ...error, [e.target.name]: { ...error[e.target.name], status: false } })
+        }
     }
 
     const submit = async (e: any) => {
@@ -220,28 +217,66 @@ const StockReportPage = (props: any) => {
         }
 
         // Valid data        
-        ShipmentService.getSpecific(formData).then((res: any) => {
-            const shipments = res.data;
-            let tempTableData = [...initialTableData] as any
+        await ShipmentService.getSpecific(formData).then((res: any) => {
+            let filteredData: any[] = [];
+            let tempTableData: any[] = [];
 
-            tempTableData.forEach((row: any) => {
-                let totalStock = 0;
-                Object.values(locationData).forEach((location: any) => {
-                    row[location._id] = 0;
-                    shipments.forEach((shipment: any) => {
-                        if (shipment.productId === row.product._id) {
-                            if (shipment.locationId === location._id) {
-                                row[location._id] += actionData[shipment.actionId].value;
-                                totalStock += actionData[shipment.actionId].value;
+            const uniqueDates = res.data.map((item: any) => format(new Date(item.createdAt), "MMM d, yyyy")).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
+            const uniqueActionIds = res.data.map((item: any) => item.actionId).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
+            const uniqueInvoiceIds = res.data.map((item: any) => item.invoiceId).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
+            const uniqueLocationIds = res.data.map((item: any) => item.locationId).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
+
+            let total = 0;
+
+            uniqueDates.forEach((uniqueDate: any) => {
+                let tempDate = { date: uniqueDate, actions: [] as any }
+                uniqueActionIds.forEach((uniqueActionId: any) => {
+                    let tempAction = { action: actionData[uniqueActionId], invoices: [] as any }
+                    uniqueInvoiceIds.forEach((uniqueInvoiceId: any) => {
+                        let tempInvoice = { invoice: uniqueInvoiceId ? invoiceData[uniqueInvoiceId] : null, locations: [] as any }
+                        uniqueLocationIds.forEach((uniqueLocationId: any) => {
+                            let tempLocation = { location: locationData[uniqueLocationId], quantity: 0, total: total, count: 0 }
+                            res.data.forEach((shipment: any) => {
+                                if (isSameDay(new Date(shipment.createdAt), new Date(uniqueDate)) && shipment.actionId === uniqueActionId && shipment.invoiceId === uniqueInvoiceId && shipment.locationId === uniqueLocationId) {
+                                    tempLocation.quantity += tempAction.action.value;
+                                    tempLocation.count++;
+                                }
+                            })
+                            if (tempLocation.count > 0) {
+                                total += tempLocation.quantity;
+                                tempLocation.total = total;
+                                tempInvoice.locations.push(tempLocation);
                             }
+                        })
+                        if (tempInvoice.locations.length > 0) {
+                            tempAction.invoices.push(tempInvoice);
                         }
                     })
+                    if (tempAction.invoices.length > 0) {
+                        tempDate.actions.push(tempAction);
+                    }
                 })
-                row.totalStock = totalStock;
+                filteredData.push(tempDate);
             })
 
+            filteredData.forEach((uniqueDate: any) => {
+                uniqueDate.actions.forEach((uniqueAction: any) => {
+                    uniqueAction.invoices.forEach((uniqueInvoice: any) => {
+                        uniqueInvoice.locations.forEach((uniqueLocation: any) => {
+                            tempTableData.push({
+                                date: uniqueDate.date,
+                                action: uniqueAction.action,
+                                location: uniqueLocation.location,
+                                invoice: uniqueInvoice.invoice,
+                                quantity: uniqueLocation.quantity,
+                                total: uniqueLocation.total
+                            })
+                        })
+                    })
+                })
+            })
             setTableData(tempTableData);
-            setDateInfo(format(formData.endDate, "MMM d, yyyy").toString());
+            setProductInfo(brandData[formData.brandId].name + " - " + productData[formData.productId].name);
         }).catch((error: any) => {
             setSnackbarMessage(error.response.data.msg);
             handleShowErrorSnackbar();
@@ -251,26 +286,34 @@ const StockReportPage = (props: any) => {
 
     const columns = [
         {
-            name: "brand", label: "Brand"
+            name: "date", label: "Date"
         },
         {
-            name: "product", label: "Product"
-        }
+            name: "action", label: "Action"
+        },
+        {
+            name: "location", label: "Location"
+        },
+        {
+            name: "invoice", label: "Invoice"
+        },
+        {
+            name: "customer", label: "Customer"
+        },
+        {
+            name: "description", label: "Description"
+        },
+        {
+            name: "quantity", label: "Quantity"
+        },
+        {
+            name: "total", label: "Total"
+        },
     ] as any;
 
-    Object.values(locationData).filter(FunctionUtil.activeFilterFunction).forEach((location: any) => {
-        columns.push({ name: location._id, label: location.name })
-    })
-    columns.push({ name: "totalStock", label: "Total Stock" })
-
     let data: any[] = [];
-
     tableData.forEach((td: any) => {
-        const tempRow = { "brand": td.brand.name, "product": td.product.name, "totalStock": td.totalStock } as any;
-        Object.values(locationData).filter(FunctionUtil.activeFilterFunction).forEach((location: any) => {
-            tempRow[location._id] = td[location._id];
-        })
-        data.push(tempRow);
+        data.push({ "date": td.date, "action": td.action ? td.action.name : "-", "location": td.location ? td.location.name : "-", "invoice": td.invoice ? td.invoice.name : "-", "customer": td.invoice ? customerData[td.invoice.customerId].name : "-", "description": td.invoice ? td.invoice.description : "-", "quantity": td.quantity, "total": td.total })
     })
 
     let productOptions: any[] = [];
@@ -286,7 +329,7 @@ const StockReportPage = (props: any) => {
         selectableRows: "none" as any,
         downloadOptions:
         {
-            filename: 'stockSummary' + dateInfo + '.csv',
+            filename: 'productReport ' + productInfo + '.csv',
             separator: ',',
             filterOptions: {
                 useDisplayedColumnsOnly: true,
@@ -310,16 +353,9 @@ const StockReportPage = (props: any) => {
             {isLoaded && (
                 <>
                     <Grid container>
-                        <Grid item xs={12} sm={5} style={{ paddingLeft: "40px", position: "relative" }}>
-                            <TodayIcon style={{ fontSize: "30px", position: "absolute", left: "0px" }}></TodayIcon>
-                            <h2 style={{ marginTop: "0px", color: "black" }}>{dateInfo}</h2>
-                        </Grid>
-                        <Grid item xs={12} sm={5} style={{ paddingLeft: "40px", position: "relative" }}>
-                            {/* <LabelIcon style={{ fontSize: "30px", position: "absolute", left: "0px" }}></LabelIcon>
-                            <h2 style={{ marginTop: "0px" }}>{brandData[formData.brandId] ? brandData[formData.brandId].name : LIST_DATA_TYPE.ALL}{formData.brandId !== LIST_DATA_TYPE.ALL && productData[formData.productId] ? " - " + productData[formData.productId].name : ""}</h2> */}
-                        </Grid>
-                        <Grid item xs={12} sm={2}>
-                            {/* <h1 style={{ marginTop: "-5px", color: "black" }}>{"#" + tableData.length}</h1> */}
+                        <Grid item xs={12} sm={12} style={{ paddingLeft: "40px", position: "relative" }}>
+                            <LabelIcon style={{ fontSize: "30px", position: "absolute", left: "0px" }}></LabelIcon>
+                            <h2 style={{ marginTop: "0px" }}>{brandData[formData.brandId] ? brandData[formData.brandId].name : "-"}{formData.brandId && productData[formData.productId] ? " - " + productData[formData.productId].name : ""}</h2>
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
@@ -332,27 +368,37 @@ const StockReportPage = (props: any) => {
                                 >
                                     <Grid container spacing={2}>
                                         <Grid item xs={12} sm={12}>
-                                            <Grid container spacing={1}>
-                                                <Grid item xs={12} sm={12}>
-                                                    <IconBtn icon={TodayIcon} tooltip={"Set Date"} handleClick={handleClickDateButton}></IconBtn>
-                                                </Grid>
-                                                <Grid item xs={12} sm={12}>
-                                                    <TextField
-                                                        id="input-date"
-                                                        label="Date"
-                                                        fullWidth={true}
-                                                        disabled
-                                                        value={format(formData.endDate, "MMM d, yyyy")}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start">
-                                                                    <TodayIcon></TodayIcon>
-                                                                </InputAdornment>
-                                                            ),
-                                                        }}
-                                                    />
-                                                </Grid>
-                                            </Grid>
+                                            <FormControl style={{ width: "100%" }} required error={error.brandId.status}>
+                                                <InputLabel id="brand-label">{"Brand"}</InputLabel>
+                                                <Select
+                                                    labelId="brand-label"
+                                                    id="brandId"
+                                                    name="brandId"
+                                                    value={formData.brandId ? formData.brandId : ""}
+                                                    onChange={handleChange}
+                                                    error={error.brandId.status}
+                                                >
+                                                    {Object.values(brandData).filter(FunctionUtil.activeFilterFunction).map((data: any) => {
+                                                        return (
+                                                            <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
+                                                        )
+                                                    })}
+                                                </Select>
+                                                <FormHelperText>{error.brandId.status ? defaultErrorMessage : ""}</FormHelperText>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12} sm={12}>
+                                            <Autocomplete
+                                                key={isChangeBrand}
+                                                id="productId"
+                                                options={productOptions}
+                                                getOptionLabel={(option: any) => option.name}
+                                                fullWidth={true}
+                                                size={"small"}
+                                                onChange={handleChangeAutoComplete}
+                                                renderInput={(params) => <TextField required {...params} label="Product" variant="outlined" />}
+                                            />
+                                            <FormHelperText style={{ color: "red" }}>{error.productId.status ? defaultErrorMessage : ""}</FormHelperText>
                                         </Grid>
                                         <Grid item xs={12} sm={12}>
                                             <Button type="submit" fullWidth variant="contained" size="large" color="primary">
@@ -366,7 +412,7 @@ const StockReportPage = (props: any) => {
                         <Grid item xs={12} sm={9}>
                             <MuiThemeProvider theme={theme}>
                                 <MUIDataTable
-                                    title={"Stock Summary"}
+                                    title={"List of Shipments"}
                                     data={data}
                                     columns={columns}
                                     options={options}
@@ -374,18 +420,6 @@ const StockReportPage = (props: any) => {
                             </MuiThemeProvider>
                         </Grid>
                     </Grid>
-
-                    <Dialog
-                        open={isOpenCalendar}
-                        onClose={handleCloseCalendarDialog}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        <Calendar
-                            date={formData.endDate}
-                            onChange={handleSelectDate}
-                        />
-                    </Dialog>
                 </>
             )
             }
@@ -393,4 +427,4 @@ const StockReportPage = (props: any) => {
     );
 }
 
-export default StockReportPage;
+export default ShipmentReportPage;

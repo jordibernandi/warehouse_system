@@ -31,7 +31,7 @@ const ShipmentConfiguration1Page = (props: any) => {
         setSnackbarMessage
     } = useContext(AppContext);
 
-    const { configData, error, defaultErrorMessage, handleChange, locationData, actionData, } = props;
+    const { configData, error, defaultErrorMessage, handleChange, locationData, actionData } = props;
 
     return (
         <>
@@ -49,7 +49,7 @@ const ShipmentConfiguration1Page = (props: any) => {
                                     onChange={handleChange}
                                     error={error.actionConfigId.status}
                                 >
-                                    {Object.values(actionData).filter((action: any) => action._id !== ACTION_TYPE.CHANGE_WH_FROM && action._id !== ACTION_TYPE.CHANGE_WH_TO).map((data: any) => {
+                                    {Object.values(actionData).filter(FunctionUtil.activeFilterFunction).filter((action: any) => action._id !== ACTION_TYPE.CHANGE_WH_FROM && action._id !== ACTION_TYPE.CHANGE_WH_TO).map((data: any) => {
                                         return (
                                             <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                         )
@@ -71,7 +71,7 @@ const ShipmentConfiguration1Page = (props: any) => {
                                             onChange={handleChange}
                                             error={error.locationChangeWHFromConfigId.status}
                                         >
-                                            {Object.values(locationData).filter((location: any) => location._id !== configData.locationChangeWHToConfigId).map((data: any) => {
+                                            {Object.values(locationData).filter(FunctionUtil.activeFilterFunction).filter((location: any) => location._id !== configData.locationChangeWHToConfigId).map((data: any) => {
                                                 return (
                                                     <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                                 )
@@ -91,7 +91,7 @@ const ShipmentConfiguration1Page = (props: any) => {
                                             onChange={handleChange}
                                             error={error.locationChangeWHToConfigId.status}
                                         >
-                                            {Object.values(locationData).filter((location: any) => location._id !== configData.locationChangeWHFromConfigId).map((data: any) => {
+                                            {Object.values(locationData).filter(FunctionUtil.activeFilterFunction).filter((location: any) => location._id !== configData.locationChangeWHFromConfigId).map((data: any) => {
                                                 return (
                                                     <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                                 )
@@ -113,7 +113,7 @@ const ShipmentConfiguration1Page = (props: any) => {
                                         onChange={handleChange}
                                         error={error.locationConfigId.status}
                                     >
-                                        {Object.values(locationData).map((data: any) => {
+                                        {Object.values(locationData).filter(FunctionUtil.activeFilterFunction).map((data: any) => {
                                             return (
                                                 <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                             )

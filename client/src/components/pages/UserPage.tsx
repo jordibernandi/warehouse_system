@@ -67,10 +67,10 @@ const UserPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataUser: any;
+            let dataUser: any;
 
             await UserService.getAll().then((res: any) => {
-                activeDataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataUser = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -78,11 +78,11 @@ const UserPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataUser).forEach((data: any) => {
+            Object.values(dataUser).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
                 tempTableData.push({ "_id": data._id, "name": data.name, "email": data.email, "role": data.role });
             })
 
-            setUserData(activeDataUser);
+            setUserData(dataUser);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);

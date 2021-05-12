@@ -28,6 +28,7 @@ import InvoicePage from './components/pages/InvoicePage';
 import ShipmentPage from './components/pages/ShipmentPage';
 import ShipmentReportPage from './components/pages/ShipmentReportPage';
 import StockReportPage from './components/pages/StockReportPage';
+import ProductReportPage from './components/pages/ProductReportPage';
 import CustomerPage from './components/pages/CustomerPage';
 import ActionPage from './components/pages/ActionPage';
 import ErrorPage from './components/pages/ErrorPage';
@@ -231,6 +232,7 @@ const App = () => {
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT} Component={ShipmentPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.SHIPMENT_REPORT} Component={ShipmentReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.STOCK_REPORT} Component={StockReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.PRODUCT_REPORT} Component={ProductReportPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.PRINT_INVOICE} Component={PrintInvoicePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.CHECK_SERIAL_NUMBER} Component={CheckSerialNumberPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <Route>

@@ -19,6 +19,9 @@ import SearchIcon from '@material-ui/icons/Search';
 // Types
 import { SHIPMENT_INVOICE_TYPE, ACTION_TYPE } from '../../types/enum';
 
+// Utils
+import FunctionUtil from '../../utils/FunctionUtil';
+
 // Services
 import InvoiceService from '../../services/InvoiceService';
 
@@ -152,7 +155,7 @@ const ShipmentConfiguration2Page = (props: any) => {
                                                     onChange={handleChange}
                                                     error={error.customerConfigId.status}
                                                 >
-                                                    {Object.values(customerData).map((data: any) => {
+                                                    {Object.values(customerData).filter(FunctionUtil.activeFilterFunction).map((data: any) => {
                                                         return (
                                                             <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                                         )

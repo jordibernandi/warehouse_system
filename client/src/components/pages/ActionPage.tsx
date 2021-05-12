@@ -68,10 +68,10 @@ const ActionPage = (props: any) => {
         const fetchData = async () => {
             setIsLoading(true);
 
-            let activeDataAction: any;
+            let dataAction: any;
 
             await ActionService.getAll().then((res: any) => {
-                activeDataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
+                dataAction = FunctionUtil.getConvertArrayToAssoc(res.data);
             }).catch((error: any) => {
                 setSnackbarMessage(error.response.data.msg);
                 handleShowErrorSnackbar();
@@ -79,11 +79,11 @@ const ActionPage = (props: any) => {
 
             let tempTableData: any[] = [];
 
-            Object.values(activeDataAction).forEach((data: any) => {
+            Object.values(dataAction).filter(FunctionUtil.activeFilterFunction).forEach((data: any) => {
                 tempTableData.push({ "_id": data._id, "name": data.name, "value": data.value, "checkFirst": data.checkFirst, "withInvoice": data.withInvoice, "description": data.description });
             })
 
-            setActionData(activeDataAction);
+            setActionData(dataAction);
             setTableData(tempTableData);
             setIsLoaded(true);
             setIsLoading(false);
