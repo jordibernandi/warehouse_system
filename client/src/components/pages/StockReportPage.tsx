@@ -157,7 +157,7 @@ const StockReportPage = (props: any) => {
     useEffect(() => {
         if (isLoaded && productData) {
             let tempTableData: any[] = [];
-            Object.values(productData).forEach((product: any) => {
+            Object.values(productData).filter(FunctionUtil.activeFilterFunction).forEach((product: any) => {
                 tempTableData.push({
                     "brand": brandData[product.brandId],
                     "product": product,

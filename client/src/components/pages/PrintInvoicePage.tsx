@@ -120,6 +120,7 @@ const InvoicePage = (props: any) => {
                 <Text style={styles.subTitle}>{"No. Nota:"} {selectedInvoiceData[0].invoice.name}</Text>
                 <Text style={styles.subTitle}>{"Customer:"} {selectedInvoiceData[0].customer.name}</Text>
                 <Text style={styles.subTitle}>{"Date:"} {format(new Date(selectedInvoiceData[0].createdAt), "MMM d, yyyy")}</Text>
+                <Text style={styles.subTitle}>{"Description:"} {selectedInvoiceData[0].invoice.description}</Text>
 
                 {invoiceSummary.map((brand: any, index: any) => (
                     <View key={`brand${index}`}>

@@ -27,7 +27,7 @@ export const getShipmentInformation = (shipmentInformation: any) => {
             };
         case SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA:
             return {
-                "message": "Duplicate Data",
+                "message": "Data Duplicate / Not Found",
                 "fontColor": "orange"
             };
         case SHIPMENT_INFORMATION_TYPE.DUPLICATE_DATA_CHANGE_WH_FROM:
