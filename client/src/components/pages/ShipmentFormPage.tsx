@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { makeStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { AppContext } from '../../App';
 import { v4 as uuidv4 } from 'uuid';
@@ -237,9 +237,9 @@ const ShipmentFormPage = (props: any) => {
         setIsOpenShipmentSummaryDialog(true);
     }
 
-    const handleCloseShipmentSummaryDialog = () => {
+    const handleCloseShipmentSummaryDialog = useCallback(() => {
         setIsOpenShipmentSummaryDialog(false);
-    }
+    }, [])
 
     const handleCloseConfirmationDialog = () => {
         setIsOpenConfirmationDialog(false);
@@ -487,7 +487,7 @@ const ShipmentFormPage = (props: any) => {
 
         setIsLoading(true);
 
-        ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
+        await ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.findIndex(sd => sd._id === data._id) === -1;

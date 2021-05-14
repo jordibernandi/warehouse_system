@@ -176,13 +176,13 @@ const ShipmentReportPage = (props: any) => {
         fetchData();
     }, []);
 
-    const handleClickShipmentSummaryButton = useCallback(() => {
+    const handleClickShipmentSummaryButton = () => {
         setIsOpenShipmentSummaryDialog(true);
-    }, [isOpenShipmentSummaryDialog])
-
-    const handleCloseShipmentSummaryDialog = () => {
-        setIsOpenShipmentSummaryDialog(false);
     }
+
+    const handleCloseShipmentSummaryDialog = useCallback(() => {
+        setIsOpenShipmentSummaryDialog(false);
+    }, [])
 
     const handleCloseConfirmationDialog = () => {
         setIsOpenConfirmationDialog(false);
@@ -328,7 +328,7 @@ const ShipmentReportPage = (props: any) => {
 
         setIsLoading(true);
 
-        ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
+        await ShipmentService.delete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.findIndex(sd => sd._id === data._id) === -1;

@@ -241,7 +241,7 @@ const UserPage = (props: any) => {
 
         setIsLoading(true);
 
-        UserService.softDelete({ selectedData: selectedData }).then((res: any) => {
+        await UserService.softDelete({ selectedData: selectedData }).then((res: any) => {
             const tempTableData = [...tableData]
             setTableData(tempTableData.filter(function (data: any) {
                 return selectedData.indexOf(data._id) === -1;
