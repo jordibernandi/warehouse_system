@@ -287,14 +287,6 @@ const AppNavbar = (props: IAppNavbarProps) => {
                   <ListItemText primary="Brands" />
                 </ListItem>
               </Tooltip>
-              <Tooltip title={"Customers"} placement="right">
-                <ListItem button onClick={() => history.push(AUTH_ROUTES.CUSTOMER)}>
-                  <ListItemIcon>
-                    <EmojiPeopleIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Customers" />
-                </ListItem>
-              </Tooltip>
               <Tooltip title={"Actions"} placement="right">
                 <ListItem button onClick={() => history.push(AUTH_ROUTES.ACTION)}>
                   <ListItemIcon>
@@ -324,6 +316,14 @@ const AppNavbar = (props: IAppNavbarProps) => {
 
           {[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)].includes(loginData.role) && (
             <>
+              <Tooltip title={"Customers"} placement="right">
+                <ListItem button onClick={() => history.push(AUTH_ROUTES.CUSTOMER)}>
+                  <ListItemIcon>
+                    <EmojiPeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Customers" />
+                </ListItem>
+              </Tooltip>
               <Tooltip title={"Shipments"} placement="right">
                 <ListItem button onClick={() => history.push(AUTH_ROUTES.SHIPMENT)}>
                   <ListItemIcon>
