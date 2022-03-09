@@ -225,7 +225,7 @@ const App = () => {
                 <AuthRoute path={AUTH_ROUTES.USER} Component={UserPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.LOCATION} Component={LocationPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.BRAND} Component={BrandPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
-                <AuthRoute path={AUTH_ROUTES.CUSTOMER} Component={CustomerPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
+                <AuthRoute path={AUTH_ROUTES.CUSTOMER} Component={CustomerPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN), String(USER_ROLES.NON_ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.ACTION} Component={ActionPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.PRODUCT} Component={ProductPage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>
                 <AuthRoute path={AUTH_ROUTES.INVOICE} Component={InvoicePage} requiredRoles={[String(USER_ROLES.SUPER_ADMIN), String(USER_ROLES.ADMIN)]}></AuthRoute>

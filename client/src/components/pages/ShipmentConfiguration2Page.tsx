@@ -3,6 +3,7 @@ import { AppContext } from '../../App';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -76,6 +77,18 @@ const ShipmentConfiguration2Page = (props: any) => {
         setIsLoading(false);
     }
 
+    const handleChangeCustomer = (e: any, value: any) => {
+        setConfigData({ ...configData, ["customerConfigId"]: value ? value._id : "" })
+
+        if (!value || value._id === "") {
+            setError({ ...error, ["customerConfigId"]: { ...error["customerConfigId"], status: true } })
+        } else {
+            setError({ ...error, ["customerConfigId"]: { ...error["customerConfigId"], status: false } })
+        }
+    }
+
+    const customerOptions = [{ _id: "", name: "" }, ...Object.values(customerData).filter(FunctionUtil.activeFilterFunction)];
+
     return (
         <>
             <Grid container spacing={3}>
@@ -146,8 +159,8 @@ const ShipmentConfiguration2Page = (props: any) => {
                                     <>
                                         <Grid item xs={12} sm={12}>
                                             <FormControl style={{ width: "100%" }} required error={error.customerConfigId.status}>
-                                                <InputLabel id="customer-label">{"Customer"}</InputLabel>
-                                                <Select
+                                                {/* <InputLabel id="customer-label">{"Customer"}</InputLabel> */}
+                                                {/* <Select
                                                     labelId="customer-label"
                                                     id="customerConfigId"
                                                     name="customerConfigId"
@@ -160,7 +173,23 @@ const ShipmentConfiguration2Page = (props: any) => {
                                                             <MenuItem key={data._id} value={data._id}>{data.name}</MenuItem>
                                                         )
                                                     })}
-                                                </Select>
+                                                </Select> */}
+                                                <Autocomplete
+                                                    id="customerConfigId"
+                                                    options={customerOptions}
+                                                    getOptionLabel={(option: any) => option.name}
+                                                    value={configData.customerConfigId ? customerOptions.find((data: any) => data._id === configData.customerConfigId) : customerOptions[0]}
+                                                    onChange={handleChangeCustomer}
+                                                    renderInput={
+                                                        (params) =>
+                                                            <TextField
+                                                                {...params} required
+                                                                label="Customer"
+                                                                margin="normal"
+                                                                error={error.customerConfigId.status}
+                                                            />
+                                                    }
+                                                />
                                                 <FormHelperText>{error.customerConfigId.status ? defaultErrorMessage : ""}</FormHelperText>
                                             </FormControl>
                                         </Grid>

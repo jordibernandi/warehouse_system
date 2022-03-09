@@ -274,7 +274,7 @@ const ShipmentPage = (props: any) => {
     return (
         <> {isLoaded && (
             <>
-                { activeStep === steps.length ? (
+                {activeStep === steps.length ? (
                     <ShipmentFormPage
                         configData={configData}
                         setConfigData={setConfigData}
