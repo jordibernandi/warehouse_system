@@ -1,6 +1,6 @@
-# MERN Shopping List
+# Warehouse System
 
-> Shopping list app built with the MERN stack along with Redux for state management, Reactstrap and react-transition-group.
+> Developed a system to manage a company's warehouse operations for stock monitoring.
 
 ## Quick Start
 
@@ -24,10 +24,6 @@ npm run client
 
 # Server runs on http://localhost:5000 and client on http://localhost:3000
 ```
-
-## Deployment
-
-There is a Heroku post build script so that you do not have to compile your React frontend manually, it is done on the server. Simply push to Heroku and it will build and load the client index.html page
 
 ## App Info
 
