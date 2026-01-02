@@ -1,4 +1,6 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 // Create Schema
 const LocationSchema = new Schema({
@@ -18,6 +20,5 @@ const LocationSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const Location = model('location', LocationSchema);
+module.exports = mongoose.model('location', LocationSchema);
 
-export default Location;

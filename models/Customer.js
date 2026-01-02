@@ -1,4 +1,6 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 // Create Schema
 const CustomerSchema = new Schema({
@@ -21,6 +23,4 @@ const CustomerSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const Customer = model('customer', CustomerSchema);
-
-export default Customer;
+module.exports = mongoose.model('customer', CustomerSchema);

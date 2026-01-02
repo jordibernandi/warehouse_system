@@ -1,4 +1,6 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 // Create Schema
 const ActionSchema = new Schema({
@@ -36,6 +38,4 @@ const ActionSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const Action = model('action', ActionSchema);
-
-export default Action;
+module.exports = mongoose.model('action', ActionSchema);

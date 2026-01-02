@@ -1,4 +1,6 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 // Create Schema
 const ErasedShipmentSchema = new Schema({
@@ -37,6 +39,4 @@ const ErasedShipmentSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const ErasedShipment = model('erasedShipment', ErasedShipmentSchema);
-
-export default ErasedShipment;
+module.exports = mongoose.model('erasedShipment', ErasedShipmentSchema);

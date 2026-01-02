@@ -1,19 +1,19 @@
-import { Router } from 'express';
+const express = require('express');
 
 // Constants
-import { USER_ROLES } from '../../lib/constants'
+const { USER_ROLES } = require('../../lib/constants');
 
 // Middleware
-import auth from '../../middleware/auth';
+const auth = require('../../middleware/auth');
 
 // Shipment Model
-import Shipment from '../../models/Shipment';
-import ErasedShipment from '../../models/ErasedShipment';
-import Action from '../../models/Action';
+const Shipment = require('../../models/Shipment');
+const ErasedShipment = require('../../models/ErasedShipment');
+const Action = require('../../models/Action');
 
 const { v4: uuidv4 } = require('uuid');
 
-const router = Router();
+const router = express.Router();
 
 /**
  * @route   POST api/shipments/specific
@@ -301,4 +301,4 @@ router.put('/delete', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN, USER_ROLES
     }
 });
 
-export default router;
+module.exports = router;
