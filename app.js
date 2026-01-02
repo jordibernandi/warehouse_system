@@ -1,21 +1,21 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import path from 'path';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import morgan from 'morgan';
-import config from './config';
+const express = require('express');
+const mongoose = require('mongoose');
+const path = require('path');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const config = require('./config');
 
 // routes
-import authRoutes from './routes/api/auth';
-import userRoutes from './routes/api/users';
-import locationRoutes from './routes/api/locations';
-import brandRoutes from './routes/api/brands';
-import productRoutes from './routes/api/products';
-import invoiceRoutes from './routes/api/invoices';
-import shipmentRoutes from './routes/api/shipments';
-import customerRoutes from './routes/api/customers';
-import actionRoutes from './routes/api/actions';
+const authRoutes = require('./routes/api/auth');
+const userRoutes = require('./routes/api/users');
+const locationRoutes = require('./routes/api/locations');
+const brandRoutes = require('./routes/api/brands');
+const productRoutes = require('./routes/api/products');
+const invoiceRoutes = require('./routes/api/invoices');
+const shipmentRoutes = require('./routes/api/shipments');
+const customerRoutes = require('./routes/api/customers');
+const actionRoutes = require('./routes/api/actions');
 
 const { MONGO_URI, MONGO_DB_NAME } = config;
 
@@ -37,9 +37,9 @@ mongoose
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
-  }) // Adding new mongo url parser
+  })
   .then(() => console.log('MongoDB Connected...'))
-  .catch(err => console.log(err));
+  .catch(err => console.error(err));
 
 // Use Routes
 app.use('/api/users', userRoutes);
@@ -54,12 +54,13 @@ app.use('/api/actions', actionRoutes);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
   app.use(express.static('client/build'));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    res.sendFile(
+      path.resolve(__dirname, 'client', 'build', 'index.html')
+    );
   });
 }
 
-export default app;
+module.exports = app;

@@ -1,16 +1,16 @@
-import { Router } from 'express';
-import bcrypt from 'bcryptjs';
+const express = require('express');
+const bcrypt = require('bcryptjs');
 
 // Constants
-import { USER_ROLES } from '../../lib/constants'
+const { USER_ROLES } = require('../../lib/constants');
 
 // Middleware
-import auth from '../../middleware/auth';
+const auth = require('../../middleware/auth');
 
 // User Model
-import User from '../../models/User';
+const User = require('../../models/User');
 
-const router = Router();
+const router = express.Router();
 
 /**
  * @route   GET api/users
@@ -175,4 +175,4 @@ router.put('/softDelete', auth([USER_ROLES.SUPER_ADMIN]), async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

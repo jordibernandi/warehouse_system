@@ -1,15 +1,15 @@
-import { Router } from 'express';
+const express = require('express');
 
 // Constants
-import { USER_ROLES } from '../../lib/constants'
+const { USER_ROLES } = require('../../lib/constants');
 
 // Middleware
-import auth from '../../middleware/auth';
+const auth = require('../../middleware/auth');
 
 // Invoice Model
-import Invoice from '../../models/Invoice';
+const Invoice = require('../../models/Invoice');
 
-const router = Router();
+const router = express.Router();
 
 /**
  * @route   GET api/invoices
@@ -239,4 +239,4 @@ router.put('/softDelete', auth([USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN]), asyn
     }
 });
 
-export default router;
+module.exports = router;

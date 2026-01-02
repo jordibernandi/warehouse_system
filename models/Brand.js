@@ -1,4 +1,6 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 // Create Schema
 const BrandSchema = new Schema({
@@ -18,6 +20,4 @@ const BrandSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const Brand = model('brand', BrandSchema);
-
-export default Brand;
+module.exports = mongoose.model('brand', BrandSchema);

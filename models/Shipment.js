@@ -1,4 +1,6 @@
-import { Schema, model } from 'mongoose';
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 // Create Schema
 const ShipmentSchema = new Schema({
@@ -33,6 +35,4 @@ const ShipmentSchema = new Schema({
     timestamps: true, _id: false
 });
 
-const Shipment = model('shipment', ShipmentSchema);
-
-export default Shipment;
+module.exports = mongoose.model('shipment', ShipmentSchema);
