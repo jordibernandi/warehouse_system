@@ -4,16 +4,16 @@ A warehouse management system developed to support daily warehouse operations, i
 
 ## 📋 Overview
 
-This application provides features including:
+This application provides the following features:
 
-- Login system.
-- User management.
-- Product registration.
-- Customer registration.
-- Location registration.
-- Product shipment including inventory calculation.
-- Product serial number searching.
-- Invoice and shipment report in PDF.
+- Authentication and login system
+- User and role management
+- Product registration and catalog management
+- Customer registration and management
+- Location registration and warehouse mapping
+- Product shipment handling with automatic inventory calculation
+- Product serial number search
+- Invoice and shipment report generation (PDF)
 
 ## 🛠️ Technology Stack
 
@@ -60,5 +60,6 @@ npm run client
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
 
 
