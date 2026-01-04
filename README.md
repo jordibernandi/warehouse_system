@@ -1,8 +1,41 @@
-# Warehouse System
+### Warehouse System
 
-> Developed a system to manage a company's warehouse operations for stock monitoring.
+A warehouse management system developed to support daily warehouse operations, including stock monitoring and inventory tracking for a small business.
 
-## Quick Start
+## 📋 Overview
+
+This application provides features including:
+
+- Login system.
+- User management.
+- Product registration.
+- Customer registration.
+- Location registration.
+- Product shipment including inventory calculation.
+- Product serial number searching.
+- Invoice and shipment report in PDF.
+
+## 🛠️ Technology Stack
+
+- **React 17**: React UI library
+
+- **TypeScript**: For type-safe code
+  
+- **ExpressJS**: Backend node framework
+
+- **MongoDB**: Database schema NoSQL
+
+- **MaterialUI**: UI framework library
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v16)
+
+- npm/yarn
+
+### Installation
 
 Add your MONGO_URI to the default.json file. Make sure you set an env var for that and the jwtSecret on deployment
 
@@ -24,17 +57,8 @@ npm run client
 
 # Server runs on http://localhost:5000 and client on http://localhost:3000
 ```
+## 📝 License
 
-## App Info
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### Author
 
-Jordi Bernandi
-
-### Version
-
-1.0.0
-
-### License
-
-This project is licensed under the MIT License
